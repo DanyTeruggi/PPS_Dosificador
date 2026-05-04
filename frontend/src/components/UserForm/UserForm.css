@@ -1,0 +1,11 @@
+/* Alinear labels a la izquierda */
+.form-label {
+  text-align: left;
+  display: block;
+  margin-bottom: 4px; /* reduce espacio entre label e input */
+}
+
+/* Opcional: reducir espacio vertical entre campos */
+.mb-3 {
+  margin-bottom: 12px; /* antes era 16px */
+}

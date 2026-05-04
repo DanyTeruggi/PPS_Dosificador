@@ -1,11 +1,19 @@
 :root {
   --color-background: #D4AAD9;
   --color-input-bg: #A7B5B3;
+  --background-gradient: linear-gradient(
+      135deg,
+    #d4aad9 0%,
+    #b57ac7 40%,
+    #8a4fa3 100%
+);
+
 }
 
 /* Fondo global de toda la app */
 body {
-  background-color: var(--color-background);
+  /* background-color: var(--color-background); */
+  background: var(--background-gradient);
   margin: 0;
   padding: 0;
 }

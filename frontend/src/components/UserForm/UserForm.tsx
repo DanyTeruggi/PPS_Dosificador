@@ -1,5 +1,7 @@
 import { useForm } from "react-hook-form";
 import type { User } from "../../types/User";
+import Button from "../Button/Button";
+import "./UserForm.css";
 
 export default function UserForm() {
   const {
@@ -175,9 +177,12 @@ return (
               {errors.userName && <div className="invalid-feedback">{errors.userName.message}</div>}
             </div>
 
-            <button type="submit" className="btn btn-primary w-100">
-              Registrar
-            </button>
+            {<Button 
+            label="Registrar" 
+            type="submit" 
+            fullWidth={false}
+            />}
+
           </form>
 
         </div>

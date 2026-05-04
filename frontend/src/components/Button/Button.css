@@ -1,0 +1,35 @@
+.custom-btn {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  transition: 0.2s ease;
+  width: auto; /* 👈 IMPORTANTE */
+}
+
+/* Ancho completo solo si se usa fullWidth */
+.custom-btn.full {
+  width: 100%;
+}
+
+/* Botón principal violeta */
+.custom-btn.primary {
+  background-color: #8a4fa3; /* Ajustado al tono del prototipo */
+}
+
+.custom-btn.primary:hover {
+  background-color: #7a4591;
+}
+
+/* Variante secundaria (por si la necesitás después) */
+.custom-btn.secondary {
+  background-color: #A7B5B3;
+  color: black;
+}
+
+.custom-btn.secondary:hover {
+  background-color: #96a4a2;
+}
