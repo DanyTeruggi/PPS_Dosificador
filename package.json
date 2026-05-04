@@ -1,16 +1,5 @@
 {
-  "name": "pps_dosificador",
-  "version": "1.0.0",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "Daniel Teruggi y Matias Spacech",
-  "license": "ISC",
-  "description": "API del dosificador automático",
   "dependencies": {
-    "body-parser": "^2.2.2",
-    "express": "^5.2.1"
+    "react-bootstrap-icons": "^1.11.6"
   }
 }
