@@ -24,3 +24,8 @@
   font-size: 14px;
   color: #222;
 }
+
+.footer-desktop p {
+  margin-bottom: 0;
+}
+

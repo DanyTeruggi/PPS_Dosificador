@@ -36,6 +36,26 @@ input.form-control::placeholder {
   opacity: 0.8;
 }
 
+
+
+/************** DesktopHomePage *************************/
+
+/* SECTION con imagen */
+.home-section {
+  width: 100%;
+  background-image: url("../assets/ovejasPastando.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  padding: 60px 0;
+}
+
+/* Título */
+.home-title {
+  font-size: 42px;
+  padding-bottom: 20px; /* ← tu padding inferior */
+}
+
 /* Animación */
 .fade-in {
   opacity: 0;
@@ -46,5 +66,12 @@ input.form-control::placeholder {
 .fade-in.visible {
   opacity: 1;
   transform: scale(1);
+}
+
+.home-form {
+  width: 100%;
+  max-width: 420px;
+  padding: 20px;
+  border-radius: 12px;
 }
 

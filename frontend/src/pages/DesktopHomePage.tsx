@@ -24,37 +24,18 @@ export default function DesktopHomePage() {
 
       {/* SECTION con imagen de fondo */}
       <section
-        className="text-center d-flex flex-column align-items-center"
-        style={{
-          width: "100%",
-          backgroundImage: `url(${ImgBackground})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-          padding: "60px 0",
-         
-        }}
+        className="home-section text-center d-flex flex-column align-items-center"
       >
         {/* TÍTULO con animación */}
         <h1
-          className={`fw-bold mb-4 fade-in ${showContent ? "visible" : ""}`}
-          style={{ fontSize: "42px",
-            paddingBottom: "20px",
-           }}
+          className={`home-title fw-bold mb-4 fade-in ${showContent ? "visible" : ""}`}
         >
           Centro de Monitoreo Bacteriológico
         </h1>
 
         {/* FORM con animación */}
         <article
-          className={`fade-in ${showContent ? "visible" : ""}`}
-          style={{
-            width: "100%",
-            maxWidth: "420px",
-            padding: "20px",
-            borderRadius: "12px",
-           
-          }}
+          className={`home-form fade-in ${showContent ? "visible" : ""}`}
         >
           <LoginForm />
         </article>
