@@ -1,13 +1,18 @@
 :root {
   --color-background: #D4AAD9;
   --color-input-bg: #A7B5B3;
+
+  /* Degradado principal */
   --background-gradient: linear-gradient(
       135deg,
     #d4aad9 0%,
     #b57ac7 40%,
     #8a4fa3 100%
 );
-
+ 
+/* background para formularios)*/
+  --background-form: #e8e3e3; 
+  
 }
 
 /* Fondo global de toda la app */
@@ -30,3 +35,16 @@ input.form-control::placeholder {
   color: #333;
   opacity: 0.8;
 }
+
+/* Animación */
+.fade-in {
+  opacity: 0;
+  transform: scale(0.95);
+  transition: opacity 1s ease-out, transform 1s ease-out;
+}
+
+.fade-in.visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
