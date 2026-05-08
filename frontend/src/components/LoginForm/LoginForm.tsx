@@ -1,36 +1,35 @@
+import styles from "./LoginForm.module.css";
 import Button from "../Button/Button";
-import "./LoginForm.css";
 
 export default function LoginForm() {
   return (
-    <form
-      className="login-form-container p-4 rounded shadow-sm"
-    >
+    <form className={styles.form}>
+
       {/* Usuario */}
-      <div className="mb-3">
-        <label className="form-label">Usuario</label>
+      <div className={styles.group}>
+        <label className={styles.label}>Usuario</label>
         <input
           type="text"
-          className="form-control"
+          className={styles.input}
           placeholder="Ingrese su usuario"
         />
       </div>
 
       {/* Password */}
-      <div className="mb-3">
-        <label className="form-label">Contraseña</label>
+      <div className={styles.group}>
+        <label className={styles.label}>Contraseña</label>
         <input
           type="password"
-          className="form-control"
+          className={styles.input}
           placeholder="Ingrese su contraseña"
         />
       </div>
 
-       {<Button 
-                label="Ingresar" 
-                type="submit" 
-                fullWidth={false}
-                />}
+      <Button 
+        label="Ingresar" 
+        type="submit" 
+        fullWidth={false}
+      />
     </form>
   );
 }

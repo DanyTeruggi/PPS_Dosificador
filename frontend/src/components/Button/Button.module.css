@@ -1,4 +1,4 @@
-.custom-btn {
+.button {
   padding: 12px 20px;
   border: none;
   border-radius: 8px;
@@ -7,35 +7,35 @@
   color: white;
   cursor: pointer;
   transition: 0.2s ease;
-  width: auto; /* 👈 IMPORTANTE */
+  width: auto;
 }
 
-/* Ancho completo solo si se usa fullWidth */
-.custom-btn.full {
+/* Ancho completo */
+.full {
   width: 100%;
 }
 
-/* Botón principal violeta */
-.custom-btn.primary {
-  background-color: #8a4fa3; /* Ajustado al tono del prototipo */
+/* PRIMARY */
+.primary {
+  background-color: #8a4fa3;
 }
 
-.custom-btn.primary:hover {
+.primary:hover {
   background-color: #7a4591;
 }
 
-/* Variante secundaria */
-.custom-btn.secondary {
+/* SECONDARY */
+.secondary {
   background-color: #A7B5B3;
   color: black;
 }
 
-.custom-btn.secondary:hover {
+.secondary:hover {
   background-color: #96a4a2;
 }
 
-/* Variante hero */
-.custom-btn.hero {
+/* HERO */
+.hero {
   padding: 14px 32px;
   font-size: 20px;
   font-weight: 600;
@@ -46,7 +46,7 @@
   transition: all 0.3s ease;
 }
 
-.custom-btn.hero:hover {
+.hero:hover {
   background: rgba(0, 0, 0, 0.65);
   transform: scale(1.05);
 }

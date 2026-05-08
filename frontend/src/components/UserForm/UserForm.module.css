@@ -1,0 +1,75 @@
+.wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+}
+
+.form {
+  width: 100%;
+  max-width: 480px;
+  padding: 24px;
+  border-radius: 12px;
+  background: var(--background-form);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.title {
+  text-align: center;
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 24px;
+  color: #222;
+}
+
+/* Grupo de inputs */
+.group {
+  margin-bottom: 14px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Label */
+.label {
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 6px;
+  padding-left: 12px; /* alineado con el input */
+}
+
+/* Input */
+.input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #bbb;
+  background-color: var(--color-input-bg);
+  font-size: 15px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.input:focus {
+  border-color: #6a3dad;
+  box-shadow: 0 0 4px rgba(106, 61, 173, 0.4);
+  outline: none;
+}
+
+/* Placeholder */
+.input::placeholder {
+  color: #444;
+  opacity: 0.7;
+}
+
+/* Error */
+.error {
+  color: #b00020;
+  font-size: 13px;
+  margin-top: 4px;
+  padding-left: 12px;
+}
+
+.invalid {
+  border-color: #b00020 !important;
+  box-shadow: 0 0 4px rgba(176, 0, 32, 0.4);
+}

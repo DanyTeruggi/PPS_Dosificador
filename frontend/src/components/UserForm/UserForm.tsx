@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import type { User } from "../../types/User";
 import Button from "../Button/Button";
-import "./UserForm.css";
+import styles from "./UserForm.module.css";
 
 export default function UserForm() {
   const {
@@ -12,113 +12,99 @@ export default function UserForm() {
 
   const onSubmit = (data: User) => {
     console.log("Datos enviados:", data);
-
-    // Aquí luego vas a hacer:
-    // fetch("http://localhost:3000/api/usuarios", { method: "POST", body: JSON.stringify(data) })
   };
-  
-return (
-    <div className="container mt-4">
-      <div className="row justify-content-center">
-        <div className="col-12 col-md-8 col-lg-6">
 
-          <form onSubmit={handleSubmit(onSubmit)} 
-            className="p-3 border rounded shadow-sm"
-            style={{ background: "var(--background-form)" }}
-              >
-            <h2 className="mb-4 text-center">Registro de Usuario</h2>
+  return (
+    <div className={styles.wrapper}>
+      <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
 
-            {/* Nombre */}
-            <div className="mb-3">
-              <label className="form-label">Nombre</label>
-              <input
-                className={`form-control ${errors.nombre ? "is-invalid" : ""}`}
-                {...register("nombre", { required: "El nombre es obligatorio" })}
-              />
-              {errors.nombre && <div className="invalid-feedback">{errors.nombre.message}</div>}
-            </div>
+        <h2 className={styles.title}>Registro de Usuario</h2>
 
-            {/* Apellido */}
-            <div className="mb-3">
-              <label className="form-label">Apellido</label>
-              <input
-                className={`form-control ${errors.apellido ? "is-invalid" : ""}`}
-                {...register("apellido", { required: "El apellido es obligatorio" })}
-              />
-              {errors.apellido && <div className="invalid-feedback">{errors.apellido.message}</div>}
-            </div>
-
-            {/* Email */}
-            <div className="mb-3">
-              <label className="form-label">Email</label>
-              <input
-                type="email"
-                className={`form-control ${errors.email ? "is-invalid" : ""}`}
-                {...register("email", {
-                  required: "El email es obligatorio",
-                  pattern: {
-                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                    message: "Formato de email inválido",
-                  },
-                })}
-              />
-              {errors.email && <div className="invalid-feedback">{errors.email.message}</div>}
-            </div>
-
-            {/* Celular */}
-            <div className="mb-3">
-              <label className="form-label">Número de celular</label>
-              <input
-                className={`form-control ${errors.celular ? "is-invalid" : ""}`}
-                {...register("celular", { required: "El celular es obligatorio" })}
-              />
-              {errors.celular && <div className="invalid-feedback">{errors.celular.message}</div>}
-            </div>
-
-            {/* Razón Social */}
-            <div className="mb-3">
-              <label className="form-label">Razón Social</label>
-              <input className="form-control" {...register("razonSocial")} />
-            </div>
-
-            {/* CUIT */}
-            <div className="mb-3">
-              <label className="form-label">CUIT</label>
-              <input
-                className={`form-control ${errors.cuit ? "is-invalid" : ""}`}
-                {...register("cuit", { required: "El CUIT es obligatorio" })}
-              />
-              {errors.cuit && <div className="invalid-feedback">{errors.cuit.message}</div>}
-            </div>
-
-            {/* Username */}
-            <div className="mb-3">
-              <label className="form-label">Nombre de usuario</label>
-              <input
-                className={`form-control ${errors.userName ? "is-invalid" : ""}`}
-                {...register("userName", {
-                  required: "El nombre de usuario es obligatorio",
-                  minLength: {
-                    value: 4,
-                    message: "Debe tener al menos 4 caracteres",
-                  },
-                })}
-              />
-              {errors.userName && <div className="invalid-feedback">{errors.userName.message}</div>}
-            </div>
-
-            {<Button 
-            label="Enviar" 
-            type="submit" 
-            fullWidth={false}
-            />}
-
-          </form>
-
+        {/* Nombre */}
+        <div className={styles.group}>
+          <label className={styles.label}>Nombre</label>
+          <input
+            className={`${styles.input} ${errors.nombre ? styles.invalid : ""}`}
+            {...register("nombre", { required: "El nombre es obligatorio" })}
+          />
+          {errors.nombre && <p className={styles.error}>{errors.nombre.message}</p>}
         </div>
-      </div>
+
+        {/* Apellido */}
+        <div className={styles.group}>
+          <label className={styles.label}>Apellido</label>
+          <input
+            className={`${styles.input} ${errors.apellido ? styles.invalid : ""}`}
+            {...register("apellido", { required: "El apellido es obligatorio" })}
+          />
+          {errors.apellido && <p className={styles.error}>{errors.apellido.message}</p>}
+        </div>
+
+        {/* Email */}
+        <div className={styles.group}>
+          <label className={styles.label}>Email</label>
+          <input
+            type="email"
+            className={`${styles.input} ${errors.email ? styles.invalid : ""}`}
+            {...register("email", {
+              required: "El email es obligatorio",
+              pattern: {
+                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                message: "Formato de email inválido",
+              },
+            })}
+          />
+          {errors.email && <p className={styles.error}>{errors.email.message}</p>}
+        </div>
+
+        {/* Celular */}
+        <div className={styles.group}>
+          <label className={styles.label}>Número de celular</label>
+          <input
+            className={`${styles.input} ${errors.celular ? styles.invalid : ""}`}
+            {...register("celular", { required: "El celular es obligatorio" })}
+          />
+          {errors.celular && <p className={styles.error}>{errors.celular.message}</p>}
+        </div>
+
+        {/* Razón Social */}
+        <div className={styles.group}>
+          <label className={styles.label}>Razón Social</label>
+          <input
+            className={styles.input}
+            {...register("razonSocial")}
+          />
+        </div>
+
+        {/* CUIT */}
+        <div className={styles.group}>
+          <label className={styles.label}>CUIT</label>
+          <input
+            className={`${styles.input} ${errors.cuit ? styles.invalid : ""}`}
+            {...register("cuit", { required: "El CUIT es obligatorio" })}
+          />
+          {errors.cuit && <p className={styles.error}>{errors.cuit.message}</p>}
+        </div>
+
+        {/* Username */}
+        <div className={styles.group}>
+          <label className={styles.label}>Nombre de usuario</label>
+          <input
+            className={`${styles.input} ${errors.userName ? styles.invalid : ""}`}
+            {...register("userName", {
+              required: "El nombre de usuario es obligatorio",
+              minLength: {
+                value: 4,
+                message: "Debe tener al menos 4 caracteres",
+              },
+            })}
+          />
+          {errors.userName && <p className={styles.error}>{errors.userName.message}</p>}
+        </div>
+
+        <Button label="Enviar" type="submit" fullWidth={true} />
+
+      </form>
     </div>
   );
-
-
 }

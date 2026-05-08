@@ -1,4 +1,4 @@
-import "./Button.css";
+import styles from "./Button.module.css";
 
 interface ButtonProps {
   label: string;
@@ -13,13 +13,13 @@ export default function Button({
   onClick,
   type = "button",
   variant = "primary",
-  fullWidth = true, // por defecto ocupa todo el ancho
+  fullWidth = true,
 }: ButtonProps) {
   return (
     <button
       type={type}
-      className={`custom-btn ${variant} ${fullWidth ? "full" : ""}`}
       onClick={onClick}
+      className={`${styles.button} ${styles[variant]} ${fullWidth ? styles.full : ""}`}
     >
       {label}
     </button>

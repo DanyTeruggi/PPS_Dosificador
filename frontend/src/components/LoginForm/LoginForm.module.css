@@ -1,31 +1,34 @@
-/* Contenedor interno del formulario */
-.login-form-container {
+.form {
   width: 100%;
   max-width: 100%;
   margin: 0;
   padding: 0;
 }
 
-/* Cada grupo de input */
-.mb-3 {
-  margin-bottom: 18px; /* más aire */
+/* Grupo de inputs */
+.group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 /* Label */
-.form-label {
+.label {
+  align-self: flex-start;
   font-size: 15px;
   font-weight: 600;
   color: #333;
   margin-bottom: 6px;
   display: block;
   text-align: left;
-  
+  padding-left: 14px;
 }
 
 /* Input */
-.form-control {
-  width: 100%;
+.input {
   padding: 10px 14px;
+  margin-bottom: 6px;
+  width: 80%;
   border-radius: 8px;
   border: 1px solid #bbb;
   background-color: var(--color-input-bg);
@@ -34,14 +37,14 @@
 }
 
 /* Input focus */
-.form-control:focus {
+.input:focus {
   border-color: #6a3dad;
   box-shadow: 0 0 4px rgba(106, 61, 173, 0.4);
   outline: none;
 }
 
 /* Placeholder */
-.form-control::placeholder {
+.input::placeholder {
   color: #444;
   opacity: 0.7;
 }

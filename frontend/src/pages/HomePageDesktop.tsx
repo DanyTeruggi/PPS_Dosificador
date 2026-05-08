@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
-import LoginForm from "../components/LoginForm/LoginForm";
-import Button from "../components/Button/Button"; 
-import "./HomePageDesktop.css";
 import { useNavigate } from "react-router-dom";
+
+import LoginForm from "../components/LoginForm/LoginForm";
+import Button from "../components/Button/Button";
 import { useIsDesktop } from "../hooks/useIsDesktop";
+
+import styles from "./HomePageDesktop.module.css";
 
 export default function HomePageDesktop() {
 
@@ -16,7 +18,6 @@ export default function HomePageDesktop() {
     }
   }, [isDesktop, navigate]);
 
-
   const [showContent, setShowContent] = useState(false);
   const [showForm, setShowForm] = useState(false);
 
@@ -26,42 +27,37 @@ export default function HomePageDesktop() {
   }, []);
 
   return (
-    <main className="desktop-homepage">
+    <main className={styles.page}>
 
-      {/* SECTION con imagen de fondo */}
-      <section className="home-section">
+      <section className={styles.section}>
 
-        {/* TÍTULO con blur + animación */}
-        <div className={`home-title-wrapper fade-in ${showContent ? "visible" : ""}`}>
-          <h1 className="home-title fw-bold mb-4">
-            Centro de Control Bacteriológico
-          </h1>
+        {/* TÍTULO */}
+        <div className={`${styles.titleWrapper} ${styles.fadeIn} ${showContent ? styles.visible : ""}`}>
+          <h1 className={styles.title}>Centro de Control Bacteriológico</h1>
         </div>
-        
-        <div className="spacer"></div>
 
-        {/* BOTÓN INGRESAR (solo si el form está oculto) */}
+        <div className={styles.spacer}></div>
+
+        {/* BOTÓN INGRESAR */}
         {!showForm && (
-          <div className={`fade-in ${showContent ? "visible" : ""}`}>
+          <div className={`${styles.fadeIn} ${showContent ? styles.visible : ""}`}>
             <Button
               label="INGRESAR"
-              variant="hero"     
-              fullWidth={false}  // ← centrado y tamaño natural
+              variant="hero"
+              fullWidth={false}
               onClick={() => setShowForm(true)}
             />
           </div>
         )}
 
-        {/* FORMULARIO (aparece con animación) */}
+        {/* FORMULARIO */}
         {showForm && (
-          <article className={`home-form fade-in visible`}>
+          <article className={`${styles.form} ${styles.fadeIn} ${styles.visible}`}>
             <LoginForm />
           </article>
         )}
 
       </section>
-
-     
 
     </main>
   );

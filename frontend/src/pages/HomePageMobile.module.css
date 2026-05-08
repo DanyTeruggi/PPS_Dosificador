@@ -1,19 +1,18 @@
-.home-container {
+.container {
   min-height: 100vh;
   width: 100%;
   padding-bottom: 80px;
+
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+
   text-align: center;
 }
 
-
-
-
 /* Logo principal */
-.logo-principal {
+.mainLogo {
   width: 180px;
   height: 180px;
   object-fit: contain;
@@ -21,28 +20,31 @@
 }
 
 /* Barra inferior de logos */
-.logos-bar {
+.logosBar {
   width: 100%;
-  max-width: 900px;          /* para que no se estiren demasiado en pantallas grandes */
+  max-width: 900px;
+
   display: flex;
   justify-content: space-around;
   align-items: center;
-  gap: 4px;          /* ← separa los logos */
+
+  gap: 4px;
   padding: 12px 24px 12px 10px;
   margin-top: 20px;
+
   border-radius: 12px;
-  background: rgba(236, 232, 232, 0.25); 
+  background: rgba(236, 232, 232, 0.25);
 }
 
-/* Logos dentro de la barra */
-.logo-institucion {
+/* Logos institucionales */
+.institutionLogo {
   max-height: 40px;
   width: auto;
   object-fit: contain;
 }
 
 /* Fade-out suave */
-.fade-out {
+.fadeOut {
   animation: fadeOut 0.6s ease forwards;
 }
 

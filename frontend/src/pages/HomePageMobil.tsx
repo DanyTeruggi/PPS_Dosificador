@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useIsDesktop } from "../hooks/useIsDesktop";
-import "./HomePageMobil.css";
+
+import styles from "./HomePageMobile.module.css";
 
 import logoCIVETAN from "../assets/CIVETAN.png";
 import logoVEWTERINARIA from "../assets/facVeterinaria.jpeg";
@@ -26,7 +27,6 @@ export default function HomePageMobile() {
     const timer = setTimeout(() => {
       setFadeOut(true);
 
-      // esperar a que termine la animación (600ms)
       setTimeout(() => {
         navigate("/login", { replace: true });
       }, 600);
@@ -37,20 +37,20 @@ export default function HomePageMobile() {
   }, [navigate]);
 
   return (
-    <div className={`home-container ${fadeOut ? "fade-out" : ""}`}>
+    <div className={`${styles.container} ${fadeOut ? styles.fadeOut : ""}`}>
 
-      <h1 className="fw-bold mb-1">Bienvenido</h1>
-      <h2 className="mb-4">Control Bacteriológico</h2>
+      <h1>Bienvenido</h1>
+      <h2>Control Bacteriológico</h2>
 
       <img
         src={logoVEWTERINARIA}
         alt="Logo Facultad"
-        className="logo-principal"
+        className={styles.mainLogo}
       />
 
-      <div className="logos-bar">
-        <img src={logoCIVETAN} alt="CIVETAN" className="logo-institucion" />
-        <img src={logoEXACTAS} alt="Facultad de Exactas" className="logo-institucion" />
+      <div className={styles.logosBar}>
+        <img src={logoCIVETAN} alt="CIVETAN" className={styles.institutionLogo} />
+        <img src={logoEXACTAS} alt="Facultad de Exactas" className={styles.institutionLogo} />
       </div>
 
     </div>
