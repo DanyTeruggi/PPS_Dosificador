@@ -15,9 +15,27 @@
           "imagen": "/mock/images/bebedero1.jpg"
         },
         {
+          "idBebedero": 1,
+          "numeroBebedero": "B-01",
+          "ubicacion": "Sector Norte",
+          "fechaMedicion": "2026-05-09",
+          "horaMedicion": "11:30",
+          "cobertura": "75%",
+          "imagen": "/mock/images/bebedero2.jpg"
+        },
+        {
           "idBebedero": 2,
           "numeroBebedero": "B-02",
-          "ubicacion": "Sector Norte",
+          "ubicacion": "Sector Sur",
+          "fechaMedicion": "2026-05-08",
+          "horaMedicion": "10:32",
+          "cobertura": "85%",
+          "imagen": "/mock/images/bebedero1.jpg"
+        },
+        {
+          "idBebedero": 2,
+          "numeroBebedero": "B-02",
+          "ubicacion": "Sector Sur",
           "fechaMedicion": "2026-05-08",
           "horaMedicion": "10:35",
           "cobertura": "92%",

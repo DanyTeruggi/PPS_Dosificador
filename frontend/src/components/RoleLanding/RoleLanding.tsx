@@ -7,7 +7,7 @@ import Footer from "../Footer/Footer";
 
 export default function RoleLanding() {
   const { state } = useLocation();
-
+  const navigate = useNavigate();
   const nombre = state?.nombre ?? "Usuario";
   const rol: Rol = state?.rol ?? "Productor";
 
@@ -57,8 +57,16 @@ export default function RoleLanding() {
           const isEstablecimiento = "nombre" in item;
           const isCliente = "cliente" in item;
 
+
           return (
-            <div key={index} className={styles.item}>
+            <div key={index}
+            className={styles.item}
+            onClick={() => {
+              if (isEstablecimiento) {
+            navigate("/establecimiento", { state: { establecimiento: item } });
+          }
+        }}
+        >
               <span className={styles.star}>✦</span>
 
               {isEstablecimiento && item.nombre}
