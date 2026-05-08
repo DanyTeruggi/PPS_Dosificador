@@ -81,6 +81,16 @@ return (
               <input className="form-control" {...register("razonSocial")} />
             </div>
 
+            {/* CUIT */}
+            <div className="mb-3">
+              <label className="form-label">CUIT</label>
+              <input
+                className={`form-control ${errors.cuit ? "is-invalid" : ""}`}
+                {...register("cuit", { required: "El CUIT es obligatorio" })}
+              />
+              {errors.cuit && <div className="invalid-feedback">{errors.cuit.message}</div>}
+            </div>
+
             {/* Username */}
             <div className="mb-3">
               <label className="form-label">Nombre de usuario</label>
@@ -98,7 +108,7 @@ return (
             </div>
 
             {<Button 
-            label="Registrar" 
+            label="Enviar" 
             type="submit" 
             fullWidth={false}
             />}

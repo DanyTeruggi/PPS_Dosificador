@@ -4,7 +4,7 @@ interface ButtonProps {
   label: string;
   onClick?: () => void;
   type?: "button" | "submit";
-  variant?: "primary" | "secondary";
+  variant?: "primary" | "secondary" | "hero";
   fullWidth?: boolean;
 }
 

@@ -1,0 +1,38 @@
+.home-container {
+  min-height: 100vh;
+  padding-bottom: 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+/* Logo principal */
+.logo-principal {
+  width: 180px;
+  height: 180px;
+  object-fit: contain;
+  margin-bottom: 30px;
+}
+
+/* Barra inferior de logos */
+.logos-bar {
+  width: 100%;
+  max-width: 900px;          /* para que no se estiren demasiado en pantallas grandes */
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  gap: 4px;          /* ← separa los logos */
+  padding: 12px 24px 12px 10px;
+  margin-top: 20px;
+  border-radius: 12px;
+  background: rgba(236, 232, 232, 0.25); /* podés subir/bajar opacidad */
+}
+
+/* Logos dentro de la barra */
+.logo-institucion {
+  max-height: 40px;
+  width: auto;
+  object-fit: contain;
+}

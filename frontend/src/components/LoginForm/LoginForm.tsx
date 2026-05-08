@@ -4,12 +4,7 @@ import "./LoginForm.css";
 export default function LoginForm() {
   return (
     <form
-      className="p-4 rounded shadow-sm"
-      style={{ width: "90%",
-              maxWidth: "380px",
-              background: "var(--background-form)",
-              borderRadius: "12px",
-              }}
+      className="login-form-container p-4 rounded shadow-sm"
     >
       {/* Usuario */}
       <div className="mb-3">

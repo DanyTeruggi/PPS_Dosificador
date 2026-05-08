@@ -1,0 +1,82 @@
+/* Layout principal */
+.desktop-homepage {
+  min-height: 100vh;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Sección con imagen */
+.home-section {
+  width: 100%;
+  height: 90vh;
+  
+  background-image: url("../assets/ovejasPastando.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* ← arranca arriba */
+  align-items: center;     /* ← centra horizontal */
+  text-align: center;
+  padding-top: 120px; /* ← ajustás cuánto sube */
+  gap: 30px;
+
+  position: relative;      /* ← necesario para posicionar el form */
+}
+
+/* Título principal */
+.home-title {
+  font-size: 56px;
+  font-weight: 700;
+  color: #523773;
+  text-shadow: 0 3px 6px rgba(0,0,0,0.35);
+  letter-spacing: 1px;
+  margin: 0;
+}
+
+
+
+.home-title-wrapper {
+  display: inline-block;
+  padding: 12px 24px;
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(6px);
+  border-radius: 12px;
+}
+
+.spacer {
+  height: 40px;
+}
+
+
+/* Contenedor del formulario */
+.home-form {
+  width: 100%;
+  max-width: 420px;
+  padding: 28px;
+  border-radius: 16px;
+  background: var(--background-form);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+
+  
+ 
+}
+
+
+
+/* Animaciones */
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.9s ease, transform 0.9s ease;
+}
+
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}

@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "react-bootstrap-icons": "^1.11.6"
+    "react-bootstrap-icons": "^1.11.6",
+    "react-router-dom": "^7.15.0"
   }
 }

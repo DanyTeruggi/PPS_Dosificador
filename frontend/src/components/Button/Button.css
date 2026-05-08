@@ -24,7 +24,7 @@
   background-color: #7a4591;
 }
 
-/* Variante secundaria (por si la necesitás después) */
+/* Variante secundaria */
 .custom-btn.secondary {
   background-color: #A7B5B3;
   color: black;
@@ -32,4 +32,21 @@
 
 .custom-btn.secondary:hover {
   background-color: #96a4a2;
+}
+
+/* Variante hero */
+.custom-btn.hero {
+  padding: 14px 32px;
+  font-size: 20px;
+  font-weight: 600;
+  background: rgba(0, 0, 0, 0.45);
+  color: #c9c6c6;
+  border-radius: 12px;
+  backdrop-filter: blur(4px);
+  transition: all 0.3s ease;
+}
+
+.custom-btn.hero:hover {
+  background: rgba(0, 0, 0, 0.65);
+  transform: scale(1.05);
 }

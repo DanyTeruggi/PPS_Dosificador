@@ -1,9 +1,47 @@
-.form-label {
-  text-align: left;
-  display: block;
-  margin-bottom: 4px;
+/* Contenedor interno del formulario */
+.login-form-container {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
+/* Cada grupo de input */
 .mb-3 {
-  margin-bottom: 12px;
+  margin-bottom: 18px; /* más aire */
+}
+
+/* Label */
+.form-label {
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 6px;
+  display: block;
+  text-align: left;
+  
+}
+
+/* Input */
+.form-control {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #bbb;
+  background-color: var(--color-input-bg);
+  font-size: 15px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Input focus */
+.form-control:focus {
+  border-color: #6a3dad;
+  box-shadow: 0 0 4px rgba(106, 61, 173, 0.4);
+  outline: none;
+}
+
+/* Placeholder */
+.form-control::placeholder {
+  color: #444;
+  opacity: 0.7;
 }
