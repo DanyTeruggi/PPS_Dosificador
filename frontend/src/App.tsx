@@ -19,7 +19,7 @@ export default function App() {
         <Route element={<PublicLayout />}>
           <Route path="/login" element={<LoginPage />} />
 
-          {/* Redirección inteligente según tamaño */}
+          {/* Redirección según tamaño */}
           <Route path="/home" element={<SmartHomeRedirect />} />
 
           {/* Vistas específicas */}

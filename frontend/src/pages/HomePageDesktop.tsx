@@ -2,8 +2,21 @@ import { useEffect, useState } from "react";
 import LoginForm from "../components/LoginForm/LoginForm";
 import Button from "../components/Button/Button"; 
 import "./HomePageDesktop.css";
+import { useNavigate } from "react-router-dom";
+import { useIsDesktop } from "../hooks/useIsDesktop";
 
 export default function HomePageDesktop() {
+
+  const isDesktop = useIsDesktop();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isDesktop) {
+      navigate("/home-mobile", { replace: true });
+    }
+  }, [isDesktop, navigate]);
+
+
   const [showContent, setShowContent] = useState(false);
   const [showForm, setShowForm] = useState(false);
 

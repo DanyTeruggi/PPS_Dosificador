@@ -1,10 +1,18 @@
-import { Navigate } from "react-router-dom";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useIsDesktop } from "../hooks/useIsDesktop";
 
 export default function SmartHomeRedirect() {
   const isDesktop = useIsDesktop();
+  const navigate = useNavigate();
 
-  return isDesktop
-    ? <Navigate to="/home-desktop" replace />
-    : <Navigate to="/home-mobile" replace />;
+  useEffect(() => {
+    if (isDesktop) {
+      navigate("/home-desktop", { replace: true });
+    } else {
+      navigate("/home-mobile", { replace: true });
+    }
+  }, [isDesktop, navigate]);
+
+  return null; // no renderiza nada
 }
