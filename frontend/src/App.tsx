@@ -8,31 +8,41 @@ import PublicLayout from "./layouts/PublicLayout";
 import PrivateLayout from "./layouts/PrivateLayout";
 
 import SmartHomeRedirect from "./components/SmartHomeRedirect";
+import RoleLanding from "./components/RoleLanding/RoleLanding"
+import LandingPageEstablecimiento from "./pages/LandingPageEstablecimiento";
 
 
 export default function App() {
   return (
     <BrowserRouter>
-      <Routes>
+  <Routes>
 
-        {/* RUTAS PÚBLICAS */}
-        <Route element={<PublicLayout />}>
-          <Route path="/login" element={<LoginPage />} />
+    {/* RUTAS PÚBLICAS */}
+    <Route element={<PublicLayout />}>
 
-          {/* Redirección según tamaño */}
-          <Route path="/home" element={<SmartHomeRedirect />} />
+      {/* Login */}
+      <Route path="/login" element={<LoginPage />} />
 
-          {/* Vistas específicas */}
-          <Route path="/home-desktop" element={<HomePageDesktop />} />
-          <Route path="/home-mobile" element={<HomePageMobil />} />
-        </Route>
+      {/* Redirección según tamaño */}
+      <Route path="/home" element={<SmartHomeRedirect />} />
 
-        {/* RUTAS PRIVADAS */}
-        <Route element={<PrivateLayout />}>
-          {/* <Route path="/dashboard" element={<Dashboard />} /> */}
-        </Route>
+      {/* Vistas específicas */}
+      <Route path="/home-desktop" element={<HomePageDesktop />} />
+      <Route path="/home-mobile" element={<HomePageMobil />} />
 
-      </Routes>
-    </BrowserRouter>
+      {/* RoleLanding: pantalla después del login */}
+      <Route path="/role-landing" element={<RoleLanding />} />
+      <Route path="/establecimiento" element={<LandingPageEstablecimiento />} />
+
+    </Route>
+
+    {/* RUTAS PRIVADAS */}
+    <Route element={<PrivateLayout />}>
+      {/* <Route path="/dashboard" element={<Dashboard />} /> */}
+    </Route>
+
+  </Routes>
+</BrowserRouter>
+
   );
 }

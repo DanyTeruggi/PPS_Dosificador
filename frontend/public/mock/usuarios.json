@@ -1,0 +1,20 @@
+[
+  {
+    "userName": "juan123",
+    "password": "1234",
+    "nombre": "Juan",
+    "rol": "Productor"
+  },
+  {
+    "userName": "raulvet",
+    "password": "abcd",
+    "nombre": "Raúl",
+    "rol": "Veterinario"
+  },
+  {
+    "userName": "admin",
+    "password": "admin",
+    "nombre": "Administrador",
+    "rol": "Admin"
+  }
+]
