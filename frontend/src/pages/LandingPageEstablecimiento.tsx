@@ -3,6 +3,8 @@ import type { Establecimiento } from "../types/Role";
 import BebederoCard from "../components/BebederoCard/BebederoCard";
 import Footer from "../components/Footer/Footer";
 import styles from "./LandingPageEstablecimiento.module.css";
+import type { Bebedero } from "../types/Role";
+
 
 export default function LandingPageEstablecimiento() {
   const { state } = useLocation();
@@ -13,13 +15,14 @@ export default function LandingPageEstablecimiento() {
   }
 
   // AGRUPAR POR idBebedero
-  const bebederosAgrupados = establecimiento.bebederos.reduce((acc, item) => {
-    if (!acc[item.idBebedero]) {
-      acc[item.idBebedero] = [];
-    }
-    acc[item.idBebedero].push(item);
-    return acc;
-  }, {} as Record<number, Establecimiento["bebederos"]>);
+const bebederosAgrupados: Record<number, Bebedero[]> = {};
+
+establecimiento.bebederos.forEach((item) => {
+  if (!bebederosAgrupados[item.idBebedero]) {
+    bebederosAgrupados[item.idBebedero] = [];
+  }
+  bebederosAgrupados[item.idBebedero].push(item);
+});
 
 
   return (

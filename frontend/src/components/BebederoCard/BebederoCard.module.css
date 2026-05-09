@@ -4,8 +4,12 @@
   backdrop-filter: blur(6px);
   border-radius: 12px;
   padding: 16px;
-  color: white;
-  overflow: visible; /* ← CLAVE */
+  overflow: visible; 
+}
+
+.card p {
+  margin: 0;
+  font-size: 16px;
 }
 
 .horizontalScroll {
@@ -21,16 +25,17 @@
 }
 
 .block {
-  min-width: 260px;   /* ← CLAVE */
-  flex-shrink: 0;     /* ← CLAVE */
-  background: rgba(255,255,255,0.1);
+  min-width: 200px;  
+  flex-shrink: 0;     
   padding: 12px;
   border-radius: 10px;
-  border: 2px solid rgb(0, 0, 0); /* para debug */
+  border: 2px solid rgb(0, 0, 0); 
+  background: rgba(233, 231, 231, 0.35);
 }
 
 .imageWrapper img {
-  width: 100%;
+  width: 95%;
+  max-width: 200px;
   height: 160px;
   object-fit: cover;
   border-radius: 8px;
@@ -41,3 +46,11 @@
   font-size: 20px;
   font-weight: 600;
 }
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+

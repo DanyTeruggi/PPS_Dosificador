@@ -14,7 +14,7 @@
 }
 
 /* Fondo global */
-body {
+html, body {
   background: var(--background-gradient);
   margin: 0;
   padding: 0;
@@ -32,3 +32,4 @@ input.form-control::placeholder {
   color: #333;
   opacity: 0.8;
 }
+

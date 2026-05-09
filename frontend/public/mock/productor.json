@@ -24,6 +24,15 @@
           "imagen": "/mock/images/bebedero2.jpg"
         },
         {
+          "idBebedero": 1,
+          "numeroBebedero": "B-01",
+          "ubicacion": "Sector Norte",
+          "fechaMedicion": "2026-05-08",
+          "horaMedicion": "11:30",
+          "cobertura": "65%",
+          "imagen": "/mock/images/bebedero1.jpg"
+        },
+        {
           "idBebedero": 2,
           "numeroBebedero": "B-02",
           "ubicacion": "Sector Sur",

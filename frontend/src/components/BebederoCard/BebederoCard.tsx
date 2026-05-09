@@ -6,6 +6,7 @@ interface BebederoCardProps {
 }
 
 export default function BebederoCard({ bebedero }: BebederoCardProps) {
+  
   return (
     <div className={styles.card}>
       <div className={styles.horizontalScroll}>
@@ -15,10 +16,19 @@ export default function BebederoCard({ bebedero }: BebederoCardProps) {
               <img src={medicion.imagen} alt={medicion.numeroBebedero} />
             </div>
 
-            <h3 className={styles.title}>{medicion.numeroBebedero}</h3>
-            <p><strong>Ubicación:</strong> {medicion.ubicacion}</p>
-            <p><strong>Medición:</strong> {medicion.fechaMedicion} {medicion.horaMedicion}</p>
-            <p><strong>Cobertura:</strong> {medicion.cobertura}</p>
+            <div className={styles.header}>
+              <h3 className={styles.title}>{medicion.numeroBebedero}</h3>
+              <p>
+                <strong>Cobertura:</strong> {medicion.cobertura}
+              </p>
+            </div>
+            <p>
+              <strong>Ubicación:</strong> {medicion.ubicacion}
+            </p>
+            <p>
+              <strong>Medición:</strong> {medicion.fechaMedicion}{" "}
+              {medicion.horaMedicion}
+            </p>
           </div>
         ))}
       </div>
