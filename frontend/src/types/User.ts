@@ -6,4 +6,5 @@ export interface User {
   razonSocial?: string;
   cuit: string;
   userName: string;
+  establecimientos: string;
 }

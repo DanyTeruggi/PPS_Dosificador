@@ -10,8 +10,32 @@ export default function UserForm() {
     formState: { errors },
   } = useForm<User>();
 
-  const onSubmit = (data: User) => {
-    console.log("Datos enviados:", data);
+  const onSubmit = async (data: User) => {
+    try {
+      const response = await fetch("/api/usuarios", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log("Respuesta del backend:", result);
+        alert("Usuario registrado con éxito");
+        // Aquí podrías redirigir al usuario o limpiar el formulario
+      } else {
+        // Manejar respuestas de error del servidor
+        const errorData = await response.json();
+        console.error("Error del servidor:", errorData);
+        alert(`Error al registrar el usuario: ${errorData.message || "Intente de nuevo"}`);
+      }
+    } catch (error) {
+      // Manejar errores de red
+      console.error("Error de red:", error);
+      alert("Error de red, no se pudo conectar con el servidor.");
+    }
   };
 
   return (
@@ -100,6 +124,17 @@ export default function UserForm() {
             })}
           />
           {errors.userName && <p className={styles.error}>{errors.userName.message}</p>}
+        </div>
+
+        {/* Establecimientos */}
+        <div className={styles.group}>
+          <label className={styles.label}>Establecimientos</label>
+          <textarea
+            className={`${styles.input} ${errors.establecimientos ? styles.invalid : ""}`}
+            {...register("establecimientos", { required: "La lista de establecimientos es obligatoria" })}
+            placeholder="Ingrese los establecimientos separados por comas"
+          />
+          {errors.establecimientos && <p className={styles.error}>{errors.establecimientos.message}</p>}
         </div>
 
         <Button label="Enviar" type="submit" fullWidth={true} />

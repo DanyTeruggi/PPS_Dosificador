@@ -31,7 +31,7 @@ export default function RoleLanding() {
           throw new Error("No se pudo obtener la información");
         }
 
-        const json: RoleData = await response.json();
+        const json: RoleData = await response.json(); 
         setData(json);
 
       } catch (err) {

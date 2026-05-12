@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import HomePageDesktop from "./pages/HomePageDesktop";
 import HomePageMobil from "./pages/HomePageMobil";
+import HomePageDashboard from "./pages/HomePageDashboard";
 
 import PublicLayout from "./layouts/PublicLayout";
 import PrivateLayout from "./layouts/PrivateLayout";
@@ -38,7 +39,7 @@ export default function App() {
 
     {/* RUTAS PRIVADAS */}
     <Route element={<PrivateLayout />}>
-      {/* <Route path="/dashboard" element={<Dashboard />} /> */}
+      <Route path="/dashboard" element={<HomePageDashboard />} />
     </Route>
 
   </Routes>
