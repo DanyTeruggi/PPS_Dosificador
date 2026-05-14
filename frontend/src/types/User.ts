@@ -1,4 +1,5 @@
 export interface User {
+  id: number;
   nombre: string;
   apellido: string;
   email: string;
@@ -7,4 +8,7 @@ export interface User {
   cuit: string;
   userName: string;
   establecimientos: string;
+  activo: boolean;
+  password: string;
+  rol: string;
 }

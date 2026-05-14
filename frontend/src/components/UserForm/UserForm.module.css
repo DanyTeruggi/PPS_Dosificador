@@ -1,3 +1,6 @@
+/* --------------------------------------------- */
+/* CONTENEDOR GENERAL */
+/* --------------------------------------------- */
 .wrapper {
   width: 100%;
   display: flex;
@@ -5,15 +8,20 @@
   padding: 20px;
 }
 
+/* --------------------------------------------- */
+/* FORMULARIO */
+/* --------------------------------------------- */
 .form {
   width: 100%;
   max-width: 480px;
-  padding: 24px;
+  padding: 24px 32px; /* padding lateral extra */
   border-radius: 12px;
   background: var(--background-form);
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
+
+/* Título */
 .title {
   text-align: center;
   font-size: 22px;
@@ -22,7 +30,9 @@
   color: #222;
 }
 
-/* Grupo de inputs */
+/* --------------------------------------------- */
+/* GRUPOS DE INPUTS */
+/* --------------------------------------------- */
 .group {
   margin-bottom: 14px;
   display: flex;
@@ -38,7 +48,9 @@
   padding-left: 12px; /* alineado con el input */
 }
 
-/* Input */
+/* --------------------------------------------- */
+/* INPUTS */
+/* --------------------------------------------- */
 .input {
   width: 100%;
   padding: 10px 12px;
@@ -61,7 +73,17 @@
   opacity: 0.7;
 }
 
-/* Error */
+/* --------------------------------------------- */
+/* TEXTAREA (Establecimientos) */
+/* --------------------------------------------- */
+textarea.input {
+  min-height: 80px;
+  resize: vertical;
+}
+
+/* --------------------------------------------- */
+/* ERRORES */
+/* --------------------------------------------- */
 .error {
   color: #b00020;
   font-size: 13px;

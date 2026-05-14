@@ -1,20 +1,26 @@
 [
   {
+    "id": 1,
     "userName": "juan123",
     "password": "1234",
-    "nombre": "Juan",
-    "rol": "Productor"
+    "nombre": "Juan Pérez",
+    "rol": "Productor",
+    "activo": true
   },
   {
+    "id": 2,
     "userName": "raulvet",
     "password": "abcd",
-    "nombre": "Raúl",
-    "rol": "Veterinario"
+    "nombre": "Raúl Gómez",
+    "rol": "Veterinario",
+    "activo": true
   },
   {
+    "id": 3,
     "userName": "admin",
     "password": "admin",
     "nombre": "Administrador",
-    "rol": "Admin"
+    "rol": "Admin",
+    "activo": false
   }
 ]

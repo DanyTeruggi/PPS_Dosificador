@@ -3,7 +3,12 @@ import type { User } from "../../types/User";
 import Button from "../Button/Button";
 import styles from "./UserForm.module.css";
 
-export default function UserForm() {
+
+interface UserFormProps {
+  onClose?: () => void;
+}
+
+export default function UserForm({ onClose }: UserFormProps) {
   const {
     register,
     handleSubmit,
@@ -25,6 +30,8 @@ export default function UserForm() {
         console.log("Respuesta del backend:", result);
         alert("Usuario registrado con éxito");
         // Aquí podrías redirigir al usuario o limpiar el formulario
+        if (onClose) onClose();
+
       } else {
         // Manejar respuestas de error del servidor
         const errorData = await response.json();
