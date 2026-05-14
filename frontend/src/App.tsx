@@ -11,6 +11,7 @@ import PrivateLayout from "./layouts/PrivateLayout";
 import SmartHomeRedirect from "./components/SmartHomeRedirect";
 import RoleLanding from "./components/RoleLanding/RoleLanding"
 import LandingPageEstablecimiento from "./pages/LandingPageEstablecimiento";
+import BebederosPanel from "./components/Dashboard/BebederosPanel/BebederosPanel";
 
 
 export default function App() {
@@ -40,6 +41,7 @@ export default function App() {
     {/* RUTAS PRIVADAS */}
     <Route element={<PrivateLayout />}>
       <Route path="/dashboard" element={<HomePageDashboard />} />
+      <Route path="/bebederos" element={<BebederosPanel />} />
     </Route>
 
   </Routes>

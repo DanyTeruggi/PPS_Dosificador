@@ -1,3 +1,4 @@
+import BebederosPanel from "../components/Dashboard/BebederosPanel/BebederosPanel";
 import DashboardHeader from "../components/Dashboard/Header/DashboardHeader";
 import DashboardNavTabs from "../components/Dashboard/NavTabs/DashboardNavTabs";
 import UsersPanel from "../components/Dashboard/UsersPanel/UsersPanel";
@@ -17,8 +18,8 @@ export default function HomePageDashboard() {
 
       {<div className={styles.content}>
         {activeTab === "usuarios" && <UsersPanel />}
+        {activeTab === "dispositivos" && <BebederosPanel />}
         {/* {activeTab === "general" && <SummaryCards />}
-        {activeTab === "dispositivos" && <DevicesPanel />}
         {activeTab === "reportes" && <ReportsPanel />} */}
       </div> }
     </div>
