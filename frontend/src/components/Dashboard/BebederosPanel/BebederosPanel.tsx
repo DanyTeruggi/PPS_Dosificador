@@ -1,65 +1,122 @@
 import { useState, useEffect } from "react";
 import styles from "./BebederosPanel.module.css";
 import BebederoForm from "./BebederoForm";
-import type { Bebedero } from "../../../types/Bebedero";
 
-// IMPORTAMOS EL MOCK
-import bebederosMock from "../../../../public/mock/bebderos.json";
+import { useApi } from "../../../utils/apiFetch";
+import { useAuth } from "../../../context/AuthContext";
+
+import type { Bebedero } from "../../../types/Bebedero";
+import type { Establecimiento } from "../../../types/Role";
 
 export default function BebederosPanel() {
+  const { apiFetch } = useApi();
+  const { user } = useAuth();
+
   const [bebederos, setBebederos] = useState<Bebedero[]>([]);
   const [searchId, setSearchId] = useState("");
   const [editBebedero, setEditBebedero] = useState<Bebedero | null>(null);
 
-  // GET inicial (USANDO MOCK)
+  /**
+   * Carga los bebederos según el rol del usuario.
+   * 
+   * cliente → sus establecimientos → bebederos
+   * veterinario → clientes → establecimientos → bebederos
+   * admin → (por ahora) no tiene endpoint directo, pedimos manualmente
+   */
   useEffect(() => {
-    setBebederos(bebederosMock);
+    async function loadBebederos() {
+      let all: Bebedero[] = [];
 
-    /*
-    // GET REAL A LA API
-    fetch("http://localhost:3000/api/bebederos")
-      .then((res) => res.json())
-      .then((data) => setBebederos(data));
-    */
-  }, []);
+      // ============================
+      // CLIENTE
+      // ============================
+      if (user?.rol === "cliente") {
+        const res = await apiFetch("/api/v1/clientes/mis-establecimientos");
+        if (!res) return;
+
+        const establecimientos: Establecimiento[] = await res.json();
+
+        for (const est of establecimientos) {
+          const r2 = await apiFetch(`/api/v1/establecimientos/${est.id}/bebederos`);
+          if (!r2) continue;
+
+          const beb: Bebedero[] = await r2.json();
+          all = [...all, ...beb];
+        }
+      }
+
+      // ============================
+      // VETERINARIO
+      // ============================
+      if (user?.rol === "veterinario") {
+        const res = await apiFetch("/api/v1/veterinarios/clientes");
+        if (!res) return;
+
+        const clientes = await res.json();
+
+        for (const cliente of clientes) {
+          const r2 = await apiFetch(
+            `/api/v1/veterinarios/${cliente.veterinario_id}/clientes/${cliente.id}/establecimientos`
+          );
+          if (!r2) continue;
+
+          const establecimientos: Establecimiento[] = await r2.json();
+
+          for (const est of establecimientos) {
+            const r3 = await apiFetch(`/api/v1/establecimientos/${est.id}/bebederos`);
+            if (!r3) continue;
+
+            const beb: Bebedero[] = await r3.json();
+            all = [...all, ...beb];
+          }
+        }
+      }
+
+      // ============================
+      // ADMIN
+      // ============================
+      if (user?.rol === "admin") {
+        // Si querés, después hacemos un endpoint especial para admin
+        console.warn("Admin: falta endpoint directo para bebederos.");
+      }
+
+      setBebederos(all);
+    }
+
+    loadBebederos();
+  }, [user, apiFetch]);
 
   // FILTRO POR ID
   const filtrados = bebederos.filter((b) =>
     searchId === "" ? true : b.id.toString().includes(searchId)
   );
 
-  // TOGGLE ESTADO (solo local por ahora)
-  function toggleEstado(id: number) {
+  // TOGGLE ESTADO
+  async function toggleEstado(id: number) {
     const nuevos = bebederos.map((b) =>
       b.id === id ? { ...b, estado: !b.estado } : b
     );
     setBebederos(nuevos);
 
-    /*
-    // PATCH REAL A LA API
-    await fetch(`http://localhost:3000/api/bebederos/${id}/estado`, {
+    await apiFetch(`/api/v1/admin/bebederos/${id}/estado`, {
       method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ estado: nuevos.find((b) => b.id === id)?.estado }),
+      body: JSON.stringify({
+        estado: nuevos.find((b) => b.id === id)?.estado,
+      }),
     });
-    */
   }
 
   // GUARDAR CAMBIOS DEL MODAL
-  function guardarCambios(bebederoActualizado: Bebedero) {
+  async function guardarCambios(bebederoActualizado: Bebedero) {
     const nuevos = bebederos.map((b) =>
       b.id === bebederoActualizado.id ? bebederoActualizado : b
     );
     setBebederos(nuevos);
 
-    /*
-    // PUT REAL A LA API
-    await fetch(`http://localhost:3000/api/bebederos/${bebederoActualizado.id}`, {
+    await apiFetch(`/api/v1/bebederos/${bebederoActualizado.id}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(bebederoActualizado),
     });
-    */
 
     setEditBebedero(null);
   }
@@ -86,8 +143,6 @@ export default function BebederosPanel() {
             <th>Nombre</th>
             <th>Ubicación</th>
             <th>Establecimiento</th>
-            <th>Veterinario</th>
-            <th>Productor</th>
             <th>Estado</th>
             <th></th>
           </tr>
@@ -100,8 +155,6 @@ export default function BebederosPanel() {
               <td>{b.nombre}</td>
               <td>{b.ubicacion}</td>
               <td>{b.establecimiento}</td>
-              <td>{b.veterinario}</td>
-              <td>{b.productor}</td>
 
               <td>
                 <label className={styles.switch}>

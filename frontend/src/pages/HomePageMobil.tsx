@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useIsDesktop } from "../hooks/useIsDesktop";
-
+import { useAuth } from "../context/AuthContext";
 import styles from "./HomePageMobile.module.css";
 
 import logoCIVETAN from "../assets/CIVETAN.png";
@@ -9,32 +8,37 @@ import logoVEWTERINARIA from "../assets/facVeterinaria.jpeg";
 import logoEXACTAS from "../assets/facExactas.png";
 
 export default function HomePageMobile() {
-
-  const isDesktop = useIsDesktop();
+  const { user, token } = useAuth();
   const navigate = useNavigate();
 
   const [fadeOut, setFadeOut] = useState(false);
 
-  // Redirección automática si cambia el tamaño
-  useEffect(() => {
-    if (isDesktop) {
-      navigate("/home-desktop", { replace: true });
-    }
-  }, [isDesktop, navigate]);
-
-  // Fade-out + navegación
   useEffect(() => {
     const timer = setTimeout(() => {
       setFadeOut(true);
 
       setTimeout(() => {
-        navigate("/login", { replace: true });
+        // Si NO hay token → ir al login
+        if (!token) {
+          navigate("/login", { replace: true });
+          return;
+        }
+
+        // Si hay token:
+        // ADMIN → NO puede estar en HomeMobile → ir a dashboard
+        if (user?.rol === "admin") {
+          navigate("/dashboard", { replace: true });
+          return;
+        }
+
+        // CLIENTE o VETERINARIO → se quedan en HomeMobile
+        // (NO redirigimos a dashboard)
       }, 600);
 
     }, 1000);
 
     return () => clearTimeout(timer);
-  }, [navigate]);
+  }, [navigate, token, user]);
 
   return (
     <div className={`${styles.container} ${fadeOut ? styles.fadeOut : ""}`}>

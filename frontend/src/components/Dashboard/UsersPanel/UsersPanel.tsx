@@ -1,14 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styles from "./UsersPanel.module.css";
-import usuariosData from "../../../../public/mock/usuarios.json";
+
+import { useApi } from "../../../utils/apiFetch";
+import { useAuth } from "../../../context/AuthContext";
+
 import UserForm from "../../UserForm/UserForm";
 import type { UsuarioPanel } from "../../../types/UsuarioPanel";
 
 export default function UsersPanel() {
-  // LISTA DE USUARIOS
-  const [usuarios, setUsuarios] = useState<UsuarioPanel[]>(usuariosData);
+  const { apiFetch } = useApi();
+  const { user } = useAuth();
 
-  // MODAL
+  const [usuarios, setUsuarios] = useState<UsuarioPanel[]>([]);
   const [showModal, setShowModal] = useState(false);
 
   // FILTROS
@@ -19,6 +22,24 @@ export default function UsersPanel() {
   // EDICIÓN
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const [tempRol, setTempRol] = useState("");
+
+  /**
+   * Carga inicial de usuarios desde el backend.
+   * Solo el ADMIN puede acceder a este panel.
+   */
+  useEffect(() => {
+    async function loadUsuarios() {
+      if (user?.rol !== "admin") return;
+
+      const res = await apiFetch("/api/v1/admin/usuarios");
+      if (!res) return;
+
+      const data = await res.json();
+      setUsuarios(data);
+    }
+
+    loadUsuarios();
+  }, [user, apiFetch]);
 
   // CLEAR
   function clearFilters() {
@@ -50,35 +71,47 @@ export default function UsersPanel() {
       return estadoFilter === "activo" ? u.activo : !u.activo;
     });
 
-  // GUARDAR CAMBIOS
+  /**
+   * Guardar cambios de rol
+   */
   async function guardarCambios(index: number) {
     const usuario = usuarios[index];
 
-    const payload = { ...usuario, rol: tempRol };
+    const res = await apiFetch(`/api/v1/admin/usuarios/${usuario.id}/rol`, {
+      method: "PUT",
+      body: JSON.stringify({ rol: tempRol }),
+    });
 
-    try {
-      const response = await fetch("http://localhost:3000/api/usuarios/" + usuario.id, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) throw new Error("Error al actualizar usuario");
-
-      const nuevos = [...usuarios];
-      nuevos[index].rol = tempRol;
-      setUsuarios(nuevos);
-      setEditIndex(null);
-    } catch (error) {
-      console.error("Error guardando cambios:", error);
-      alert("No se pudo guardar el cambio");
+    if (!res || !res.ok) {
+      alert("No se pudo actualizar el rol");
+      return;
     }
+
+    const nuevos = [...usuarios];
+    nuevos[index].rol = tempRol;
+    setUsuarios(nuevos);
+    setEditIndex(null);
   }
 
-  // TOGGLE INDIVIDUAL
-  function toggleEstadoUsuario(index: number) {
+  /**
+   * Activar / desactivar usuario
+   */
+  async function toggleEstadoUsuario(index: number) {
+    const usuario = usuarios[index];
+    const nuevoEstado = !usuario.activo;
+
+    const res = await apiFetch(`/api/v1/admin/usuarios/${usuario.id}/estado`, {
+      method: "PATCH",
+      body: JSON.stringify({ activo: nuevoEstado }),
+    });
+
+    if (!res || !res.ok) {
+      alert("No se pudo cambiar el estado");
+      return;
+    }
+
     const nuevos = [...usuarios];
-    nuevos[index].activo = !nuevos[index].activo;
+    nuevos[index].activo = nuevoEstado;
     setUsuarios(nuevos);
   }
 
@@ -169,9 +202,9 @@ export default function UsersPanel() {
                       onChange={(e) => setTempRol(e.target.value)}
                       className={styles.selectRol}
                     >
-                      <option value="Productor">Productor</option>
-                      <option value="Veterinario">Veterinario</option>
-                      <option value="Admin">Admin</option>
+                      <option value="productor">Productor</option>
+                      <option value="veterinario">Veterinario</option>
+                      <option value="admin">Admin</option>
                     </select>
                   ) : (
                     u.rol

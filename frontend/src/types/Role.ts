@@ -11,6 +11,7 @@ export interface Bebedero {
 }
 
 export interface Establecimiento {
+  id: number;
   nombre: string;
   bebederos: Bebedero[];
 }

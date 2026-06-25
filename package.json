@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "jwt-decode": "^4.0.0",
     "react-bootstrap-icons": "^1.11.6",
     "react-router-dom": "^7.15.0"
   }

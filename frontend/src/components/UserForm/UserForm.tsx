@@ -1,47 +1,110 @@
 import { useForm } from "react-hook-form";
-import type { User } from "../../types/User";
+import { useApi } from "../../utils/apiFetch";
 import Button from "../Button/Button";
 import styles from "./UserForm.module.css";
-
 
 interface UserFormProps {
   onClose?: () => void;
 }
 
+interface FormData {
+  nombre: string;
+  email: string;
+  password: string;
+  rol: "admin" | "veterinario" | "cliente";
+  razonSocial?: string;
+  establecimientos?: string;
+}
+
 export default function UserForm({ onClose }: UserFormProps) {
+  const { apiFetch } = useApi();
+
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<User>();
+  } = useForm<FormData>();
 
-  const onSubmit = async (data: User) => {
+  const onSubmit = async (data: FormData) => {
     try {
-      const response = await fetch("/api/usuarios", {
+      // 1) Crear usuario base
+      const resUser = await apiFetch("/api/v1/admin/usuarios", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          nombre: data.nombre,
+          email: data.email,
+          password: data.password,
+          rol: data.rol
+        })
       });
 
-      if (response.ok) {
-        const result = await response.json();
-        console.log("Respuesta del backend:", result);
-        alert("Usuario registrado con éxito");
-        // Aquí podrías redirigir al usuario o limpiar el formulario
-        if (onClose) onClose();
-
-      } else {
-        // Manejar respuestas de error del servidor
-        const errorData = await response.json();
-        console.error("Error del servidor:", errorData);
-        alert(`Error al registrar el usuario: ${errorData.message || "Intente de nuevo"}`);
+      if (!resUser || !resUser.ok) {
+        alert("Error creando usuario");
+        return;
       }
+
+      const usuarioCreado = await resUser.json();
+      const usuarioId = usuarioCreado.id;
+
+      // 2) Si es veterinario → crear veterinario
+      if (data.rol === "veterinario") {
+        const resVet = await apiFetch("/api/v1/admin/veterinarios", {
+          method: "POST",
+          body: JSON.stringify({
+            usuario_id: usuarioId
+          })
+        });
+
+        if (!resVet || !resVet.ok) {
+          alert("Error creando veterinario");
+          return;
+        }
+      }
+
+      // 3) Si es cliente → crear cliente + establecimientos
+      if (data.rol === "cliente") {
+        const resCliente = await apiFetch("/api/v1/admin/clientes", {
+          method: "POST",
+          body: JSON.stringify({
+            usuario_id: usuarioId,
+            razon_social: data.razonSocial ?? "Sin razón social",
+            veterinario_id: 1 // TODO: seleccionar veterinario real
+          })
+        });
+
+        if (!resCliente || !resCliente.ok) {
+          alert("Error creando cliente");
+          return;
+        }
+
+        const clienteCreado = await resCliente.json();
+        const clienteId = clienteCreado.id;
+
+        // Crear establecimientos separados por coma
+        const lista = data.establecimientos?.split(",").map(e => e.trim()) ?? [];
+
+        for (const nombre of lista) {
+          const resEst = await apiFetch("/api/v1/admin/establecimientos", {
+            method: "POST",
+            body: JSON.stringify({
+              cliente_id: clienteId,
+              nombre
+            })
+          });
+
+          if (!resEst || !resEst.ok) {
+            alert(`Error creando establecimiento: ${nombre}`);
+            return;
+          }
+        }
+      }
+
+      alert("Usuario creado con éxito");
+      if (onClose) onClose();
+
     } catch (error) {
-      // Manejar errores de red
-      console.error("Error de red:", error);
-      alert("Error de red, no se pudo conectar con el servidor.");
+      console.error(error);
+      alert("Error de red");
     }
   };
 
@@ -55,20 +118,10 @@ export default function UserForm({ onClose }: UserFormProps) {
         <div className={styles.group}>
           <label className={styles.label}>Nombre</label>
           <input
-            className={`${styles.input} ${errors.nombre ? styles.invalid : ""}`}
+            className={styles.input}
             {...register("nombre", { required: "El nombre es obligatorio" })}
           />
           {errors.nombre && <p className={styles.error}>{errors.nombre.message}</p>}
-        </div>
-
-        {/* Apellido */}
-        <div className={styles.group}>
-          <label className={styles.label}>Apellido</label>
-          <input
-            className={`${styles.input} ${errors.apellido ? styles.invalid : ""}`}
-            {...register("apellido", { required: "El apellido es obligatorio" })}
-          />
-          {errors.apellido && <p className={styles.error}>{errors.apellido.message}</p>}
         </div>
 
         {/* Email */}
@@ -76,72 +129,45 @@ export default function UserForm({ onClose }: UserFormProps) {
           <label className={styles.label}>Email</label>
           <input
             type="email"
-            className={`${styles.input} ${errors.email ? styles.invalid : ""}`}
-            {...register("email", {
-              required: "El email es obligatorio",
-              pattern: {
-                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                message: "Formato de email inválido",
-              },
-            })}
+            className={styles.input}
+            {...register("email", { required: "El email es obligatorio" })}
           />
-          {errors.email && <p className={styles.error}>{errors.email.message}</p>}
         </div>
 
-        {/* Celular */}
+        {/* Password */}
         <div className={styles.group}>
-          <label className={styles.label}>Número de celular</label>
+          <label className={styles.label}>Contraseña</label>
           <input
-            className={`${styles.input} ${errors.celular ? styles.invalid : ""}`}
-            {...register("celular", { required: "El celular es obligatorio" })}
+            type="password"
+            className={styles.input}
+            {...register("password", { required: "La contraseña es obligatoria" })}
           />
-          {errors.celular && <p className={styles.error}>{errors.celular.message}</p>}
         </div>
 
-        {/* Razón Social */}
+        {/* Rol */}
+        <div className={styles.group}>
+          <label className={styles.label}>Rol</label>
+          <select className={styles.input} {...register("rol")}>
+            <option value="cliente">Productor</option>
+            <option value="veterinario">Veterinario</option>
+            <option value="admin">Administrador</option>
+          </select>
+        </div>
+
+        {/* Razón Social (solo cliente) */}
         <div className={styles.group}>
           <label className={styles.label}>Razón Social</label>
-          <input
-            className={styles.input}
-            {...register("razonSocial")}
-          />
+          <input className={styles.input} {...register("razonSocial")} />
         </div>
 
-        {/* CUIT */}
-        <div className={styles.group}>
-          <label className={styles.label}>CUIT</label>
-          <input
-            className={`${styles.input} ${errors.cuit ? styles.invalid : ""}`}
-            {...register("cuit", { required: "El CUIT es obligatorio" })}
-          />
-          {errors.cuit && <p className={styles.error}>{errors.cuit.message}</p>}
-        </div>
-
-        {/* Username */}
-        <div className={styles.group}>
-          <label className={styles.label}>Nombre de usuario</label>
-          <input
-            className={`${styles.input} ${errors.userName ? styles.invalid : ""}`}
-            {...register("userName", {
-              required: "El nombre de usuario es obligatorio",
-              minLength: {
-                value: 4,
-                message: "Debe tener al menos 4 caracteres",
-              },
-            })}
-          />
-          {errors.userName && <p className={styles.error}>{errors.userName.message}</p>}
-        </div>
-
-        {/* Establecimientos */}
+        {/* Establecimientos (solo cliente) */}
         <div className={styles.group}>
           <label className={styles.label}>Establecimientos</label>
           <textarea
-            className={`${styles.input} ${errors.establecimientos ? styles.invalid : ""}`}
-            {...register("establecimientos", { required: "La lista de establecimientos es obligatoria" })}
-            placeholder="Ingrese los establecimientos separados por comas"
+            className={styles.input}
+            {...register("establecimientos")}
+            placeholder="Estancia 1, Estancia 2, ..."
           />
-          {errors.establecimientos && <p className={styles.error}>{errors.establecimientos.message}</p>}
         </div>
 
         <Button label="Enviar" type="submit" fullWidth={true} />

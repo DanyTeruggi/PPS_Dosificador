@@ -71,3 +71,6 @@ export default defineConfig([
   },
 ])
 ```
+
+<!-- AuthContext para manejar el estado del usuario
+localStorage para persistir el token al recargar la página -->

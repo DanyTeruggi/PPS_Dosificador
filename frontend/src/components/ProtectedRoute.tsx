@@ -1,0 +1,31 @@
+import { Navigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+
+interface Props {
+  children: React.ReactNode;
+  roles?: string[]; // opcional: ["admin"], ["cliente"], ["veterinario"]
+}
+
+export default function ProtectedRoute({ children, roles }: Props) {
+  const { token, user } = useAuth();
+
+  // 1) Si NO hay token → login
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+
+  // 2) Si hay token pero NO hay user → login (caso raro)
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  // 3) Si la ruta requiere roles específicos
+  if (roles && !roles.includes(user.rol)) {
+    // Redirección inteligente según rol
+    if (user.rol === "admin") return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/home-mobile" replace />;
+  }
+
+  // 4) Si todo está OK → renderizar
+  return <>{children}</>;
+}

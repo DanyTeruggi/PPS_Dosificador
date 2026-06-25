@@ -1,19 +1,66 @@
-import { useLocation, useNavigate } from "react-router-dom";
-import type { Establecimiento } from "../types/Role";
-import BebederoCard from "../components/BebederoCard/BebederoCard";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import styles from "./LandingPageEstablecimiento.module.css";
-import type { Bebedero } from "../types/Role";
+import BebederoCard from "../components/BebederoCard/BebederoCard";
+
+import { useApi } from "../utils/apiFetch";
+import type { Establecimiento, Bebedero } from "../types/Role";
 
 export default function LandingPageEstablecimiento() {
-  const { state } = useLocation();
   const navigate = useNavigate();
+  const { id } = useParams(); // <-- obtenemos el ID desde la URL
+  const { apiFetch } = useApi();
 
-  const establecimiento = state?.establecimiento as Establecimiento;
+  const [establecimiento, setEstablecimiento] = useState<Establecimiento | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  if (!establecimiento) {
-    return <p>Error: no se encontró el establecimiento</p>;
-  }
+  /**
+   * Carga los datos del establecimiento desde el backend.
+   * 
+   * Endpoint real:
+   * GET /api/v1/establecimientos/{id}
+   * 
+   * apiFetch:
+   * - agrega token automáticamente
+   * - detecta expiración del token
+   * - hace logout automático si expira
+   */
+  useEffect(() => {
+    async function fetchEstablecimiento() {
+      try {
+        setLoading(true);
+        setError(null);
 
+        const response = await apiFetch(`/api/v1/establecimientos/${id}`);
+
+        // Si apiFetch detectó token expirado → response será undefined
+        if (!response) return;
+
+        if (!response.ok) {
+          throw new Error("No se pudo obtener el establecimiento");
+        }
+
+        const json: Establecimiento = await response.json();
+        setEstablecimiento(json);
+
+      } catch (err) {
+        setError("Error al cargar el establecimiento");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchEstablecimiento();
+  }, [id, apiFetch]);
+
+  if (loading) return <p>Cargando...</p>;
+  if (error || !establecimiento) return <p>{error ?? "Sin datos"}</p>;
+
+  /**
+   * Agrupamos los bebederos por idBebedero
+   * Esto mantiene tu diseño original.
+   */
   const bebederosAgrupados: Record<number, Bebedero[]> = {};
   establecimiento.bebederos.forEach((item) => {
     if (!bebederosAgrupados[item.idBebedero]) {
@@ -40,7 +87,6 @@ export default function LandingPageEstablecimiento() {
           <BebederoCard key={index} bebedero={mediciones} />
         ))}
       </div>
-
     </div>
   );
 }

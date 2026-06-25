@@ -1,46 +1,32 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import styles from "./LoginForm.module.css";
 import Button from "../Button/Button";
 
-export default function LoginForm() {
-  const navigate = useNavigate();
+// 1) Definimos el tipo del prop que recibimos desde LoginPage
+interface LoginFormProps {
+  onLogin: (userName: string, password: string) => Promise<void>;
+}
+
+// 2) Agregamos el prop al componente
+export default function LoginForm({ onLogin }: LoginFormProps) {
 
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
 
+  // 3) Este handleSubmit ahora NO navega ni valida mocks
+  //    Solo llama a onLogin() que viene desde LoginPage
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg("");
 
     try {
-      // Traigo los usuarios del mock
-      const response = await fetch("/mock/usuarios.json");
-      const usuarios = await response.json();
+      // Llamamos al backend a través de LoginPage
+      await onLogin(userName, password);
 
-      // Busco coincidencia
-      const user = usuarios.find(
-        (u: any) =>
-          u.userName === userName.trim() &&
-          u.password === password.trim()
-      );
-
-      if (!user) {
-        setErrorMsg("Usuario o contraseña incorrectos");
-        return;
-      }
-
-      // Navegamos a RoleLanding con datos reales
-      navigate("/role-landing", {
-        state: {
-          nombre: user.nombre,
-          rol: user.rol
-        }
-      });
-
+      // Si onLogin falla, cae al catch
     } catch (error) {
-      setErrorMsg("Error al procesar el login");
+      setErrorMsg("Usuario o contraseña incorrectos");
     }
   };
 

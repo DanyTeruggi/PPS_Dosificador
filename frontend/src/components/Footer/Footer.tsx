@@ -1,28 +1,43 @@
-import { BsHouse, BsPeopleFill, BsXCircle, BsDash } from "react-icons/bs";
+import { BsHouse, BsPeopleFill, BsXCircle } from "react-icons/bs";
 import styles from "./Footer.module.css";
 
+import { useAuth } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+
 export default function Footer() {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  // Redirige al home (SmartHomeRedirect decide desktop o mobile)
+  const handleHome = () => {
+    navigate("/home");
+  };
+
+  // Logout real: borra token + redirige al login
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
+
   return (
     <footer className={styles.footer}>
 
-      <div className={styles.item}>
+      {/* HOME */}
+      <div className={styles.item} onClick={handleHome}>
         <BsHouse size={22} />
         <span className={styles.label}>Home</span>
       </div>
 
+      {/* SOPORTE TÉCNICO */}
       <div className={styles.item}>
         <BsPeopleFill size={22} />
         <span className={styles.label}>Soporte Técnico</span>
       </div>
 
-      <div className={styles.item}>
+      {/* LOGOUT */}
+      <div className={styles.item} onClick={handleLogout}>
         <BsXCircle size={22} />
         <span className={styles.label}>Cerrar</span>
-      </div>
-
-      <div className={styles.item}>
-        <BsDash size={22} />
-        <span className={styles.label}>Minimizar</span>
       </div>
 
     </footer>

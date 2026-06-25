@@ -2,9 +2,8 @@ import { useState, useEffect } from "react";
 import styles from "./ReportsPanel.module.css";
 import { Chart } from "react-chartjs-2";
 
-import bebederosMock from "../../../../public/mock/bebderos.json";
-import usuariosMock from "../../../../public/mock/usuarios.json";
-
+import { useApi } from "../../../utils/apiFetch";
+import { useAuth } from "../../../context/AuthContext";
 
 import type { Bebedero } from "../../../types/Bebedero";
 import type { User } from "../../../types/User";
@@ -24,6 +23,9 @@ import "chartjs-adapter-date-fns";
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend, TimeScale);
 
 export default function ReportsPanel() {
+  const { apiFetch } = useApi();
+  const { user } = useAuth();
+
   const [filter, setFilter] = useState("inactivos");
 
   const [bebederos, setBebederos] = useState<Bebedero[]>([]);
@@ -34,24 +36,96 @@ export default function ReportsPanel() {
     datasets: []
   });
 
+  /**
+   * Carga de datos reales desde el backend:
+   * - Bebederos según el rol
+   * - Usuarios (solo admin)
+   */
   useEffect(() => {
-    setBebederos(bebederosMock as Bebedero[]);
-    setUsuarios(usuariosMock as User[]);
-  }, []);
+    async function loadData() {
+      let allBebederos: Bebedero[] = [];
 
+      // ============================
+      // CLIENTE
+      // ============================
+      if (user?.rol === "cliente") {
+        const res = await apiFetch("/api/v1/clientes/mis-establecimientos");
+        if (!res) return;
+
+        const establecimientos = await res.json();
+
+        for (const est of establecimientos) {
+          const r2 = await apiFetch(`/api/v1/establecimientos/${est.id}/bebederos`);
+          if (!r2) continue;
+
+          const beb = await r2.json();
+          allBebederos = [...allBebederos, ...beb];
+        }
+      }
+
+      // ============================
+      // VETERINARIO
+      // ============================
+      if (user?.rol === "veterinario") {
+        const res = await apiFetch("/api/v1/veterinarios/clientes");
+        if (!res) return;
+
+        const clientes = await res.json();
+
+        for (const cliente of clientes) {
+          const r2 = await apiFetch(
+            `/api/v1/veterinarios/${cliente.veterinario_id}/clientes/${cliente.id}/establecimientos`
+          );
+          if (!r2) continue;
+
+          const establecimientos = await r2.json();
+
+          for (const est of establecimientos) {
+            const r3 = await apiFetch(`/api/v1/establecimientos/${est.id}/bebederos`);
+            if (!r3) continue;
+
+            const beb = await r3.json();
+            allBebederos = [...allBebederos, ...beb];
+          }
+        }
+      }
+
+      // ============================
+      // ADMIN
+      // ============================
+      if (user?.rol === "admin") {
+        const res = await apiFetch("/api/v1/admin/usuarios");
+        if (res) {
+          const users = await res.json();
+          setUsuarios(users);
+        }
+
+        // Admin no tiene endpoint directo para bebederos
+        console.warn("Admin: falta endpoint directo para bebederos");
+      }
+
+      setBebederos(allBebederos);
+    }
+
+    loadData();
+  }, [user, apiFetch]);
+
+  /**
+   * Generación de reportes dinámicos
+   */
   useEffect(() => {
-    /* ────────────────────────────────────────────────
-       REPORTE 1: BEBEDEROS INACTIVOS (PERÍODOS)
-    ───────────────────────────────────────────────── */
+    // ────────────────────────────────────────────────
+    // REPORTE 1: BEBEDEROS INACTIVOS (PERÍODOS)
+    // ────────────────────────────────────────────────
     if (filter === "inactivos") {
       const data = bebederos.flatMap(b =>
-        b.inactividad.map(rango => ({
+        b.inactividad?.map(rango => ({
           x: [
             new Date(rango.desde).getTime(),
             new Date(rango.hasta).getTime()
           ],
           y: `Bebedero ${b.id}`
-        }))
+        })) ?? []
       );
 
       const labels = [...new Set(data.map(d => d.y))];
@@ -70,9 +144,9 @@ export default function ReportsPanel() {
       return;
     }
 
-    /* ────────────────────────────────────────────────
-       REPORTE 2: REAPROVISIONAR
-    ───────────────────────────────────────────────── */
+    // ────────────────────────────────────────────────
+    // REPORTE 2: REAPROVISIONAR
+    // ────────────────────────────────────────────────
     if (filter === "reaprovisionar") {
       const pendientes = bebederos.filter(
         b => b.watertank < b.coberturaMinima
@@ -92,9 +166,9 @@ export default function ReportsPanel() {
       return;
     }
 
-    /* ────────────────────────────────────────────────
-       REPORTE 3: STOCK DE BACTERIAS
-    ───────────────────────────────────────────────── */
+    // ────────────────────────────────────────────────
+    // REPORTE 3: STOCK DE BACTERIAS
+    // ────────────────────────────────────────────────
     if (filter === "stockUsuarios") {
       const labels = usuarios.map(u => u.nombre);
       const stock = usuarios.map(u => u.stockBacterias ?? 0);
