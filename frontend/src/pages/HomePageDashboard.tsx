@@ -2,6 +2,7 @@ import BebederosPanel from "../components/Dashboard/BebederosPanel/BebederosPane
 import DashboardHeader from "../components/Dashboard/Header/DashboardHeader";
 import DashboardNavTabs from "../components/Dashboard/NavTabs/DashboardNavTabs";
 import UsersPanel from "../components/Dashboard/UsersPanel/UsersPanel";
+import ReportsPanel from "../components//Dashboard/ReportsPanel/ReportsPanel";
 
 
 import styles from "./HomePageDashboard.module.css";
@@ -21,6 +22,7 @@ export default function HomePageDashboard() {
         {activeTab === "dispositivos" && <BebederosPanel />}
         {/* {activeTab === "general" && <SummaryCards />}
         {activeTab === "reportes" && <ReportsPanel />} */}
+        {activeTab === "reportes" && <ReportsPanel />}
       </div> }
     </div>
   );

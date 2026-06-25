@@ -1,0 +1,32 @@
+.container {
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+  width: 100%;
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.filterBar {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.select {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+}
+
+.chartContainer {
+  background: #fafafa;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #eee;
+}

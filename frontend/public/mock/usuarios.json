@@ -5,7 +5,8 @@
     "password": "1234",
     "nombre": "Juan Pérez",
     "rol": "Productor",
-    "activo": true
+    "activo": true,
+    "stockBacterias": 25
   },
   {
     "id": 2,
@@ -13,7 +14,8 @@
     "password": "abcd",
     "nombre": "Raúl Gómez",
     "rol": "Veterinario",
-    "activo": true
+    "activo": true,
+    "stockBacterias": 80
   },
   {
     "id": 3,
@@ -21,6 +23,7 @@
     "password": "admin",
     "nombre": "Administrador",
     "rol": "Admin",
-    "activo": false
+    "activo": false,
+    "stockBacterias": 0
   }
 ]

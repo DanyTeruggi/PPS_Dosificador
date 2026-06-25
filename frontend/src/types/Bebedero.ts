@@ -13,5 +13,8 @@ export interface Bebedero {
   watertank: number;
   ultrasound: number;
   estado: boolean;
+  inactividad: {
+    desde: string;
+    hasta: string;
+  }[];
 }
-

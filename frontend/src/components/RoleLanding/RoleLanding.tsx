@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 import type { Rol, RoleData } from "../../types/Role";
 import { useNavigate } from "react-router-dom";
 import styles from "./RoleLanding.module.css";
-import Footer from "../Footer/Footer";
+
 
 export default function RoleLanding() {
   const { state } = useLocation();
@@ -77,7 +77,7 @@ export default function RoleLanding() {
       </div>
 
 
-      <Footer />
+    
     </div>
   );
 }

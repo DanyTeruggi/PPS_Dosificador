@@ -25,10 +25,11 @@
   color: #523773;
 }
 
+
 /* Lista */
 .list {
-  width: 90%;
-  margin: 0 auto;
+  width: 70%;
+  margin-left: -10%;
   background: rgba(255, 254, 254, 0.588);
   backdrop-filter: blur(6px);
   padding: 20px;

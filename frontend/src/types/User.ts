@@ -11,4 +11,5 @@ export interface User {
   activo: boolean;
   password: string;
   rol: string;
+  stockBacterias: number;
 }

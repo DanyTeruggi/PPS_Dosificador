@@ -10,6 +10,28 @@
   margin-bottom: 20px;
 }
 
+/* volver a otra pagina */
+.header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.backButton {
+  border: none;
+  background: transparent;
+  color: inherit;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+
+
 .scrollContainer {
   display: flex;
   overflow-x: auto;

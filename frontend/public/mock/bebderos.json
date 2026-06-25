@@ -13,7 +13,11 @@
     "estado": true,
     "establecimiento": "La Rinconada",
     "veterinario": "Dr. López",
-    "productor": "Juan Pérez"
+    "productor": "Juan Pérez",
+    "inactividad": [
+      { "desde": "2024-05-01", "hasta": "2024-05-03" },
+      { "desde": "2024-06-10", "hasta": "2024-06-12" }
+    ]
   },
   {
     "id": 2,
@@ -29,7 +33,10 @@
     "estado": false,
     "establecimiento": "El Palenque",
     "veterinario": "Dra. Martínez",
-    "productor": "Carlos Gómez"
+    "productor": "Carlos Gómez",
+    "inactividad": [
+      { "desde": "2024-04-15", "hasta": "2024-04-20" }
+    ]
   },
   {
     "id": 3,
@@ -45,7 +52,11 @@
     "estado": true,
     "establecimiento": "El Milagro",
     "veterinario": "Dr. Suárez",
-    "productor": "María Torres"
+    "productor": "María Torres",
+    "inactividad": [
+      { "desde": "2024-03-01", "hasta": "2024-03-02" },
+      { "desde": "2024-07-10", "hasta": "2024-07-11" }
+    ]
   },
   {
     "id": 4,
@@ -61,6 +72,67 @@
     "estado": false,
     "establecimiento": "La Rinconada",
     "veterinario": "Dra. Martínez",
-    "productor": "Juan Pérez"
+    "productor": "Juan Pérez",
+    "inactividad": [
+      { "desde": "2024-02-10", "hasta": "2024-02-15" }
+    ]
+  },
+  {
+    "id": 5,
+    "nombre": "Bebedero Central",
+    "ubicacion": "Sector Central",
+    "largo": 2.2,
+    "ancho": 1.1,
+    "profundidad": 0.8,
+    "coberturaMinima": 65,
+    "tiempoDosis": 11,
+    "watertank": 1,
+    "ultrasound": 1,
+    "estado": true,
+    "establecimiento": "El Palenque",
+    "veterinario": "Dr. López",
+    "productor": "Carlos Gómez",
+    "inactividad": [
+      { "desde": "2024-01-05", "hasta": "2024-01-07" }
+    ]
+  },
+  {
+    "id": 6,
+    "nombre": "Bebedero Laguna",
+    "ubicacion": "Sector Laguna",
+    "largo": 3.1,
+    "ancho": 1.5,
+    "profundidad": 1.1,
+    "coberturaMinima": 90,
+    "tiempoDosis": 8,
+    "watertank": 0,
+    "ultrasound": 1,
+    "estado": false,
+    "establecimiento": "La Rinconada",
+    "veterinario": "Dra. Martínez",
+    "productor": "Juan Pérez",
+    "inactividad": [
+      { "desde": "2024-06-01", "hasta": "2024-06-05" },
+      { "desde": "2024-08-12", "hasta": "2024-08-14" }
+    ]
+  },
+  {
+    "id": 7,
+    "nombre": "Bebedero Monte",
+    "ubicacion": "Sector Monte",
+    "largo": 2.4,
+    "ancho": 1.2,
+    "profundidad": 0.9,
+    "coberturaMinima": 78,
+    "tiempoDosis": 13,
+    "watertank": 1,
+    "ultrasound": 0,
+    "estado": true,
+    "establecimiento": "El Milagro",
+    "veterinario": "Dr. Suárez",
+    "productor": "María Torres",
+    "inactividad": [
+      { "desde": "2024-09-01", "hasta": "2024-09-03" }
+    ]
   }
 ]
