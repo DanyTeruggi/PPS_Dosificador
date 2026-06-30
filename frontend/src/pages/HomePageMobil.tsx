@@ -15,10 +15,12 @@ export default function HomePageMobile() {
 
   useEffect(() => {
     const timer = setTimeout(() => {
+      console.log("fadeOut activado");
       setFadeOut(true);
 
       setTimeout(() => {
         // Si NO hay token → ir al login
+         console.log("redirigiendo...");
         if (!token) {
           navigate("/login", { replace: true });
           return;
@@ -35,7 +37,7 @@ export default function HomePageMobile() {
         // (NO redirigimos a dashboard)
       }, 600);
 
-    }, 1000);
+    }, 2000); // tiempo para ver la animación
 
     return () => clearTimeout(timer);
   }, [navigate, token, user]);

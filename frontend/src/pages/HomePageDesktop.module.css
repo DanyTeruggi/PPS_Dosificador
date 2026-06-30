@@ -1,17 +1,19 @@
 .page {
-  min-height: 100vh;
-  padding: 40px 20px;
-
+  height: 100vh;              /* Ocupa SIEMPRE el alto total */
+  padding: 0;                 /* Quitamos padding que genera scroll */
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: center;    /* Centra verticalmente */
+  align-items: center;        /* Centra horizontalmente */
+  overflow: hidden;           /* Evita scroll accidental */
 }
 
 /* Sección con imagen */
 .section {
   width: 100%;
-  height: 90vh;
-
+  height: 100vh;              /* Ocupa TODO el alto del monitor */
+  overflow: hidden;
   background-image: url("../assets/ovejasPastando.jpg");
   background-size: cover;
   background-position: center;
@@ -19,15 +21,16 @@
 
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
+  justify-content: center;    /* Centra el contenido verticalmente */
   align-items: center;
 
   text-align: center;
-  padding-top: 120px;
   gap: 30px;
 
   position: relative;
 }
+
+
 
 /* Título */
 .titleWrapper {
@@ -48,7 +51,7 @@
 }
 
 .spacer {
-  height: 40px;
+  height: 20px;               /* Reducido para evitar scroll */
 }
 
 /* Formulario */

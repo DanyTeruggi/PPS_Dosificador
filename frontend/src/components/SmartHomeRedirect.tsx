@@ -11,7 +11,6 @@ export default function SmartHomeRedirect() {
   useEffect(() => {
     // 1) Si NO hay token → login
     if (!token) {
-      navigate("/login", { replace: true });
       return;
     }
 

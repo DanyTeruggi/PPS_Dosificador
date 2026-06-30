@@ -4,6 +4,7 @@ import LoginPage from "./pages/LoginPage";
 import HomePageDesktop from "./pages/HomePageDesktop";
 import HomePageMobil from "./pages/HomePageMobil";
 import HomePageDashboard from "./pages/HomePageDashboard";
+import LandingSelector from "./pages/LandingSelector";
 
 import PublicLayout from "./layouts/PublicLayout";
 import PrivateLayout from "./layouts/PrivateLayout";
@@ -24,6 +25,7 @@ export default function App() {
 
           {/* RUTAS PÚBLICAS */}
           <Route element={<PublicLayout />}>
+            <Route path="/" element={<LandingSelector />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/home" element={<SmartHomeRedirect />} />
             <Route path="/home-desktop" element={<HomePageDesktop />} />
@@ -38,9 +40,7 @@ export default function App() {
               </ProtectedRoute>
             }
           >
-            {/* Pantalla principal después del login */}
-            <Route path="/" element={<SmartHomeRedirect />} />
-
+          
             {/* Pantalla de establecimiento */}
             <Route path="/establecimiento/:id" element={<LandingPageEstablecimiento />} />
 
