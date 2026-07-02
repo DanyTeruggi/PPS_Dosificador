@@ -34,18 +34,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   // LOGIN REAL
-  const login = async (email: string, password: string): Promise<boolean> => {
+  const API = import.meta.env.VITE_API_BASE_URL;
+  const PREFIX = import.meta.env.VITE_API_PREFIX;
+   const login = async (email: string, password: string): Promise<boolean> => {
     try {
-      const res = await fetch("/api/v1/auth/login", {
+      
+      const res = await fetch(`${API}${PREFIX}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password })
       });
 
+    
       if (!res.ok) return false;
 
       const data = await res.json();
-      const token = data.token;
+      const token = data.access_token;
 
       // Guardar token
       setToken(token);

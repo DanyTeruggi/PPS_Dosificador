@@ -1,23 +1,25 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-
-import LoginPage from "./pages/LoginPage";
-import HomePageDesktop from "./pages/HomePageDesktop";
-import HomePageMobil from "./pages/HomePageMobil";
-import HomePageDashboard from "./pages/HomePageDashboard";
-import LandingSelector from "./pages/LandingSelector";
+import { AuthProvider } from "./context/AuthContext";
 
 import PublicLayout from "./layouts/PublicLayout";
 import PrivateLayout from "./layouts/PrivateLayout";
-
-import SmartHomeRedirect from "./components/SmartHomeRedirect";
-
-import LandingPageEstablecimiento from "./pages/LandingPageEstablecimiento";
-import BebederosPanel from "./components/Dashboard/BebederosPanel/BebederosPanel";
-
-import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 
+import LandingSelector from "./pages/LandingSelector";
+import LoginPage from "./pages/LoginPage";
+
+import SmartHomeRedirect from "./components/SmartHomeRedirect";
+import HomePageDesktop from "./pages/HomePageDesktop";
+import HomePageMobile from "./pages/HomePageMobil";
+
+import HomePageDashboard from "./pages/HomePageDashboard";
+import BebederosPanel from "./components/Dashboard/BebederosPanel/BebederosPanel";
+import LandingPageEstablecimiento from "./pages/LandingPageEstablecimiento";
+import NuevoUsuarioPage from "./pages/NuevoUsuarioPage";
+
 export default function App() {
+  console.log("App.tsx REAL cargado");
+
   return (
     <AuthProvider>
       <BrowserRouter>
@@ -25,11 +27,22 @@ export default function App() {
 
           {/* RUTAS PÚBLICAS */}
           <Route element={<PublicLayout />}>
+            {/* Landing pública */}
             <Route path="/" element={<LandingSelector />} />
+
+            {/* Login */}
             <Route path="/login" element={<LoginPage />} />
+
+            {/* Ruta que decide home según rol */}
             <Route path="/home" element={<SmartHomeRedirect />} />
+
+            {/* Ruta para nuevo usuario */}
+            <Route path="/nuevo-usuario" element={<NuevoUsuarioPage />} />
+
+
+            {/* Home desktop y mobile (decididos por LandingSelector) */}
             <Route path="/home-desktop" element={<HomePageDesktop />} />
-            <Route path="/home-mobile" element={<HomePageMobil />} />
+            <Route path="/home-mobile" element={<HomePageMobile />} />
           </Route>
 
           {/* RUTAS PRIVADAS */}
@@ -40,15 +53,9 @@ export default function App() {
               </ProtectedRoute>
             }
           >
-          
-            {/* Pantalla de establecimiento */}
-            <Route path="/establecimiento/:id" element={<LandingPageEstablecimiento />} />
-
-            {/* Dashboard */}
             <Route path="/dashboard" element={<HomePageDashboard />} />
-
-            {/* Bebederos */}
             <Route path="/bebederos" element={<BebederosPanel />} />
+            <Route path="/establecimiento/:id" element={<LandingPageEstablecimiento />} />
           </Route>
 
         </Routes>

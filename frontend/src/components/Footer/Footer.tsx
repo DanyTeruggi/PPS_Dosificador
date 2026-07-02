@@ -15,8 +15,8 @@ export default function Footer() {
 
   // Logout real: borra token + redirige al login
   const handleLogout = () => {
+    navigate("/", { replace: true });
     logout();
-    navigate("/login");
   };
 
   return (

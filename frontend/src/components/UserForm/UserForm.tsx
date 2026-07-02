@@ -1,5 +1,6 @@
 import { useForm } from "react-hook-form";
 import { useApi } from "../../utils/apiFetch";
+import { useAuth } from "../../context/AuthContext";
 import Button from "../Button/Button";
 import styles from "./UserForm.module.css";
 
@@ -11,65 +12,71 @@ interface FormData {
   nombre: string;
   email: string;
   password: string;
-  rol: "admin" | "veterinario" | "cliente";
+  role: "admin" | "veterinario" | "cliente";
+
+  // Cliente
   razonSocial?: string;
-  establecimientos?: string;
+  telefonoCliente?: string;
+  contactoPrincipal?: string;
+
+  // Veterinario
+  especialidad?: string;
+  telefonoVet?: string;
+  ubicacionVet?: string;
 }
 
 export default function UserForm({ onClose }: UserFormProps) {
   const { apiFetch } = useApi();
+  const { user } = useAuth();
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    watch,
   } = useForm<FormData>();
+
+  const selectedRole = watch("role");
+  const isAdmin = user?.role === "admin";
 
   const onSubmit = async (data: FormData) => {
     try {
-      // 1) Crear usuario base
-      const resUser = await apiFetch("/api/v1/admin/usuarios", {
-        method: "POST",
-        body: JSON.stringify({
-          nombre: data.nombre,
-          email: data.email,
-          password: data.password,
-          rol: data.rol
-        })
-      });
-
-      if (!resUser || !resUser.ok) {
-        alert("Error creando usuario");
-        return;
-      }
-
-      const usuarioCreado = await resUser.json();
-      const usuarioId = usuarioCreado.id;
-
-      // 2) Si es veterinario → crear veterinario
-      if (data.rol === "veterinario") {
-        const resVet = await apiFetch("/api/v1/admin/veterinarios", {
+      // Veterinario
+      if (data.role === "veterinario") {
+        const resVet = await apiFetch("/admin/veterinarios", {
           method: "POST",
           body: JSON.stringify({
-            usuario_id: usuarioId
-          })
+            nombre: data.nombre,
+            email: data.email,
+            password: data.password,
+            especialidad: data.especialidad ?? null,
+            telefono: data.telefonoVet ?? null,
+            ubicacion: data.ubicacionVet ?? null,
+          }),
         });
 
         if (!resVet || !resVet.ok) {
           alert("Error creando veterinario");
           return;
         }
+
+        alert("Veterinario creado con éxito");
+        onClose?.();
+        return;
       }
 
-      // 3) Si es cliente → crear cliente + establecimientos
-      if (data.rol === "cliente") {
-        const resCliente = await apiFetch("/api/v1/admin/clientes", {
+      // Cliente
+      if (data.role === "cliente") {
+        const resCliente = await apiFetch("/admin/clientes", {
           method: "POST",
           body: JSON.stringify({
-            usuario_id: usuarioId,
+            nombre: data.nombre,
+            email: data.email,
+            password: data.password,
             razon_social: data.razonSocial ?? "Sin razón social",
-            veterinario_id: 1 // TODO: seleccionar veterinario real
-          })
+            telefono: data.telefonoCliente ?? null,
+            contacto_principal: data.contactoPrincipal ?? null,
+            veterinario_id: 1,
+          }),
         });
 
         if (!resCliente || !resCliente.ok) {
@@ -77,30 +84,13 @@ export default function UserForm({ onClose }: UserFormProps) {
           return;
         }
 
-        const clienteCreado = await resCliente.json();
-        const clienteId = clienteCreado.id;
-
-        // Crear establecimientos separados por coma
-        const lista = data.establecimientos?.split(",").map(e => e.trim()) ?? [];
-
-        for (const nombre of lista) {
-          const resEst = await apiFetch("/api/v1/admin/establecimientos", {
-            method: "POST",
-            body: JSON.stringify({
-              cliente_id: clienteId,
-              nombre
-            })
-          });
-
-          if (!resEst || !resEst.ok) {
-            alert(`Error creando establecimiento: ${nombre}`);
-            return;
-          }
-        }
+        alert("Cliente creado con éxito");
+        onClose?.();
+        return;
       }
 
-      alert("Usuario creado con éxito");
-      if (onClose) onClose();
+      // Admin (tu backend NO tiene endpoint para esto)
+      alert("Tu backend no tiene endpoint para crear administradores.");
 
     } catch (error) {
       console.error(error);
@@ -112,66 +102,75 @@ export default function UserForm({ onClose }: UserFormProps) {
     <div className={styles.wrapper}>
       <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
 
-        <h2 className={styles.title}>Registro de Usuario</h2>
-
         {/* Nombre */}
         <div className={styles.group}>
           <label className={styles.label}>Nombre</label>
-          <input
-            className={styles.input}
-            {...register("nombre", { required: "El nombre es obligatorio" })}
-          />
-          {errors.nombre && <p className={styles.error}>{errors.nombre.message}</p>}
+          <input className={styles.input} {...register("nombre", { required: true })} />
         </div>
 
         {/* Email */}
         <div className={styles.group}>
           <label className={styles.label}>Email</label>
-          <input
-            type="email"
-            className={styles.input}
-            {...register("email", { required: "El email es obligatorio" })}
-          />
+          <input type="email" className={styles.input} {...register("email", { required: true })} />
         </div>
 
         {/* Password */}
         <div className={styles.group}>
           <label className={styles.label}>Contraseña</label>
-          <input
-            type="password"
-            className={styles.input}
-            {...register("password", { required: "La contraseña es obligatoria" })}
-          />
+          <input type="password" className={styles.input} {...register("password", { required: true })} />
         </div>
 
-        {/* Rol */}
+        {/* Rol dinámico */}
         <div className={styles.group}>
           <label className={styles.label}>Rol</label>
-          <select className={styles.input} {...register("rol")}>
+          <select className={styles.input} {...register("role")}>
             <option value="cliente">Productor</option>
             <option value="veterinario">Veterinario</option>
-            <option value="admin">Administrador</option>
+            {isAdmin && <option value="admin">Administrador</option>}
           </select>
         </div>
 
-        {/* Razón Social (solo cliente) */}
-        <div className={styles.group}>
-          <label className={styles.label}>Razón Social</label>
-          <input className={styles.input} {...register("razonSocial")} />
-        </div>
+        {/* Campos de CLIENTE */}
+        {selectedRole === "cliente" && (
+          <>
+            <div className={styles.group}>
+              <label className={styles.label}>Razón Social</label>
+              <input className={styles.input} {...register("razonSocial")} />
+            </div>
 
-        {/* Establecimientos (solo cliente) */}
-        <div className={styles.group}>
-          <label className={styles.label}>Establecimientos</label>
-          <textarea
-            className={styles.input}
-            {...register("establecimientos")}
-            placeholder="Estancia 1, Estancia 2, ..."
-          />
-        </div>
+            <div className={styles.group}>
+              <label className={styles.label}>Teléfono</label>
+              <input className={styles.input} {...register("telefonoCliente")} />
+            </div>
+
+            <div className={styles.group}>
+              <label className={styles.label}>Contacto Principal</label>
+              <input className={styles.input} {...register("contactoPrincipal")} />
+            </div>
+          </>
+        )}
+
+        {/* Campos de VETERINARIO */}
+        {selectedRole === "veterinario" && (
+          <>
+            <div className={styles.group}>
+              <label className={styles.label}>Especialidad</label>
+              <input className={styles.input} {...register("especialidad")} />
+            </div>
+
+            <div className={styles.group}>
+              <label className={styles.label}>Teléfono</label>
+              <input className={styles.input} {...register("telefonoVet")} />
+            </div>
+
+            <div className={styles.group}>
+              <label className={styles.label}>Ubicación</label>
+              <input className={styles.input} {...register("ubicacionVet")} />
+            </div>
+          </>
+        )}
 
         <Button label="Enviar" type="submit" fullWidth={true} />
-
       </form>
     </div>
   );

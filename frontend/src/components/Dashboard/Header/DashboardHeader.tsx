@@ -1,8 +1,11 @@
 import styles from "./DashboardHeader.module.css";
 import { useAuth } from "../../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import Button from "../../Button/Button";
 
 export default function DashboardHeader() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
   /**
    * Genera iniciales a partir del nombre del usuario.
@@ -36,19 +39,40 @@ export default function DashboardHeader() {
     }
   };
 
+  /**
+   * Cierra la sesión:
+   * - Limpia token y usuario del contexto
+   * - Limpia localStorage
+   * - Redirige al landing
+   */
+  const handleLogout = () => {
+    navigate("/", { replace: true });
+    logout();
+  };
+
   return (
     <header className={styles.header}>
+      {/* Información del usuario */}
       <div className={styles.userInfo}>
         <div className={styles.avatar}>
           {getInitials(user?.nombre)}
         </div>
 
         <p className={styles.role}>
-          {getRolLabel(user?.rol)}
+          {getRolLabel(user?.role)}
         </p>
       </div>
 
+      {/* Título del panel */}
       <p className={styles.title}>Panel de Control</p>
+
+      {/* Botón de logout reutilizando el componente Button */}
+      <Button
+        label="Cerrar sesión"
+        variant="primary"
+        fullWidth={false}
+        onClick={handleLogout}
+      />
     </header>
   );
 }

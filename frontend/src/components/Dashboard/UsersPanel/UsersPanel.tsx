@@ -13,10 +13,11 @@ export default function UsersPanel() {
 
   const [usuarios, setUsuarios] = useState<UsuarioPanel[]>([]);
   const [showModal, setShowModal] = useState(false);
+  const [backendUnavailable, setBackendUnavailable] = useState(false);
 
   // FILTROS
   const [search, setSearch] = useState("");
-  const [rolFilter, setRolFilter] = useState<"todos" | "veterinario" | "productor">("todos");
+  const [rolFilter, setRolFilter] = useState<"todos" | "veterinario" | "cliente">("todos");
   const [estadoFilter, setEstadoFilter] = useState<"todos" | "activo" | "inactivo">("todos");
 
   // EDICIÓN
@@ -29,17 +30,16 @@ export default function UsersPanel() {
    */
   useEffect(() => {
     async function loadUsuarios() {
-      if (user?.rol !== "admin") return;
+      if (user?.role !== "admin") return;
 
-      const res = await apiFetch("/api/v1/admin/usuarios");
-      if (!res) return;
-
-      const data = await res.json();
-      setUsuarios(data);
+      // El backend actual no expone un listado de usuarios.
+      // Evitamos llamar a un endpoint inexistente para no romper el dashboard.
+      setUsuarios([]);
+      setBackendUnavailable(true);
     }
 
     loadUsuarios();
-  }, [user, apiFetch]);
+  }, [user]);
 
   // CLEAR
   function clearFilters() {
@@ -146,10 +146,10 @@ export default function UsersPanel() {
           </button>
 
           <button
-            className={`${styles.filterBtn} ${rolFilter === "productor" ? styles.activeFilter : ""}`}
-            onClick={() => setRolFilter("productor")}
+            className={`${styles.filterBtn} ${rolFilter === "cliente" ? styles.activeFilter : ""}`}
+            onClick={() => setRolFilter("cliente")}
           >
-            Productores
+            Clientes
           </button>
 
           <button className={styles.newUserBtn} onClick={() => setShowModal(true)}>
@@ -202,7 +202,7 @@ export default function UsersPanel() {
                       onChange={(e) => setTempRol(e.target.value)}
                       className={styles.selectRol}
                     >
-                      <option value="productor">Productor</option>
+                      <option value="cliente">Cliente</option>
                       <option value="veterinario">Veterinario</option>
                       <option value="admin">Admin</option>
                     </select>
@@ -244,6 +244,12 @@ export default function UsersPanel() {
           })}
         </tbody>
       </table>
+
+      {backendUnavailable && user?.role === "admin" && (
+        <p style={{ marginTop: 12, opacity: 0.8 }}>
+          El backend actual no expone un listado de usuarios. El panel queda disponible para altas, pero no para consultar ni editar usuarios existentes.
+        </p>
+      )}
 
       {/* MODAL */}
       {showModal && (

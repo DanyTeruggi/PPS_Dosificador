@@ -94,14 +94,9 @@ export default function ReportsPanel() {
       // ADMIN
       // ============================
       if (user?.rol === "admin") {
-        const res = await apiFetch("/api/v1/admin/usuarios");
-        if (res) {
-          const users = await res.json();
-          setUsuarios(users);
-        }
-
-        // Admin no tiene endpoint directo para bebederos
-        console.warn("Admin: falta endpoint directo para bebederos");
+        // El backend actual no expone listado de usuarios para usar este gráfico.
+        // Evitamos pegarle a un endpoint inexistente y dejamos el panel operativo.
+        setUsuarios([]);
       }
 
       setBebederos(allBebederos);

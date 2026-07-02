@@ -9,14 +9,14 @@ interface Props {
 export default function ProtectedRoute({ children, roles }: Props) {
   const { token, user } = useAuth();
 
-  // 1) Si NO hay token → login
+  // 1) Si NO hay token → home pública
   if (!token) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/" replace />;
   }
 
-  // 2) Si hay token pero NO hay user → login (caso raro)
+  // 2) Si hay token pero NO hay user → home pública (caso raro)
   if (!user) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/" replace />;
   }
 
   // 3) Si la ruta requiere roles específicos

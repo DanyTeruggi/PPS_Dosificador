@@ -1,35 +1,43 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useIsDesktop } from "../hooks/useIsDesktop";
 import { useAuth } from "../context/AuthContext";
 
 export default function SmartHomeRedirect() {
-  const isDesktop = useIsDesktop();
   const { user, token } = useAuth();
   const navigate = useNavigate();
+  const role = user?.role ?? user?.rol;
 
   useEffect(() => {
-    // 1) Si NO hay token → login
+    console.log("SmartHomeRedirect montado, token:", token, "role:", role);
+
+    // Si NO hay token → volver a la landing
     if (!token) {
+      navigate("/", { replace: true });
       return;
     }
 
-    // 2) Si hay token pero NO hay user (caso raro) → login
+    // Si hay token pero NO hay user → volver a la landing
     if (!user) {
-      navigate("/login", { replace: true });
+      navigate("/", { replace: true });
       return;
     }
 
-    // 3) ADMIN → SIEMPRE a HomeDesktop (móvil o escritorio)
-    if (user.rol === "admin") {
-      navigate("/home-desktop", { replace: true });
+    // ADMIN → escritorio (dashboard)
+    if (role === "admin") {
+      navigate("/dashboard", { replace: true });
       return;
     }
 
-    // 4) CLIENTE o VETERINARIO → SIEMPRE a HomeMobile
-    navigate("/home-mobile", { replace: true });
+    // CLIENTE/VETERINARIO → dashboard compartido por rol
+    if (role === "veterinario") {
+      navigate("/veterinarios/dashboard", { replace: true });
+      return;
+    }
 
-  }, [token, user, isDesktop, navigate]);
+    navigate("/clientes/dashboard", { replace: true });
+
+  }, [token, user, role, navigate]);
 
   return null;
 }
+

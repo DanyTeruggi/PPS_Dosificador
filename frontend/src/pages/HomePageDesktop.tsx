@@ -3,14 +3,14 @@ import { useNavigate } from "react-router-dom";
 
 import LoginForm from "../components/LoginForm/LoginForm";
 import Button from "../components/Button/Button";
-import { useIsDesktop } from "../hooks/useIsDesktop";
+//import { useIsDesktop } from "../hooks/useIsDesktop";
 import { useAuth } from "../context/AuthContext";
 
 import styles from "./HomePageDesktop.module.css";
 
 export default function HomePageDesktop() {
-  const isDesktop = useIsDesktop();
-  const { user, token, login } = useAuth();
+ //const isDesktop = useIsDesktop();
+  const { token, login } = useAuth();
   const navigate = useNavigate();
 
   const [showContent, setShowContent] = useState(false);
@@ -21,27 +21,31 @@ export default function HomePageDesktop() {
     const timer = setTimeout(() => setShowContent(true), 300);
     return () => clearTimeout(timer);
   }, []);
+  console.log("HomePageDesktop montado, token:", token);
+  console.log("HomePageDesktop montado DESDE RUTA /");
+
 
   // Si hay token y NO es admin → redirigir
-  useEffect(() => {
-    if (token && user?.rol !== "admin") {
-      navigate("/home-mobile", { replace: true });
-    }
-  }, [token, user, navigate]);
+  // useEffect(() => {
+  //   if (token && user?.rol !== "admin") {
+  //     navigate("/home-mobile", { replace: true });
+  //   }
+  // }, [token, user, navigate]);
 
   // Si NO es desktop y el rol es admin → permitir acceso
-  useEffect(() => {
-    if (!isDesktop && user?.rol === "admin") {
-      return; // Admin en móvil → permitir HomePageDesktop
-    }
+  // Admin en móvil → permitir HomePageDesktop
+  // useEffect(() => {
+  //   if (!isDesktop && user?.rol === "admin") {
+  //     return; 
+  //   }
 
     // Si NO es desktop y NO es admin → ir a HomeMobile
-    if (!isDesktop && user?.rol !== "admin") {
-      navigate("/home-mobile", { replace: true });
-    }
-  }, [isDesktop, user, navigate]);
+  //   if (!isDesktop && user?.rol !== "admin") {
+  //     navigate("/home-mobile", { replace: true });
+  //   }
+  // }, [isDesktop, user, navigate]);
 
-  return (
+  return ( 
     <main className={styles.page}>
       <section className={styles.section}>
 
@@ -77,8 +81,8 @@ export default function HomePageDesktop() {
                 }
 
                 const user = JSON.parse(localStorage.getItem("user") || "{}");
-
-                if (user.rol === "admin") {
+                console.log("rol del usuario:", user.role);
+                if (user.role === "admin") {
                   navigate("/dashboard");
                 } else {
                   navigate("/home-mobile");

@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
 import styles from "./HomePageMobile.module.css";
 
 import logoCIVETAN from "../assets/CIVETAN.png";
@@ -8,43 +7,29 @@ import logoVEWTERINARIA from "../assets/facVeterinaria.jpeg";
 import logoEXACTAS from "../assets/facExactas.png";
 
 export default function HomePageMobile() {
-  const { user, token } = useAuth();
+  const [fadeOut, setFadeOut] = useState(false);
   const navigate = useNavigate();
 
-  const [fadeOut, setFadeOut] = useState(false);
-
   useEffect(() => {
-    const timer = setTimeout(() => {
+    const fadeTimer = setTimeout(() => {
       console.log("fadeOut activado");
       setFadeOut(true);
+    }, 2000);
 
-      setTimeout(() => {
-        // Si NO hay token → ir al login
-         console.log("redirigiendo...");
-        if (!token) {
-          navigate("/login", { replace: true });
-          return;
-        }
+    const loginTimer = setTimeout(() => {
+      navigate("/login", { replace: true });
+    }, 2600);
 
-        // Si hay token:
-        // ADMIN → NO puede estar en HomeMobile → ir a dashboard
-        if (user?.rol === "admin") {
-          navigate("/dashboard", { replace: true });
-          return;
-        }
+    return () => {
+      clearTimeout(fadeTimer);
+      clearTimeout(loginTimer);
+    };
+  }, [navigate]);
 
-        // CLIENTE o VETERINARIO → se quedan en HomeMobile
-        // (NO redirigimos a dashboard)
-      }, 600);
-
-    }, 2000); // tiempo para ver la animación
-
-    return () => clearTimeout(timer);
-  }, [navigate, token, user]);
+  console.log("HomePageMobile montado");
 
   return (
     <div className={`${styles.container} ${fadeOut ? styles.fadeOut : ""}`}>
-
       <h1>Bienvenido</h1>
       <h2>Control Bacteriológico</h2>
 
@@ -58,7 +43,6 @@ export default function HomePageMobile() {
         <img src={logoCIVETAN} alt="CIVETAN" className={styles.institutionLogo} />
         <img src={logoEXACTAS} alt="Facultad de Exactas" className={styles.institutionLogo} />
       </div>
-
     </div>
   );
 }

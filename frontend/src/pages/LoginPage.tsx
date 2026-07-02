@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import { useAuth } from "../context/AuthContext";
 import LoginForm from "../components/LoginForm/LoginForm";
+import Button from "../components/Button/Button";
 
 import styles from "./LoginPage.module.css";
 
@@ -10,25 +11,30 @@ export default function LoginPage() {
   const { token, login } = useAuth();
   const navigate = useNavigate();
 
-  // Si ya está logueado → ir a SmartHomeRedirect
+  // Si ya está logueado → ir al redirect por rol
   useEffect(() => {
     if (token) {
-      navigate("/", { replace: true });
+      navigate("/home", { replace: true });
     }
   }, [token, navigate]);
 
   const handleLogin = async (email: string, password: string) => {
     const ok = await login(email, password);
-
-    if (!ok) return; // LoginForm ya muestra error
+    if (!ok) return;
 
     const user = JSON.parse(localStorage.getItem("user") || "{}");
 
-    if (user.rol === "admin") {
+    if (user.role === "admin") {
       navigate("/dashboard", { replace: true });
+    } else if (user.role === "veterinario") {
+      navigate("/veterinarios/dashboard", { replace: true });
     } else {
-      navigate("/home-mobile", { replace: true });
+      navigate("/clientes/dashboard", { replace: true });
     }
+  };
+
+  const handleNuevoUsuario = () => {
+    navigate("/nuevo-usuario");
   };
 
   return (
@@ -36,6 +42,15 @@ export default function LoginPage() {
       <h1 className={styles.title}>Centro de Control Bacteriológico</h1>
 
       <LoginForm onLogin={handleLogin} />
+
+      <div className={styles.actions}>
+        <Button
+          label="Nuevo Usuario"
+          variant="hero"
+          fullWidth={true}
+          onClick={handleNuevoUsuario}
+        />
+      </div>
     </main>
   );
 }
