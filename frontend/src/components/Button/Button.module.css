@@ -34,6 +34,20 @@
   background-color: #96a4a2;
 }
 
+/* TERTIARY */
+.tertiary {
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: #8a4fa3;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.tertiary:hover {
+  background-color: #7a4591;
+}
+
 /* HERO */
 .hero {
   padding: 14px 32px;

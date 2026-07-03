@@ -54,6 +54,8 @@ export default function App() {
             }
           >
             <Route path="/dashboard" element={<HomePageDashboard />} />
+            <Route path="/dashboard/dispositivos" element={<HomePageDashboard />} />
+            <Route path="/dashboard/dispositivos/nuevo" element={<HomePageDashboard />} />
             <Route path="/bebederos" element={<BebederosPanel />} />
             <Route path="/establecimiento/:id" element={<LandingPageEstablecimiento />} />
           </Route>

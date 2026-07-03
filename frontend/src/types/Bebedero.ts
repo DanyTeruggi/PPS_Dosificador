@@ -1,20 +1,14 @@
 export interface Bebedero {
   id: number;
   nombre: string;
-  ubicacion: string;
-  establecimiento: string;
-  veterinario: string;
-  productor: string;
-  largo: number;
-  ancho: number;
-  profundidad: number;
+  latitud: number;
+  longitud: number;
+  establecimiento: number;
+  largoBebedero: number;
+  anchoBebedero: number;
+  profundidadBebedero: number;
   coberturaMinima: number;
   tiempoDosis: number;
-  watertank: number;
-  ultrasound: number;
+  capacidadTolva: number;
   estado: boolean;
-  inactividad: {
-    desde: string;
-    hasta: string;
-  }[];
 }

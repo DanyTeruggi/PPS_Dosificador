@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 import BebederosPanel from "../components/Dashboard/BebederosPanel/BebederosPanel";
@@ -11,6 +12,16 @@ import styles from "./HomePageDashboard.module.css";
 
 export default function HomePageDashboard() {
   const { user } = useAuth();
+  const location = useLocation();
+
+  const getTabFromPath = () => {
+    if (location.pathname.includes("/reportes")) return "reportes";
+    if (location.pathname.includes("/dispositivos")) return "dispositivos";
+    if (location.pathname.includes("/usuarios")) return "usuarios";
+
+    if (user?.rol === "cliente") return "dispositivos";
+    return "usuarios";
+  };
 
   /**
    * Tab inicial según el rol:
@@ -18,12 +29,13 @@ export default function HomePageDashboard() {
    * - veterinario → usuarios
    * - cliente → dispositivos (bebederos)
    */
-  const getInitialTab = () => {
-    if (user?.rol === "cliente") return "dispositivos";
-    return "usuarios";
-  };
+  const getInitialTab = () => getTabFromPath();
 
   const [activeTab, setActiveTab] = useState(getInitialTab);
+
+  useEffect(() => {
+    setActiveTab(getTabFromPath());
+  }, [location.pathname, user]);
 
   return (
     <div className={styles.container}>
