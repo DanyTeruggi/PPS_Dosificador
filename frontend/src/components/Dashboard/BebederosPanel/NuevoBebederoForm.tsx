@@ -7,27 +7,12 @@ interface Props {
   onClose: () => void;
 }
 
-// Estado interno del formulario (strings para inputs, number al enviar)
-interface BebederoFormState {
-  establecimiento: string;      // ID numérico, pero se ingresa como texto
-  nombre: string;
-  latitud: string;
-  longitud: string;
-  largoBebedero: string;
-  anchoBebedero: string;
-  profundidadBebedero: string;
-  coberturaMinima: string;
-  tiempoDosis: string;
-  capacidadTolva: string;
-  estado: boolean;
-}
-
 export default function NuevoBebederoForm({ onClose }: Props) {
   const { apiFetch } = useApi();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const [form, setForm] = useState<BebederoFormState>({
+  const [form, setForm] = useState({
     establecimiento: "",
     nombre: "",
     latitud: "",
@@ -41,7 +26,7 @@ export default function NuevoBebederoForm({ onClose }: Props) {
     estado: true,
   });
 
-  const updateField = (field: keyof BebederoFormState, value: string | boolean) => {
+  const updateField = (field: string, value: string | boolean) => {
     setForm((current) => ({ ...current, [field]: value }));
   };
 
@@ -87,149 +72,166 @@ export default function NuevoBebederoForm({ onClose }: Props) {
   };
 
   return (
-    <form className={styles.form} onSubmit={handleSubmit}>
-      <h2 className={styles.title}>Nuevo Bebedero</h2>
-      <p className={styles.subtitle}>Completá los datos para registrar un nuevo bebedero.</p>
+    <div className={styles.wrapper}>
+      <form className={styles.form} onSubmit={handleSubmit}>
+        <h2 className={styles.title}>Nuevo Bebedero</h2>
+        <p className={styles.subtitle}>
+          Completá los datos para registrar un nuevo bebedero.
+        </p>
 
-      <div className={styles.group}>
-        <label className={styles.label}>ID Establecimiento</label>
-        <input
-          className={styles.input}
-          type="number"
-          min="1"
-          required
-          value={form.establecimiento}
-          onChange={(e) => updateField("establecimiento", e.target.value)}
-          placeholder="Ej: 1"
-        />
-      </div>
-
-      <div className={styles.group}>
-        <label className={styles.label}>Nombre</label>
-        <input
-          className={styles.input}
-          type="text"
-          required
-          value={form.nombre}
-          onChange={(e) => updateField("nombre", e.target.value)}
-          placeholder="Ej: Bebedero principal"
-        />
-      </div>
-
-      <div className={styles.row}>
+        {/* ID Establecimiento */}
+        {/*
         <div className={styles.group}>
-          <label className={styles.label}>Latitud</label>
+          <label className={styles.label}>ID Establecimiento</label>
           <input
             className={styles.input}
             type="number"
-            step="0.000001"
+            min="1"
             required
-            value={form.latitud}
-            onChange={(e) => updateField("latitud", e.target.value)}
+            value={form.establecimiento}
+            onChange={(e) => updateField("establecimiento", e.target.value)}
+            placeholder="Ej: 1"
           />
         </div>
-
+        */}
+        {/* Nombre */}
         <div className={styles.group}>
-          <label className={styles.label}>Longitud</label>
+          <label className={styles.label}>Nombre</label>
           <input
             className={styles.input}
-            type="number"
-            step="0.000001"
+            type="text"
             required
-            value={form.longitud}
-            onChange={(e) => updateField("longitud", e.target.value)}
+            value={form.nombre}
+            onChange={(e) => updateField("nombre", e.target.value)}
+            placeholder="Ej: Bebedero principal"
           />
         </div>
-      </div>
 
-      <div className={styles.row}>
-        <div className={styles.group}>
-          <label className={styles.label}>Largo (m)</label>
+        {/* Latitud / Longitud */}
+        <div className={styles.row}>
+          <div className={styles.group}>
+            <label className={styles.label}>Latitud</label>
+            <input
+              className={styles.input}
+              type="number"
+              step="0.000001"
+              required
+              value={form.latitud}
+              onChange={(e) => updateField("latitud", e.target.value)}
+            />
+          </div>
+
+          <div className={styles.group}>
+            <label className={styles.label}>Longitud</label>
+            <input
+              className={styles.input}
+              type="number"
+              step="0.000001"
+              required
+              value={form.longitud}
+              onChange={(e) => updateField("longitud", e.target.value)}
+            />
+          </div>
+        </div>
+
+        {/* Largo / Ancho / Profundidad */}
+        <div className={styles.row}>
+          <div className={styles.group}>
+            <label className={styles.label}>Largo (m)</label>
+            <input
+              className={styles.input}
+              type="number"
+              required
+              value={form.largoBebedero}
+              onChange={(e) => updateField("largoBebedero", e.target.value)}
+            />
+          </div>
+
+          <div className={styles.group}>
+            <label className={styles.label}>Ancho (m)</label>
+            <input
+              className={styles.input}
+              type="number"
+              required
+              value={form.anchoBebedero}
+              onChange={(e) => updateField("anchoBebedero", e.target.value)}
+            />
+          </div>
+
+          <div className={styles.group}>
+            <label className={styles.label}>Profundidad (m)</label>
+            <input
+              className={styles.input}
+              type="number"
+              required
+              value={form.profundidadBebedero}
+              onChange={(e) => updateField("profundidadBebedero", e.target.value)}
+            />
+          </div>
+        </div>
+
+        {/* Cobertura / Tiempo / Tolva */}
+        <div className={styles.row}>
+          <div className={styles.group}>
+            <label className={styles.label}>Cobertura mín (%)</label>
+            <input
+              className={styles.input}
+              type="number"
+              min="0"
+              max="100"
+              required
+              value={form.coberturaMinima}
+              onChange={(e) => updateField("coberturaMinima", e.target.value)}
+            />
+          </div>
+
+          <div className={styles.group}>
+            <label className={styles.label}>Tiempo dosis (seg)</label>
+            <input
+              className={styles.input}
+              type="number"
+              required
+              value={form.tiempoDosis}
+              onChange={(e) => updateField("tiempoDosis", e.target.value)}
+            />
+          </div>
+
+          <div className={styles.group}>
+            <label className={styles.label}>Capacidad tolva (kg)</label>
+            <input
+              className={styles.input}
+              type="number"
+              required
+              value={form.capacidadTolva}
+              onChange={(e) => updateField("capacidadTolva", e.target.value)}
+            />
+          </div>
+        </div>
+
+        {/* Checkbox */}
+        <div className={styles.checkboxRow}>
           <input
-            className={styles.input}
-            type="number"
-            required
-            value={form.largoBebedero}
-            onChange={(e) => updateField("largoBebedero", e.target.value)}
+            type="checkbox"
+            checked={form.estado}
+            onChange={(e) => updateField("estado", e.target.checked)}
           />
+          <span>Bebedero activo</span>
         </div>
 
-        <div className={styles.group}>
-          <label className={styles.label}>Ancho (m)</label>
-          <input
-            className={styles.input}
-            type="number"
-            required
-            value={form.anchoBebedero}
-            onChange={(e) => updateField("anchoBebedero", e.target.value)}
+        {error && <p className={styles.error}>{error}</p>}
+
+        <div className={styles.actions}>
+          <Button
+            label="Cancelar"
+            variant="secondary"
+            onClick={onClose}
+          />
+          <Button
+            label={loading ? "Guardando..." : "Guardar"}
+            type="submit"
           />
         </div>
-
-        <div className={styles.group}>
-          <label className={styles.label}>Profundidad (m)</label>
-          <input
-            className={styles.input}
-            type="number"
-            required
-            value={form.profundidadBebedero}
-            onChange={(e) => updateField("profundidadBebedero", e.target.value)}
-          />
-        </div>
-      </div>
-
-      <div className={styles.row}>
-        <div className={styles.group}>
-          <label className={styles.label}>Cobertura mínima (%)</label>
-          <input
-            className={styles.input}
-            type="number"
-            min="0"
-            max="100"
-            required
-            value={form.coberturaMinima}
-            onChange={(e) => updateField("coberturaMinima", e.target.value)}
-          />
-        </div>
-
-        <div className={styles.group}>
-          <label className={styles.label}>Tiempo de dosis (seg)</label>
-          <input
-            className={styles.input}
-            type="number"
-            required
-            value={form.tiempoDosis}
-            onChange={(e) => updateField("tiempoDosis", e.target.value)}
-          />
-        </div>
-
-        <div className={styles.group}>
-          <label className={styles.label}>Capacidad tolva (L)</label>
-          <input
-            className={styles.input}
-            type="number"
-            required
-            value={form.capacidadTolva}
-            onChange={(e) => updateField("capacidadTolva", e.target.value)}
-          />
-        </div>
-      </div>
-
-      <div className={styles.checkboxRow}>
-        <input
-          className={styles.checkbox}
-          type="checkbox"
-          checked={form.estado}
-          onChange={(e) => updateField("estado", e.target.checked)}
-        />
-        <span className={styles.helper}>Bebedero activo</span>
-      </div>
-
-      {error && <p className={styles.error}>{error}</p>}
-
-      <div className={styles.actions}>
-        <Button label="Cancelar" variant="secondary" onClick={onClose} />
-        <Button label={loading ? "Guardando..." : "Guardar"} type="submit" />
-      </div>
-    </form>
+      </form>
+    </div>
   );
 }

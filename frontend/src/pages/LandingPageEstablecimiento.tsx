@@ -2,40 +2,38 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import styles from "./LandingPageEstablecimiento.module.css";
 import BebederoCard from "../components/BebederoCard/BebederoCard";
+import Footer from "../components/Footer/Footer";
 
 import { useApi } from "../utils/apiFetch";
 import type { Establecimiento, Bebedero } from "../types/Role";
 
 export default function LandingPageEstablecimiento() {
   const navigate = useNavigate();
-  const { id } = useParams(); // <-- obtenemos el ID desde la URL
+  const { id } = useParams();
   const { apiFetch } = useApi();
 
-  const [establecimiento, setEstablecimiento] = useState<Establecimiento | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  // Usuario logueado
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
 
-  /**
-   * Carga los datos del establecimiento desde el backend.
-   * 
-   * Endpoint real:
-   * GET /api/v1/establecimientos/{id}
-   * 
-   * apiFetch:
-   * - agrega token automáticamente
-   * - detecta expiración del token
-   * - hace logout automático si expira
-   */
+  // Estado del establecimiento seleccionado
+  const [establecimiento, setEstablecimiento] = useState<Establecimiento | null>(null);
+  const [loadingEst, setLoadingEst] = useState(true);
+  const [errorEst, setErrorEst] = useState<string | null>(null);
+
+  // Cargar establecimiento por ID
   useEffect(() => {
     async function fetchEstablecimiento() {
       try {
-        setLoading(true);
-        setError(null);
+        setLoadingEst(true);
+        setErrorEst(null);
 
         const response = await apiFetch(`/api/v1/establecimientos/${id}`);
 
-        // Si apiFetch detectó token expirado → response será undefined
-        if (!response) return;
+        if (!response) {
+          setErrorEst("Sesión expirada. Volvé a iniciar sesión.");
+          setLoadingEst(false);
+          return;
+        }
 
         if (!response.ok) {
           throw new Error("No se pudo obtener el establecimiento");
@@ -45,48 +43,83 @@ export default function LandingPageEstablecimiento() {
         setEstablecimiento(json);
 
       } catch (err) {
-        setError("Error al cargar el establecimiento");
+        setErrorEst("Error al cargar el establecimiento");
       } finally {
-        setLoading(false);
+        setLoadingEst(false);
       }
     }
 
     fetchEstablecimiento();
-  }, [id, apiFetch]);
+  }, [id]);
 
-  if (loading) return <p>Cargando...</p>;
-  if (error || !establecimiento) return <p>{error ?? "Sin datos"}</p>;
-
-  /**
-   * Agrupamos los bebederos por idBebedero
-   * Esto mantiene tu diseño original.
-   */
+  // Agrupación de bebederos (solo si cargó bien)
   const bebederosAgrupados: Record<number, Bebedero[]> = {};
-  establecimiento.bebederos.forEach((item) => {
-    if (!bebederosAgrupados[item.idBebedero]) {
-      bebederosAgrupados[item.idBebedero] = [];
-    }
-    bebederosAgrupados[item.idBebedero].push(item);
-  });
+  if (establecimiento) {
+    establecimiento.bebederos.forEach((item) => {
+      if (!bebederosAgrupados[item.idBebedero]) {
+        bebederosAgrupados[item.idBebedero] = [];
+      }
+      bebederosAgrupados[item.idBebedero].push(item);
+    });
+  }
 
   return (
     <div className={styles.container}>
-      <header className={styles.header}>
-        <button
-          type="button"
-          className={styles.backButton}
-          onClick={() => navigate("/role-landing")}
-        >
-          &lt;
-        </button>
-        <h1 className={styles.title}>{establecimiento.nombre}</h1>
-      </header>
 
-      <div className={styles.listContainer}>
-        {Object.values(bebederosAgrupados).map((mediciones, index) => (
-          <BebederoCard key={index} bebedero={mediciones} />
+      {/* ------------------------------ */}
+      {/* SALUDO + LISTA DE ESTABLECIMIENTOS */}
+      {/* ------------------------------ */}
+
+      <h1 className={styles.saludo}>Hola {user.nombre}</h1>
+
+      <h2 className={styles.sectionTitle}>Establecimientos</h2>
+
+      {/* Lista de establecimientos del usuario */}
+      <div className={styles.establecimientosList}>
+        {user.establecimientos?.length === 0 && (
+          <p>No tenés establecimientos asociados.</p>
+        )}
+
+        {user.establecimientos?.map((est: any) => (
+          <button
+            key={est.id}
+            className={styles.establecimientoItem}
+            onClick={() => navigate(`/establecimiento/${est.id}/bebederos`)}
+          >
+            {est.nombre}
+          </button>
         ))}
       </div>
+
+      {/* ------------------------------ */}
+      {/* DETALLE DEL ESTABLECIMIENTO SELECCIONADO */}
+      {/* ------------------------------ */}
+
+      {loadingEst && <p>Cargando establecimiento...</p>}
+      {errorEst && <p className={styles.error}>{errorEst}</p>}
+
+      {establecimiento && (
+        <>
+          <header className={styles.header}>
+            <button
+              type="button"
+              className={styles.backButton}
+              onClick={() => navigate("/role-landing")}
+            >
+              &lt;
+            </button>
+            <h1 className={styles.title}>{establecimiento.nombre}</h1>
+          </header>
+
+          <div className={styles.listContainer}>
+            {Object.values(bebederosAgrupados).map((mediciones, index) => (
+              <BebederoCard key={index} bebedero={mediciones} />
+            ))}
+          </div>
+        </>
+      )}
+      < Footer />
     </div>
+    
   );
 }

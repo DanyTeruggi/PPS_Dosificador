@@ -16,6 +16,7 @@ import HomePageDashboard from "./pages/HomePageDashboard";
 import BebederosPanel from "./components/Dashboard/BebederosPanel/BebederosPanel";
 import LandingPageEstablecimiento from "./pages/LandingPageEstablecimiento";
 import NuevoUsuarioPage from "./pages/NuevoUsuarioPage";
+import LandingBebederosMobile from "./pages/LandingBebederosMobile";
 
 export default function App() {
   console.log("App.tsx REAL cargado");
@@ -26,6 +27,7 @@ export default function App() {
         <Routes>
 
           {/* RUTAS PÚBLICAS */}
+
           <Route element={<PublicLayout />}>
             {/* Landing pública */}
             <Route path="/" element={<LandingSelector />} />
@@ -58,6 +60,8 @@ export default function App() {
             <Route path="/dashboard/dispositivos/nuevo" element={<HomePageDashboard />} />
             <Route path="/bebederos" element={<BebederosPanel />} />
             <Route path="/establecimiento/:id" element={<LandingPageEstablecimiento />} />
+            <Route path="/establecimiento/:id/bebederos" element={<LandingBebederosMobile />} />
+
           </Route>
 
         </Routes>

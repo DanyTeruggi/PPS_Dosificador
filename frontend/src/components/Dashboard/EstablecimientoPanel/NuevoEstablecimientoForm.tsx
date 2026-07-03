@@ -7,17 +7,13 @@ interface Props {
   onClose: () => void;
 }
 
-/**
- * Formulario para crear un nuevo establecimiento.
- * Se usa dentro del modal del EstablecimientoPanel.
- */
 export default function NuevoEstablecimientoForm({ onClose }: Props) {
   const { apiFetch } = useApi();
 
   const [form, setForm] = useState({
     nombre: "",
     ubicacion: "",
-    cliente_id: "", // se ingresa como texto, se envía como número
+    cliente_id: "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -46,7 +42,7 @@ export default function NuevoEstablecimientoForm({ onClose }: Props) {
         throw new Error("No se pudo crear el establecimiento");
       }
 
-      onClose(); // cierra el modal
+      onClose();
     } catch (err) {
       console.error(err);
       setError("No se pudo crear el establecimiento. Revisá los datos.");
@@ -56,54 +52,58 @@ export default function NuevoEstablecimientoForm({ onClose }: Props) {
   }
 
   return (
-    <form className={styles.form} onSubmit={handleSubmit}>
-      <h2 className={styles.title}>Nuevo Establecimiento</h2>
-      <p className={styles.subtitle}>Completá los datos para registrar un nuevo establecimiento.</p>
+    <div className={styles.wrapper}>
+      <form className={styles.form} onSubmit={handleSubmit}>
+        <h2 className={styles.title}>Nuevo Establecimiento</h2>
+        <p className={styles.subtitle}>
+          Completá los datos para registrar un nuevo establecimiento.
+        </p>
 
-      {/* Nombre */}
-      <div className={styles.group}>
-        <label className={styles.label}>Nombre</label>
-        <input
-          type="text"
-          className={styles.input}
-          required
-          value={form.nombre}
-          onChange={(e) => updateField("nombre", e.target.value)}
-          placeholder="Ej: Campo La Esperanza"
-        />
-      </div>
+        {/* Nombre */}
+        <div className={styles.group}>
+          <label className={styles.label}>Nombre</label>
+          <input
+            type="text"
+            className={styles.input}
+            required
+            value={form.nombre}
+            onChange={(e) => updateField("nombre", e.target.value)}
+            placeholder="Ej: Campo La Esperanza"
+          />
+        </div>
 
-      {/* Ubicación */}
-      <div className={styles.group}>
-        <label className={styles.label}>Ubicación</label>
-        <input
-          type="text"
-          className={styles.input}
-          value={form.ubicacion}
-          onChange={(e) => updateField("ubicacion", e.target.value)}
-          placeholder="Ej: Ruta 226 km 145"
-        />
-      </div>
+        {/* Ubicación */}
+        <div className={styles.group}>
+          <label className={styles.label}>Ubicación</label>
+          <input
+            type="text"
+            className={styles.input}
+            value={form.ubicacion}
+            onChange={(e) => updateField("ubicacion", e.target.value)}
+            placeholder="Ej: Ruta 226 km 145"
+          />
+        </div>
 
-      {/* Cliente ID */}
-      <div className={styles.group}>
-        <label className={styles.label}>ID Cliente</label>
-        <input
-          type="number"
-          className={styles.input}
-          required
-          value={form.cliente_id}
-          onChange={(e) => updateField("cliente_id", e.target.value)}
-          placeholder="Ej: 12"
-        />
-      </div>
+        {/* Cliente ID */}
+        <div className={styles.group}>
+          <label className={styles.label}>ID Cliente</label>
+          <input
+            type="number"
+            className={styles.input}
+            required
+            value={form.cliente_id}
+            onChange={(e) => updateField("cliente_id", e.target.value)}
+            placeholder="Ej: 12"
+          />
+        </div>
 
-      {error && <p className={styles.error}>{error}</p>}
+        {error && <p className={styles.error}>{error}</p>}
 
-      <div className={styles.actions}>
-        <Button label="Cancelar" variant="secondary" onClick={onClose} />
-        <Button label={loading ? "Guardando..." : "Guardar"} type="submit" />
-      </div>
-    </form>
+        <div className={styles.actions}>
+          <Button label="Cancelar" variant="secondary" onClick={onClose} />
+          <Button label={loading ? "Guardando..." : "Guardar"} type="submit" />
+        </div>
+      </form>
+    </div>
   );
 }

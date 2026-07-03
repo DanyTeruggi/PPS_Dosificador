@@ -1,53 +1,83 @@
+/* Contenedor general */
+.wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* Caja del formulario */
 .form {
+  width: 100%;
+  max-width: 480px;
+  padding: 24px 32px;
+  border-radius: 12px;
+  background: var(--background-form);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
   display: flex;
   flex-direction: column;
-  gap: 18px;
 }
 
+/* Título */
 .title {
-  font-size: 20px;
-  font-weight: 600;
-  margin-bottom: -6px;
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #222;
 }
 
+/* Subtítulo */
 .subtitle {
   font-size: 14px;
   opacity: 0.8;
-  margin-bottom: 10px;
+  margin-bottom: 18px;
 }
 
+/* Grupo de inputs */
 .group {
+  margin-bottom: 14px;
+  padding: 0 8px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  width: 100%;
 }
 
+/* Label */
 .label {
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 3px;
 }
 
+/* Input */
 .input {
-  padding: 10px 14px;
+  width: 100%;
+  padding: 10px 12px;
   border-radius: 8px;
-  border: 1px solid #ccc;
-  font-size: 14px;
-  outline: none;
-  transition: border-color 0.2s ease;
+  border: 1px solid #bbb;
+  background-color: var(--color-input-bg);
+  font-size: 15px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .input:focus {
-  border-color: #7b4eff;
+  border-color: #6a3dad;
+  box-shadow: 0 0 4px rgba(106, 61, 173, 0.4);
+  outline: none;
 }
 
+/* Error */
 .error {
-  color: #d9534f;
-  font-size: 14px;
+  color: #b00020;
+  font-size: 13px;
+  margin-top: -4px;
+  padding-left: 12px;
 }
 
+/* Botones */
 .actions {
   display: flex;
   justify-content: flex-end;
   gap: 12px;
-  margin-top: 10px;
+  margin-top: 16px;
 }

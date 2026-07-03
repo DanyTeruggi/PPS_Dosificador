@@ -1,0 +1,40 @@
+/* CONTENEDOR PRINCIPAL */
+.container {
+  min-height: 100vh;                 /* Ocupa toda la pantalla */
+  display: flex;                     /* Layout vertical */
+  flex-direction: column;            /* Orden vertical */
+  padding: 20px;
+  color: #222;
+}
+
+/* TÍTULO DEL ESTABLECIMIENTO */
+.title {
+  font-size: 26px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+/* LISTA DE BEBEDEROS */
+.bebederosList {
+  flex: 1;                           /* Ocupa todo el espacio disponible */
+  overflow-y: auto;                  /* Scroll vertical si hay muchas cards */
+  padding-bottom: 20px;              /* Evita que el contenido tape el footer */
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* WRAPPER DE CADA CARD */
+.cardWrapper {
+  background: rgba(255, 255, 255, 0.15);
+  padding: 12px;
+  border-radius: 12px;
+}
+
+/* ESTADOS */
+.loading,
+.error {
+  text-align: center;
+  margin-top: 40px;
+  font-size: 18px;
+}

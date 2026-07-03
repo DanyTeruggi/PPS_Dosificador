@@ -31,6 +31,8 @@ export default function LoginPage() {
     } else {
       navigate("/clientes/dashboard", { replace: true });
     }
+
+
   };
 
   const handleNuevoUsuario = () => {
@@ -45,12 +47,13 @@ export default function LoginPage() {
 
       <div className={styles.actions}>
         <Button
-          label="Nuevo Usuario"
+          label="Registrarme"
           variant="hero"
           fullWidth={true}
           onClick={handleNuevoUsuario}
         />
       </div>
+      
     </main>
   );
 }

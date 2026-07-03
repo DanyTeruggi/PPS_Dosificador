@@ -17,6 +17,13 @@
   border-radius: 12px;
   background: var(--background-form);
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  text-align: left;
+}
+
+@media (max-width: 480px) {
+  .form {
+    padding: 20px 20px;
+  }
 }
 
 
