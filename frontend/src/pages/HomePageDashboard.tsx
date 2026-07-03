@@ -9,12 +9,14 @@ import UsersPanel from "../components/Dashboard/UsersPanel/UsersPanel";
 import ReportsPanel from "../components/Dashboard/ReportsPanel/ReportsPanel";
 
 import styles from "./HomePageDashboard.module.css";
+import EstablecimientoPanel from "../components/Dashboard/EstablecimientoPanel/EstablecimientoPanel";
 
 export default function HomePageDashboard() {
   const { user } = useAuth();
   const location = useLocation();
 
   const getTabFromPath = () => {
+    if (location.pathname.includes("/establecimientos")) return "establecimientos";
     if (location.pathname.includes("/reportes")) return "reportes";
     if (location.pathname.includes("/dispositivos")) return "dispositivos";
     if (location.pathname.includes("/usuarios")) return "usuarios";
@@ -44,6 +46,7 @@ export default function HomePageDashboard() {
       <DashboardNavTabs active={activeTab} onChange={setActiveTab} />
 
       <div className={styles.content}>
+        {activeTab === "establecimientos" && <EstablecimientoPanel />}
         {activeTab === "usuarios" && <UsersPanel />}
         {activeTab === "dispositivos" && <BebederosPanel />}
         {activeTab === "reportes" && <ReportsPanel />}

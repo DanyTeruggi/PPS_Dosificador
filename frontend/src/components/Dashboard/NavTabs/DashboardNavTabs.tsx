@@ -7,7 +7,7 @@ interface DashboardNavTabsProps {
 
 export default function DashboardNavTabs({ active, onChange }: DashboardNavTabsProps) {
   const tabs = [
-    { id: "general", label: "General" },
+    { id: "establecimientos", label: "Establecimientos" },
     { id: "usuarios", label: "Usuarios" },
     { id: "dispositivos", label: "Dispositivos" },
     { id: "reportes", label: "Reportes" }
