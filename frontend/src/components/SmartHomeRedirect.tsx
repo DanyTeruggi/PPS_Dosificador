@@ -30,7 +30,7 @@ export default function SmartHomeRedirect() {
 
     // CLIENTE/VETERINARIO → dashboard compartido por rol
     if (role === "veterinario") {
-      navigate("/veterinarios/dashboard", { replace: true });
+      navigate("/veterinarios/clientes", { replace: true });
       return;
     }
 

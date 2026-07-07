@@ -8,6 +8,7 @@ import { useAuth } from "../context/AuthContext";
 
 import styles from "./HomePageDesktop.module.css";
 
+
 export default function HomePageDesktop() {
  //const isDesktop = useIsDesktop();
   const { token, login } = useAuth();
@@ -25,25 +26,6 @@ export default function HomePageDesktop() {
   console.log("HomePageDesktop montado DESDE RUTA /");
 
 
-  // Si hay token y NO es admin → redirigir
-  // useEffect(() => {
-  //   if (token && user?.rol !== "admin") {
-  //     navigate("/home-mobile", { replace: true });
-  //   }
-  // }, [token, user, navigate]);
-
-  // Si NO es desktop y el rol es admin → permitir acceso
-  // Admin en móvil → permitir HomePageDesktop
-  // useEffect(() => {
-  //   if (!isDesktop && user?.rol === "admin") {
-  //     return; 
-  //   }
-
-    // Si NO es desktop y NO es admin → ir a HomeMobile
-  //   if (!isDesktop && user?.rol !== "admin") {
-  //     navigate("/home-mobile", { replace: true });
-  //   }
-  // }, [isDesktop, user, navigate]);
 
   return ( 
     <main className={styles.page}>
@@ -93,6 +75,7 @@ export default function HomePageDesktop() {
         )}
 
       </section>
+     
     </main>
   );
 }

@@ -12,9 +12,9 @@
 /* Sección con imagen */
 .section {
   width: 100%;
-  height: 100vh;              /* Ocupa TODO el alto del monitor */
+  height: 100%;              /* Ocupa TODO el alto del monitor */
   overflow: hidden;
-  background-image: url("../assets/ovejasPastando.jpg");
+  background-image: url("../assets/UNICEN.jpg");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

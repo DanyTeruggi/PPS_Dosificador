@@ -1,6 +1,6 @@
 /* CONTENEDOR PRINCIPAL */
 .container {
-  min-height: 100vh;                 /* Ocupa toda la pantalla */
+  min-height: 100vh;                 /* Ocupa al menos toda la pantalla */
   display: flex;                     /* Layout vertical */
   flex-direction: column;            /* Orden vertical */
   padding: 20px;
@@ -13,6 +13,16 @@
   font-size: 26px;
   font-weight: bold;
   margin: 0;
+  flex: 1;
+  text-align: left;
+  line-height: 1.2;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
 }
 
 .backButtonRow {
@@ -22,8 +32,8 @@
 
 /* LISTA DE BEBEDEROS */
 .bebederosList {
-  flex: 1;                           /* Ocupa todo el espacio disponible */
-  overflow-y: auto;                  /* Scroll vertical si hay muchas cards */
+  flex: 1;
+  overflow: visible;
   padding-bottom: 20px;              /* Evita que el contenido tape el footer */
   display: flex;
   flex-direction: column;

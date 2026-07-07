@@ -4,9 +4,14 @@ export interface Bebedero {
   idBebedero: number;
   numeroBebedero: string;
   ubicacion: string;
-  fechaMedicion: string;
-  horaMedicion: string;
-  cobertura: string;
+  fechaMedicion?: string;
+  horaMedicion?: string;
+  cobertura?: string;
+  coberturaMinima?: number | string;
+  cobertura_objetivo?: number | string;
+  cobertura_capsulas_porciento?: number | string;
+  ultima_medicion?: string;
+  timestamp?: string;
   imagen: string;
 }
 

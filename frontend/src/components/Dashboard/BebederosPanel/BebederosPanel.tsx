@@ -45,14 +45,15 @@ export default function BebederosPanel() {
 
     // VETERINARIO
     if (user?.role === "veterinario") {
-      const res = await apiFetch("/api/v1/veterinarios/clientes");
+      const res = await apiFetch("/api/v1/veterinarios/me");
       if (!res) return;
 
-      const clientes = await res.json();
+      const veterinario = await res.json();
+      const clientes = veterinario?.clientes ?? [];
 
       for (const cliente of clientes) {
         const r2 = await apiFetch(
-          `/api/v1/veterinarios/${cliente.veterinario_id}/clientes/${cliente.id}/establecimientos`
+          `/api/v1/veterinarios/clientes/${cliente.id}/establecimientos`
         );
         if (!r2) continue;
 

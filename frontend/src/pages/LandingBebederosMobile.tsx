@@ -1,18 +1,49 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import styles from "./LandingBebederosMobile.module.css";
 
 import BebederoCard from "../components/BebederoCard/BebederoCard";
 import Button from "../components/Button/Button";
 import { useApi } from "../utils/apiFetch";
-import type { Establecimiento, Bebedero } from "../types/Role";
 import Footer from "../components/Footer/Footer";
+import { useAuth } from "../context/AuthContext";
+
+
+type EstablecimientoDetalleResponse = {
+  id: number;
+  cliente_id: number;
+  cliente_razon_social: string;
+  nombre: string;
+  ubicacion?: string | null;
+  fecha_creacion: string;
+  bebederos: Array<{
+    id: number;
+    nombre: string;
+  }>;
+};
+
+type BebederoDetalle = {
+  id: number;
+  nombre: string;
+  ubicacion?: string | null;
+  cobertura_objetivo: number;
+  ultima_medicion?: string | null;
+  monitoreos: Array<{
+    imagenes: Array<{
+      image_url?: string | null;
+    }>;
+  }>;
+};
 
 export default function LandingBebederosMobile() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { apiFetch } = useApi();
+  const { user } = useAuth();
+  const role = user?.role ?? user?.rol;
 
-  const [establecimiento, setEstablecimiento] = useState<Establecimiento | null>(null);
+  const [establecimientoNombre, setEstablecimientoNombre] = useState<string | null>(null);
+  const [bebederos, setBebederos] = useState<BebederoDetalle[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -34,8 +65,22 @@ export default function LandingBebederosMobile() {
           throw new Error("No se pudo obtener el establecimiento");
         }
 
-        const json: Establecimiento = await response.json();
-        setEstablecimiento(json);
+        const json: EstablecimientoDetalleResponse = await response.json();
+        setEstablecimientoNombre(json.nombre);
+
+        const bebederosConDetalle = await Promise.all(
+          json.bebederos.map(async (bebederoResumen: { id: number; nombre: string }) => {
+            const detalleResponse = await apiFetch(`/api/v1/bebederos/${bebederoResumen.id}`);
+
+            if (!detalleResponse || !detalleResponse.ok) {
+              throw new Error(`No se pudo obtener el detalle del bebedero ${bebederoResumen.id}`);
+            }
+
+            return detalleResponse.json() as Promise<BebederoDetalle>;
+          })
+        );
+
+        setBebederos(bebederosConDetalle);
 
       } catch (err) {
         setError("Error al cargar el establecimiento");
@@ -47,31 +92,22 @@ export default function LandingBebederosMobile() {
     fetchData();
   }, [id]);
 
-  // Agrupar lecturas por bebedero usando MAP en vez de forEach
-  const bebederosAgrupados: Record<number, Bebedero[]> = {};
+  const handleBackClick = () => {
+    if (role === "cliente") {
+      window.location.assign("/cliente/establecimientos");
+      return;
+    }
 
-  if (establecimiento) {
-    establecimiento.bebederos.map((item) => {
-      if (!bebederosAgrupados[item.idBebedero]) {
-        bebederosAgrupados[item.idBebedero] = [];
-      }
-      bebederosAgrupados[item.idBebedero].push(item);
-      return null; // para evitar warning de map sin return útil
-    });
-  }
+    window.location.assign("/veterinarios/clientes");
+  };
 
   return (
     <>
       <div className={styles.container}>
 
-        {!loading && !error && establecimiento && (
-          <Button
-            label="<"
-            variant="tertiary"
-            fullWidth={false}
-            onClick={() => window.location.assign("/cliente/establecimientos")}
-          />
-        )}
+        
+          
+       
 
         {/* LOADING */}
         {loading && (
@@ -84,14 +120,27 @@ export default function LandingBebederosMobile() {
         )}
 
         {/* CONTENIDO PRINCIPAL */}
-        {!loading && !error && establecimiento && (
+        {!loading && !error && establecimientoNombre && (
           <>
-            <h1 className={styles.title}>{establecimiento.nombre}</h1>
-
+          <section className={styles.sectionHeader}>
+          <Button
+            label="←"
+            variant="tertiary"
+            fullWidth={false}
+            onClick={handleBackClick}
+          />
+            <h1 className={styles.title}>{establecimientoNombre}</h1>
+            <Button
+            label="+"
+            variant="tertiary"
+            fullWidth={false}
+            onClick={() => navigate(`/establecimiento/${id}/resumen`)}
+          />
+          </section>
             <div className={styles.bebederosList}>
-              {Object.values(bebederosAgrupados).map((lecturas, index) => (
-                <div key={index} className={styles.cardWrapper}>
-                  <BebederoCard bebedero={lecturas} />
+              {bebederos.map((bebedero) => (
+                <div key={bebedero.id} className={styles.cardWrapper}>
+                  <BebederoCard bebedero={bebedero} />
                 </div>
               ))}
             </div>

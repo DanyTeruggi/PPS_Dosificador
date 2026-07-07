@@ -15,11 +15,13 @@ import HomePageMobile from "./pages/HomePageMobil";
 import HomePageDashboard from "./pages/HomePageDashboard";
 import BebederosPanel from "./components/Dashboard/BebederosPanel/BebederosPanel";
 import LandingPageEstablecimiento from "./pages/LandingPageEstablecimiento";
+import LandingPageClientes from "./pages/LandingPageClientes";
 import NuevoUsuarioPage from "./pages/NuevoUsuarioPage";
 import LandingBebederosMobile from "./pages/LandingBebederosMobile";
+import LandingResumenEstablecimientoMobile from "./pages/LandingResumenEstablecimientoMobile";
 
 export default function App() {
-  console.log("App.tsx REAL cargado");
+  
 
   return (
     <AuthProvider>
@@ -59,9 +61,11 @@ export default function App() {
             <Route path="/dashboard/dispositivos" element={<HomePageDashboard />} />
             <Route path="/dashboard/dispositivos/nuevo" element={<HomePageDashboard />} />
             <Route path="/bebederos" element={<BebederosPanel />} />
-            
+
+            <Route path="/veterinarios/clientes" element={<LandingPageClientes />} />
             <Route path="/cliente/establecimientos" element={<LandingPageEstablecimiento />} />
             <Route path="/establecimiento/:id/bebederos" element={<LandingBebederosMobile />} />
+            <Route path="/establecimiento/:id/resumen" element={<LandingResumenEstablecimientoMobile />} />
 
           </Route>
 

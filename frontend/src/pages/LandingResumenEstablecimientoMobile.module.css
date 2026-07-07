@@ -1,0 +1,119 @@
+.container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px;
+  color: #17141c;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.title {
+  margin: 0;
+  flex: 1;
+  text-align: center;
+  font-size: 42px;
+  line-height: 1.05;
+  letter-spacing: -0.5px;
+  font-weight: 700;
+}
+
+.columnsHeader {
+  display: grid;
+  grid-template-columns: 0.85fr 1.35fr 0.7fr 28px;
+  align-items: center;
+  padding: 4px 10px;
+  font-size: 21px;
+  font-weight: 600;
+}
+
+.iconColumnTitle {
+  width: 28px;
+}
+
+.historyList {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-bottom: 16px;
+}
+
+.rowCard {
+  display: grid;
+  grid-template-columns: 0.85fr 1.35fr 0.7fr 28px;
+  align-items: center;
+  gap: 8px;
+  border: 3px solid #0f0b14;
+  border-radius: 18px;
+  padding: 12px 10px;
+  background: rgba(255, 255, 255, 0.06);
+  font-size: 20px;
+}
+
+.cellBebedero,
+.cellMedicion,
+.cellCobertura {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cellEstado {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.iconOk,
+.iconDesvio,
+.iconSinDato {
+  width: 23px;
+  height: 23px;
+}
+
+.iconOk {
+  color: #1e1a26;
+}
+
+.iconDesvio {
+  color: #d31327;
+}
+
+.iconSinDato {
+  color: #6f647d;
+}
+
+.loading,
+.error {
+  text-align: center;
+  margin: 34px 0 0;
+  font-size: 18px;
+}
+
+.error {
+  color: #8f1122;
+}
+
+@media (max-width: 380px) {
+  .title {
+    font-size: 34px;
+  }
+
+  .columnsHeader,
+  .rowCard {
+    font-size: 16px;
+    grid-template-columns: 0.8fr 1.25fr 0.75fr 24px;
+  }
+
+  .iconOk,
+  .iconDesvio,
+  .iconSinDato {
+    width: 20px;
+    height: 20px;
+  }
+}
