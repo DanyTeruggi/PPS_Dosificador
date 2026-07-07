@@ -28,7 +28,7 @@ export default function BebederosPanel() {
     let all: Bebedero[] = [];
 
     // CLIENTE
-    if (user?.rol === "cliente") {
+    if (user?.role === "cliente") { console.log("USER:", user);
       const res = await apiFetch("/api/v1/clientes/mis-establecimientos");
       if (!res) return;
 
@@ -44,7 +44,7 @@ export default function BebederosPanel() {
     }
 
     // VETERINARIO
-    if (user?.rol === "veterinario") {
+    if (user?.role === "veterinario") {
       const res = await apiFetch("/api/v1/veterinarios/clientes");
       if (!res) return;
 
@@ -69,7 +69,7 @@ export default function BebederosPanel() {
     }
 
     // ADMIN
-    if (user?.rol === "admin") {
+    if (user?.role === "admin") {
       console.warn("Admin: falta endpoint directo para bebederos.");
     }
 

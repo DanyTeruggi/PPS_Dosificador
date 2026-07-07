@@ -8,7 +8,7 @@ export default function SmartHomeRedirect() {
   const role = user?.role ?? user?.rol;
 
   useEffect(() => {
-    console.log("SmartHomeRedirect montado, token:", token, "role:", role);
+  
 
     // Si NO hay token → volver a la landing
     if (!token) {
@@ -34,7 +34,7 @@ export default function SmartHomeRedirect() {
       return;
     }
 
-    navigate("/clientes/dashboard", { replace: true });
+    navigate("/cliente/establecimientos", { replace: true });
 
   }, [token, user, role, navigate]);
 

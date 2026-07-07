@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import styles from "./LandingBebederosMobile.module.css";
 
 import BebederoCard from "../components/BebederoCard/BebederoCard";
+import Button from "../components/Button/Button";
 import { useApi } from "../utils/apiFetch";
 import type { Establecimiento, Bebedero } from "../types/Role";
 import Footer from "../components/Footer/Footer";
@@ -62,6 +63,15 @@ export default function LandingBebederosMobile() {
   return (
     <>
       <div className={styles.container}>
+
+        {!loading && !error && establecimiento && (
+          <Button
+            label="<"
+            variant="tertiary"
+            fullWidth={false}
+            onClick={() => window.location.assign("/cliente/establecimientos")}
+          />
+        )}
 
         {/* LOADING */}
         {loading && (

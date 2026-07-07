@@ -4,26 +4,30 @@ html, body {
   height: auto;
 }
 
-
-
 .container {
   padding: 20px;
-
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
 }
 
-.title {
-  font-size: 26px;
-  font-weight: 700;
-  margin-bottom: 20px;
-}
-
-/* volver a otra pagina */
 .header {
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: 12px;
-  margin-bottom: 12px;
+}
+
+.title {
+  font-size: 26px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.subtitle {
+  margin: 8px 0 0;
+  font-size: 14px;
+  color: rgba(21, 21, 21, 0.72);
 }
 
 .backButton {
@@ -37,26 +41,47 @@ html, body {
   line-height: 1;
 }
 
-
-
-.scrollContainer {
-  display: flex;
-  overflow-x: auto;
-  padding-bottom: 20px;
-}
-
-.scrollContainer::-webkit-scrollbar {
-  display: none;
-}
-
-
-.listContainer {
+.section {
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  padding-bottom: 80px; /* espacio para el footer */
+  gap: 14px;
 }
 
-.bebederoWrapper {
+.sectionTitle {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.message,
+.error {
+  margin: 0;
+  padding: 0;
+}
+
+.error {
+  color: #8c1b1b;
+}
+
+.establecimientosList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.establecimientoItem {
+  border: none;
+  padding: 16px 18px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #ffffff 0%, #f9f5ff 100%);
+  box-shadow: 0 14px 28px rgba(24, 31, 47, 0.08);
+  font-size: 17px;
+  font-weight: 800;
+  cursor: pointer;
   width: 100%;
+  text-align: left;
+  color: inherit;
 }

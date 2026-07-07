@@ -16,6 +16,7 @@ export default function EstablecimientoPanel() {
 
   // Lista de establecimientos
   const [establecimientos, setEstablecimientos] = useState<Establecimiento[]>([]);
+ 
 
   // Buscador
   const [search, setSearch] = useState("");
@@ -32,16 +33,19 @@ export default function EstablecimientoPanel() {
    */
   async function loadEstablecimientos() {
     let all: Establecimiento[] = [];
+     console.log("ESTABLECIMIENTOS:", establecimientos);
 
     // CLIENTE
-    if (user?.rol === "cliente") {
+    if (user?.role === "cliente") {
       const res = await apiFetch("/api/v1/clientes/mis-establecimientos");
+        console.log("FETCH 1:", res);
+        console.log("FETCH 1 JSON:", await res?.json);
       if (!res) return;
       all = await res.json();
     }
 
     // VETERINARIO
-    if (user?.rol === "veterinario") {
+    if (user?.role === "veterinario") {
       const res = await apiFetch("/api/v1/veterinarios/clientes");
       if (!res) return;
 
@@ -59,10 +63,11 @@ export default function EstablecimientoPanel() {
     }
 
     // ADMIN
-    if (user?.rol === "admin") {
+    if (user?.role === "admin") {
       console.warn("Admin: falta endpoint directo para establecimientos.");
     }
-
+    
+    
     setEstablecimientos(all);
   }
 
@@ -120,7 +125,9 @@ export default function EstablecimientoPanel() {
     setEditEstablecimiento(null);
   }
 
+
   return (
+    
     <div className={styles.container}>
 
       {/* HEADER: buscador + botones */}
@@ -159,7 +166,6 @@ export default function EstablecimientoPanel() {
       <table className={styles.table}>
         <thead>
           <tr>
-            <th></th> {/* radio */}
             <th>ID</th>
             <th>Nombre</th>
             <th>Ubicación</th>

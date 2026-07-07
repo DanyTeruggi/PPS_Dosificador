@@ -6,6 +6,7 @@ import LoginForm from "../components/LoginForm/LoginForm";
 import Button from "../components/Button/Button";
 
 import styles from "./LoginPage.module.css";
+import Footer from "../components/Footer/Footer";
 
 export default function LoginPage() {
   const { token, login } = useAuth();
@@ -23,13 +24,14 @@ export default function LoginPage() {
     if (!ok) return;
 
     const user = JSON.parse(localStorage.getItem("user") || "{}");
+    console.log("USER-id:", user.id);
 
-    if (user.role === "admin") {
+    if (user.role === "admin") { console.log("USER:", user);
       navigate("/dashboard", { replace: true });
     } else if (user.role === "veterinario") {
       navigate("/veterinarios/dashboard", { replace: true });
     } else {
-      navigate("/clientes/dashboard", { replace: true });
+      navigate("/cliente/establecimientos", { replace: true });
     }
 
 
@@ -53,7 +55,7 @@ export default function LoginPage() {
           onClick={handleNuevoUsuario}
         />
       </div>
-      
+      <Footer />
     </main>
   );
 }

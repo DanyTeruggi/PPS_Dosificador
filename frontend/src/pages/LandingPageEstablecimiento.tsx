@@ -1,125 +1,116 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import styles from "./LandingPageEstablecimiento.module.css";
-import BebederoCard from "../components/BebederoCard/BebederoCard";
 import Footer from "../components/Footer/Footer";
 
+import { useAuth } from "../context/AuthContext";
 import { useApi } from "../utils/apiFetch";
-import type { Establecimiento, Bebedero } from "../types/Role";
+
+type EstablecimientoResumen = {
+  id: number;
+  nombre: string;
+};
+
+type ClienteMe = {
+  id: number;
+  razon_social: string;
+  usuario: {
+    id: number;
+    nombre: string;
+    apellido: string;
+    email: string;
+  };
+  establecimientos: EstablecimientoResumen[];
+};
 
 export default function LandingPageEstablecimiento() {
   const navigate = useNavigate();
-  const { id } = useParams();
+  const { user } = useAuth();
   const { apiFetch } = useApi();
 
-  // Usuario logueado
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const [cliente, setCliente] = useState<ClienteMe | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Estado del establecimiento seleccionado
-  const [establecimiento, setEstablecimiento] = useState<Establecimiento | null>(null);
-  const [loadingEst, setLoadingEst] = useState(true);
-  const [errorEst, setErrorEst] = useState<string | null>(null);
-
-  // Cargar establecimiento por ID
   useEffect(() => {
-    async function fetchEstablecimiento() {
+    async function fetchCliente() {
       try {
-        setLoadingEst(true);
-        setErrorEst(null);
+        setLoading(true);
+        setError(null);
 
-        const response = await apiFetch(`/api/v1/establecimientos/${id}`);
+        const response = await apiFetch("/api/v1/clientes/me");
 
         if (!response) {
-          setErrorEst("Sesión expirada. Volvé a iniciar sesión.");
-          setLoadingEst(false);
+          setError("Sesión expirada. Volvé a iniciar sesión.");
           return;
         }
 
         if (!response.ok) {
-          throw new Error("No se pudo obtener el establecimiento");
+          throw new Error("No se pudo obtener el perfil del cliente");
         }
 
-        const json: Establecimiento = await response.json();
-        setEstablecimiento(json);
+        const json: ClienteMe = await response.json();
+        setCliente(json);
 
       } catch (err) {
-        setErrorEst("Error al cargar el establecimiento");
+        setError("Error al cargar los establecimientos del usuario");
       } finally {
-        setLoadingEst(false);
+        setLoading(false);
       }
     }
 
-    fetchEstablecimiento();
-  }, [id]);
+    fetchCliente();
+  }, [apiFetch]);
 
-  // Agrupación de bebederos (solo si cargó bien)
-  const bebederosAgrupados: Record<number, Bebedero[]> = {};
-  if (establecimiento) {
-    establecimiento.bebederos.forEach((item) => {
-      if (!bebederosAgrupados[item.idBebedero]) {
-        bebederosAgrupados[item.idBebedero] = [];
-      }
-      bebederosAgrupados[item.idBebedero].push(item);
-    });
-  }
+  const nombreUsuario = cliente?.usuario.nombre ?? user?.nombre ?? "usuario";
+  const establecimientos = cliente?.establecimientos ?? [];
 
   return (
     <div className={styles.container}>
 
-      {/* ------------------------------ */}
-      {/* SALUDO + LISTA DE ESTABLECIMIENTOS */}
-      {/* ------------------------------ */}
+      <header className={styles.header}>
+        <button
+          type="button"
+          className={styles.backButton}
+          onClick={() => navigate("/home")}
+          aria-label="Volver"
+        >
+          &lt;
+        </button>
+        <div>
+          <h1 className={styles.title}>Hola {nombreUsuario}</h1>
+          <p className={styles.subtitle}>Seleccioná un establecimiento para ver sus bebederos.</p>
+        </div>
+      </header>
 
-      <h1 className={styles.saludo}>Hola {user.nombre}</h1>
+      <section className={styles.section}>
+        <h2 className={styles.sectionTitle}>Establecimientos asociados</h2>
 
-      <h2 className={styles.sectionTitle}>Establecimientos</h2>
+        {loading && <p className={styles.message}>Cargando establecimientos...</p>}
+        {error && <p className={styles.error}>{error}</p>}
 
-      {/* Lista de establecimientos del usuario */}
-      <div className={styles.establecimientosList}>
-        {user.establecimientos?.length === 0 && (
-          <p>No tenés establecimientos asociados.</p>
+        {!loading && !error && establecimientos.length === 0 && (
+          <p className={styles.message}>No tenés establecimientos asociados.</p>
         )}
 
-        {user.establecimientos?.map((est: any) => (
-          <button
-            key={est.id}
-            className={styles.establecimientoItem}
-            onClick={() => navigate(`/establecimiento/${est.id}/bebederos`)}
-          >
-            {est.nombre}
-          </button>
-        ))}
-      </div>
-
-      {/* ------------------------------ */}
-      {/* DETALLE DEL ESTABLECIMIENTO SELECCIONADO */}
-      {/* ------------------------------ */}
-
-      {loadingEst && <p>Cargando establecimiento...</p>}
-      {errorEst && <p className={styles.error}>{errorEst}</p>}
-
-      {establecimiento && (
-        <>
-          <header className={styles.header}>
-            <button
-              type="button"
-              className={styles.backButton}
-              onClick={() => navigate("/role-landing")}
+        <ul className={styles.establecimientosList}>
+          {establecimientos.map((est) => (
+            <li
+              key={est.id}
             >
-              &lt;
-            </button>
-            <h1 className={styles.title}>{establecimiento.nombre}</h1>
-          </header>
+              <button
+                type="button"
+                className={styles.establecimientoItem}
+                onClick={() => navigate(`/establecimiento/${est.id}/bebederos`)}
+              >
+                {est.nombre}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </section>
 
-          <div className={styles.listContainer}>
-            {Object.values(bebederosAgrupados).map((mediciones, index) => (
-              <BebederoCard key={index} bebedero={mediciones} />
-            ))}
-          </div>
-        </>
-      )}
-      < Footer />
+      <Footer />
     </div>
-    
   );
 }

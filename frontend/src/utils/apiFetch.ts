@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import { useAuth } from "../context/AuthContext";
 
 export function useApi() {
@@ -7,7 +8,7 @@ export function useApi() {
   const API_BASE = import.meta.env.VITE_API_BASE_URL;   // http://localhost:8000
   const API_PREFIX = import.meta.env.VITE_API_PREFIX;   // /api/v1
 
-  const apiFetch = async (path: string, options: RequestInit = {}) => {
+  const apiFetch = useCallback(async (path: string, options: RequestInit = {}) => {
     // Construimos la URL final del backend
     const normalizedBase = API_BASE?.replace(/\/$/, "") ?? "";
     const normalizedPrefix = API_PREFIX?.replace(/^\//, "").replace(/\/$/, "") ?? "";
@@ -37,7 +38,7 @@ export function useApi() {
     }
 
     return response;
-  };
+  }, [API_BASE, API_PREFIX, token, logout]);
 
   return { apiFetch };
 }
