@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 import BebederosPanel from "../components/Dashboard/BebederosPanel/BebederosPanel";
@@ -14,6 +14,12 @@ import EstablecimientoPanel from "../components/Dashboard/EstablecimientoPanel/E
 export default function HomePageDashboard() {
   const { user } = useAuth();
   const location = useLocation();
+  const role = user?.role;
+
+  // Hardening extra: este componente solo se renderiza para admin.
+  if (role !== "admin") {
+    return <Navigate to="/home" replace />;
+  }
 
   const getTabFromPath = () => {
     if (location.pathname.includes("/establecimientos")) return "establecimientos";
@@ -21,16 +27,9 @@ export default function HomePageDashboard() {
     if (location.pathname.includes("/dispositivos")) return "dispositivos";
     if (location.pathname.includes("/usuarios")) return "usuarios";
 
-    if (user?.rol === "cliente") return "dispositivos";
     return "usuarios";
   };
 
-  /**
-   * Tab inicial según el rol:
-   * - admin → usuarios
-   * - veterinario → usuarios
-   * - cliente → dispositivos (bebederos)
-   */
   const getInitialTab = () => getTabFromPath();
 
   const [activeTab, setActiveTab] = useState(getInitialTab);

@@ -57,13 +57,37 @@ export default function App() {
               </ProtectedRoute>
             }
           >
-            <Route path="/dashboard" element={<HomePageDashboard />} />
-            <Route path="/dashboard/dispositivos" element={<HomePageDashboard />} />
-            <Route path="/dashboard/dispositivos/nuevo" element={<HomePageDashboard />} />
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute roles={["admin"]}>
+                  <HomePageDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/dispositivos"
+              element={
+                <ProtectedRoute roles={["admin"]}>
+                  <HomePageDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/dispositivos/nuevo"
+              element={
+                <ProtectedRoute roles={["admin"]}>
+                  <HomePageDashboard />
+                </ProtectedRoute>
+              }
+            />
+            
             <Route path="/bebederos" element={<BebederosPanel />} />
 
             <Route path="/veterinarios/clientes" element={<LandingPageClientes />} />
+            
             <Route path="/cliente/establecimientos" element={<LandingPageEstablecimiento />} />
+            
             <Route path="/establecimiento/:id/bebederos" element={<LandingBebederosMobile />} />
             <Route path="/establecimiento/:id/resumen" element={<LandingResumenEstablecimientoMobile />} />
 

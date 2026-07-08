@@ -4,102 +4,186 @@ import styles from "./EstablecimientoPanel.module.css";
 import { useApi } from "../../../utils/apiFetch";
 import { useAuth } from "../../../context/AuthContext";
 
-import Button from "../../Button/Button";
 import NuevoEstablecimientoForm from "./NuevoEstablecimientoForm";
 import EditarEstablecimientoForm from "./EditarEstablecimientoForm";
 
 import type { Establecimiento } from "../../../types/Establecimiento";
 
+type EstablecimientoRow = Establecimiento & {
+  clienteNombre: string;
+};
+
+type ClienteProfileResponse = {
+  cliente_id: number;
+  usuario?: {
+    nombre?: string;
+  };
+  establecimientos?: Establecimiento[];
+};
+
+type VeterinarioProfileResponse = {
+  veterinario_id: number;
+};
+
+type VeterinarioCliente = {
+  cliente_id: number;
+  razon_social?: string;
+  usuario?: {
+    nombre?: string;
+  };
+};
+
+type VeterinarioClientesResponse = {
+  clientes?: VeterinarioCliente[];
+};
+
+function normalizeEstablecimientos(payload: unknown): Establecimiento[] {
+  if (Array.isArray(payload)) {
+    return payload as Establecimiento[];
+  }
+
+  if (payload && typeof payload === "object" && "establecimientos" in payload) {
+    const establecimientos = (payload as { establecimientos?: unknown }).establecimientos;
+    return Array.isArray(establecimientos) ? (establecimientos as Establecimiento[]) : [];
+  }
+
+  return [];
+}
+
+function getClienteLabel(cliente: VeterinarioCliente): string {
+  return cliente.razon_social || cliente.usuario?.nombre || `Cliente ${cliente.cliente_id}`;
+}
+
 export default function EstablecimientoPanel() {
   const { apiFetch } = useApi();
   const { user } = useAuth();
 
-  // Lista de establecimientos
-  const [establecimientos, setEstablecimientos] = useState<Establecimiento[]>([]);
- 
-
-  // Buscador
+  const [establecimientos, setEstablecimientos] = useState<EstablecimientoRow[]>([]);
+  const [adminEndpointUnavailable, setAdminEndpointUnavailable] = useState(false);
   const [search, setSearch] = useState("");
-
-  // ID seleccionado por radio button
-  const [selectedId, setSelectedId] = useState<number | null>(null);
-
-  // Modales
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editEstablecimiento, setEditEstablecimiento] = useState<Establecimiento | null>(null);
 
-  /**
-   * Cargar establecimientos según el rol del usuario
-   */
   async function loadEstablecimientos() {
-    let all: Establecimiento[] = [];
-     console.log("ESTABLECIMIENTOS:", establecimientos);
+    const role = user?.role ?? user?.rol;
+    setAdminEndpointUnavailable(false);
 
-    // CLIENTE
-    if (user?.role === "cliente") {
-      const res = await apiFetch("/api/v1/clientes/mis-establecimientos");
-        console.log("FETCH 1:", res);
-        console.log("FETCH 1 JSON:", await res?.json);
-      if (!res) return;
-      all = await res.json();
+    if (!role) {
+      setEstablecimientos([]);
+      return;
     }
 
-    // VETERINARIO
-    if (user?.role === "veterinario") {
-      const res = await apiFetch("/api/v1/veterinarios/me");
-      if (!res) return;
+    if (role === "cliente") {
+      const profileRes = await apiFetch("/api/v1/clientes/me");
+      if (!profileRes || !profileRes.ok) return;
 
-      const veterinario = await res.json();
-      const clientes = veterinario?.clientes ?? [];
+      const profile: ClienteProfileResponse = await profileRes.json();
+      let establecimientosCliente = normalizeEstablecimientos(profile.establecimientos);
 
-      for (const cliente of clientes) {
-        const r2 = await apiFetch(
-          `/api/v1/veterinarios/clientes/${cliente.id}/establecimientos`
-        );
-        if (!r2) continue;
+      if (establecimientosCliente.length === 0) {
+        const establecimientosRes = await apiFetch("/api/v1/clientes/mis-establecimientos");
+        if (!establecimientosRes || !establecimientosRes.ok) return;
 
-        const ests: Establecimiento[] = await r2.json();
-        all = [...all, ...ests];
+        const payload = await establecimientosRes.json();
+        establecimientosCliente = normalizeEstablecimientos(payload);
       }
+
+      const clienteNombre = profile.usuario?.nombre || user?.nombre || "Cliente";
+      setEstablecimientos(
+        establecimientosCliente.map((establecimiento) => ({
+          ...establecimiento,
+          clienteNombre,
+        }))
+      );
+      return;
     }
 
-    // ADMIN
-    if (user?.role === "admin") {
-      console.warn("Admin: falta endpoint directo para establecimientos.");
+    if (role === "veterinario") {
+      const [profileRes, clientesRes] = await Promise.all([
+        apiFetch("/api/v1/veterinarios/me"),
+        apiFetch("/api/v1/veterinarios/clientes"),
+      ]);
+
+      if (!profileRes || !profileRes.ok || !clientesRes || !clientesRes.ok) return;
+
+      const profile: VeterinarioProfileResponse = await profileRes.json();
+      const clientesPayload: VeterinarioClientesResponse = await clientesRes.json();
+      const clientes = clientesPayload.clientes ?? [];
+
+      const rows = await Promise.all(
+        clientes.map(async (cliente) => {
+          const establecimientosRes = await apiFetch(
+            `/api/v1/veterinarios/${profile.veterinario_id}/clientes/${cliente.cliente_id}/establecimientos`
+          );
+
+          if (!establecimientosRes || !establecimientosRes.ok) {
+            return [] as EstablecimientoRow[];
+          }
+
+          const payload = await establecimientosRes.json();
+          const establecimientosCliente = normalizeEstablecimientos(payload);
+          const clienteNombre = getClienteLabel(cliente);
+
+          return establecimientosCliente.map((establecimiento) => ({
+            ...establecimiento,
+            clienteNombre,
+          }));
+        })
+      );
+
+      setEstablecimientos(rows.flat());
+      return;
     }
-    
-    
-    setEstablecimientos(all);
+
+    if (role === "admin") {
+      // Endpoint objetivo para listar todos los establecimientos desde admin.
+      // Si todavía no existe en backend (404), mostramos un aviso amigable en la UI.
+      const adminRes = await apiFetch("/api/v1/admin/establecimientos");
+      if (!adminRes) return;
+
+      if (adminRes.status === 404) {
+        setEstablecimientos([]);
+        setAdminEndpointUnavailable(true);
+        return;
+      }
+
+      if (!adminRes.ok) {
+        setEstablecimientos([]);
+        return;
+      }
+
+      const payload = await adminRes.json();
+      const establecimientosAdmin = normalizeEstablecimientos(payload);
+
+      setEstablecimientos(
+        establecimientosAdmin.map((establecimiento) => ({
+          ...establecimiento,
+          clienteNombre: `Cliente ${establecimiento.cliente_id}`,
+        }))
+      );
+      return;
+    }
+
+    setEstablecimientos([]);
   }
 
   useEffect(() => {
     loadEstablecimientos();
   }, [user]);
 
-  /**
-   * Filtro por nombre o ID
-   */
   const filtrados = establecimientos.filter((e) => {
     if (search === "") return true;
+
+    const searchValue = search.toLowerCase();
     return (
-      e.nombre.toLowerCase().includes(search.toLowerCase()) ||
-      e.id.toString().includes(search)
+      e.nombre.toLowerCase().includes(searchValue) ||
+      e.id.toString().includes(search) ||
+      e.clienteNombre.toLowerCase().includes(searchValue)
     );
   });
 
-  /**
-   * Botón global "Editar"
-   * - Verifica que haya un establecimiento seleccionado
-   * - Pide los datos al backend
-   * - Abre el modal con el formulario cargado
-   */
-  async function handleEditClick() {
-    if (!selectedId) {
-      alert("Seleccioná un establecimiento para editar.");
-      return;
-    }
-
-    const res = await apiFetch(`/api/v1/establecimientos/${selectedId}`);
+  async function handleEditClick(id: number) {
+    const res = await apiFetch(`/api/v1/establecimientos/${id}`);
     if (!res || !res.ok) {
       alert("No se pudo cargar el establecimiento.");
       return;
@@ -109,61 +193,46 @@ export default function EstablecimientoPanel() {
     setEditEstablecimiento(data);
   }
 
-  /**
-   * Guardar cambios del formulario de edición
-   */
-  async function guardarCambios(estActualizado: Establecimiento) {
+  function clearFilters() {
+    setSearch("");
+  }
+
+  function guardarCambios(estActualizado: Establecimiento) {
     const nuevos = establecimientos.map((e) =>
-      e.id === estActualizado.id ? estActualizado : e
+      e.id === estActualizado.id
+        ? { ...e, ...estActualizado }
+        : e
     );
+
     setEstablecimientos(nuevos);
-
-    await apiFetch(`/api/v1/establecimientos/${estActualizado.id}`, {
-      method: "PUT",
-      body: JSON.stringify(estActualizado),
-    });
-
     setEditEstablecimiento(null);
   }
 
-
   return (
-    
     <div className={styles.container}>
 
-      {/* HEADER: buscador + botones */}
-      <div className={styles.headerRow}>
-        
-        {/* Buscador */}
-        <div className={styles.searchRow}>
+      <div className={styles.searchRow}>
+        <div className={styles.searchGroup}>
           <input
             type="text"
-            placeholder="Buscar por nombre o ID…"
+            placeholder="Buscar por nombre, ID o cliente…"
             className={styles.searchInput}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
+
+          <button className={styles.clearBtn} onClick={clearFilters}>
+            Clear
+          </button>
         </div>
 
-        {/* Botones */}
-        <div className={styles.actionsRow}>
-          <Button
-            label="Editar"
-            variant="secondary"
-            fullWidth={false}
-            onClick={handleEditClick}
-          />
-
-          <Button
-            label="+ Nuevo establecimiento"
-            variant="tertiary"
-            fullWidth={false}
-            onClick={() => setShowCreateModal(true)}
-          />
+        <div className={styles.filters}>
+          <button className={styles.newUserBtn} onClick={() => setShowCreateModal(true)}>
+            + Nuevo establecimiento
+          </button>
         </div>
       </div>
 
-      {/* TABLA */}
       <table className={styles.table}>
         <thead>
           <tr>
@@ -171,34 +240,42 @@ export default function EstablecimientoPanel() {
             <th>Nombre</th>
             <th>Ubicación</th>
             <th>Cliente</th>
+            <th></th>
           </tr>
         </thead>
 
         <tbody>
           {filtrados.map((e) => (
-            <tr
-              key={e.id}
-              className={selectedId === e.id ? styles.selectedRow : ""}
-            >
-              <td>
-                <input
-                  type="radio"
-                  name="establecimientoSeleccionado"
-                  checked={selectedId === e.id}
-                  onChange={() => setSelectedId(e.id)}
-                />
-              </td>
-
+            <tr key={e.id}>
               <td>{e.id}</td>
               <td>{e.nombre}</td>
-              <td>{e.ubicacion}</td>
-              <td>{e.cliente_id}</td>
+              <td>{e.ubicacion || "-"}</td>
+              <td>{e.clienteNombre}</td>
+              <td>
+                <button className={styles.editBtn} onClick={() => handleEditClick(e.id)}>
+                  Editar
+                </button>
+              </td>
             </tr>
           ))}
+
+          {filtrados.length === 0 && (
+            <tr>
+              <td colSpan={5} className={styles.emptyCell}>
+                No hay establecimientos para mostrar.
+              </td>
+            </tr>
+          )}
         </tbody>
       </table>
 
-      {/* MODAL EDITAR */}
+      {adminEndpointUnavailable && (user?.role ?? user?.rol) === "admin" && (
+        <p className={styles.infoMessage}>
+          El endpoint de admin para listar establecimientos todavia no esta disponible.
+          Cuando backend implemente GET /api/v1/admin/establecimientos, este panel mostrara el listado completo.
+        </p>
+      )}
+
       {editEstablecimiento && (
         <div className={styles.modalOverlay} onClick={() => setEditEstablecimiento(null)}>
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
@@ -214,7 +291,6 @@ export default function EstablecimientoPanel() {
         </div>
       )}
 
-      {/* MODAL CREAR */}
       {showCreateModal && (
         <div className={styles.modalOverlay} onClick={() => setShowCreateModal(false)}>
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>

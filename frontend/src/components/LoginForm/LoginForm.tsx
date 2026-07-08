@@ -26,6 +26,13 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
 
       // Si onLogin falla, cae al catch
     } catch (error) {
+      const errorCode = error instanceof Error ? error.message : "AUTH_FAILED";
+
+      if (errorCode === "UNAUTHORIZED_PROFILE") {
+        setErrorMsg("Perfil no autorizado");
+        return;
+      }
+
       setErrorMsg("Usuario o contraseña incorrectos");
     }
   };

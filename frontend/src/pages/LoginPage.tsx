@@ -22,7 +22,7 @@ export default function LoginPage() {
 
   const handleLogin = async (email: string, password: string) => {
     const ok = await login(email, password);
-    if (!ok) return;
+    if (!ok) throw new Error("AUTH_FAILED");
 
     const user = JSON.parse(localStorage.getItem("user") || "{}");
     console.log("USER-id:", user.id);
@@ -30,7 +30,7 @@ export default function LoginPage() {
     if (user.role === "admin") { console.log("USER:", user);
       navigate("/dashboard", { replace: true });
     } else if (user.role === "veterinario") {
-      navigate("/veterinarios/dashboard", { replace: true });
+      navigate("/veterinarios/clientes", { replace: true });
     } else {
       navigate("/cliente/establecimientos", { replace: true });
     }

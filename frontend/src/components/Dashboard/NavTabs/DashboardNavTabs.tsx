@@ -1,3 +1,4 @@
+import Button from "../../Button/Button";
 import styles from "./DashboardNavTabs.module.css";
 
 interface DashboardNavTabsProps {
@@ -16,13 +17,13 @@ export default function DashboardNavTabs({ active, onChange }: DashboardNavTabsP
   return (
     <nav className={styles.nav}>
       {tabs.map(tab => (
-        <button
+        <Button
           key={tab.id}
-          className={`${styles.tab} ${active === tab.id ? styles.active : ""}`}
+          variant={active === tab.id ? "selectedActive" : "selected"} 
+          label={tab.label}
           onClick={() => onChange(tab.id)}
-        >
-          {tab.label}
-        </button>
+        />
+
       ))}
     </nav>
   );

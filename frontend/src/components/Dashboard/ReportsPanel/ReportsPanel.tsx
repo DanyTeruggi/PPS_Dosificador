@@ -35,7 +35,7 @@ export default function ReportsPanel() {
 async function loadSummary() {
   try {
     const res = await apiFetch("/api/v1/admin/summary");
-
+  
     if (!res) {
       setError("No se pudo conectar con el servidor.");
       return;
@@ -46,7 +46,7 @@ async function loadSummary() {
       return;
     }
 
-    const data = await res.json();
+    const data = await res.json(); console.log("Resumen de reportes:", data);
     setSummary(data);
 
   } catch (err) {

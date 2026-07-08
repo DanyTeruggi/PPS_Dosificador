@@ -11,7 +11,7 @@ import styles from "./HomePageDesktop.module.css";
 
 export default function HomePageDesktop() {
  //const isDesktop = useIsDesktop();
-  const { token, login } = useAuth();
+  const { token, login, logout } = useAuth();
   const navigate = useNavigate();
 
   const [showContent, setShowContent] = useState(false);
@@ -58,17 +58,19 @@ export default function HomePageDesktop() {
                 const ok = await login(email, password);
 
                 if (!ok) {
-                  alert("Usuario o contraseña incorrectos");
-                  return;
+                  throw new Error("AUTH_FAILED");
                 }
 
                 const user = JSON.parse(localStorage.getItem("user") || "{}");
                 console.log("rol del usuario:", user.role);
                 if (user.role === "admin") {
                   navigate("/dashboard");
-                } else {
-                  navigate("/home-mobile");
+                  return;
                 }
+
+                // Barrera extra para escritorio: solo admin puede continuar.
+                logout();
+                throw new Error("UNAUTHORIZED_PROFILE");
               }}
             />
           </article>

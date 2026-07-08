@@ -20,9 +20,9 @@ export default function ProtectedRoute({ children, roles }: Props) {
   }
 
   // 3) Si la ruta requiere roles específicos
-  if (roles && !roles.includes(user.rol)) {
+  if (roles && !roles.includes(user.role)) {
     // Redirección inteligente según rol
-    if (user.rol === "admin") return <Navigate to="/dashboard" replace />;
+    if (user.role === "admin") return <Navigate to="/dashboard" replace />;
     return <Navigate to="/home-mobile" replace />;
   }
 

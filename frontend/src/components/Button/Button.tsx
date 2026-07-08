@@ -8,7 +8,7 @@ interface ButtonProps {
   label: string;
   onClick?: () => void;
   type?: "button" | "submit";
-  variant?: "primary" | "secondary" | "tertiary" | "hero" | "back" | "dashboard";
+  variant?: "primary" | "secondary" | "tertiary" | "hero" | "back" | "dashboard" | "selected"  | "selectedActive";
   fullWidth?: boolean;
 }
 

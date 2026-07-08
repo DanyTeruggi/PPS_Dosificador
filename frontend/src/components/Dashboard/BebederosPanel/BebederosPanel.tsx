@@ -6,111 +6,201 @@ import { useAuth } from "../../../context/AuthContext";
 
 import BebederoForm from "./BebederoForm";
 import NuevoBebederoForm from "./NuevoBebederoForm";
-import Button from "../../Button/Button";
 
 import type { Bebedero } from "../../../types/Bebedero";
-import type { Establecimiento } from "../../../types/Role";
+import type { Establecimiento } from "../../../types/Establecimiento";
+
+type BebederoRow = Bebedero & {
+  establecimientoNombre: string;
+};
+
+type ClienteProfileResponse = {
+  establecimientos?: Establecimiento[];
+};
+
+type VeterinarioProfileResponse = {
+  veterinario_id: number;
+};
+
+type VeterinarioCliente = {
+  cliente_id: number;
+};
+
+type VeterinarioClientesResponse = {
+  clientes?: VeterinarioCliente[];
+};
+
+function normalizeEstablecimientos(payload: unknown): Establecimiento[] {
+  if (Array.isArray(payload)) {
+    return payload as Establecimiento[];
+  }
+
+  if (payload && typeof payload === "object" && "establecimientos" in payload) {
+    const establecimientos = (payload as { establecimientos?: unknown }).establecimientos;
+    return Array.isArray(establecimientos) ? (establecimientos as Establecimiento[]) : [];
+  }
+
+  return [];
+}
+
+function normalizeBebederos(payload: unknown): Bebedero[] {
+  if (Array.isArray(payload)) {
+    return payload as Bebedero[];
+  }
+
+  if (payload && typeof payload === "object" && "bebederos" in payload) {
+    const bebederos = (payload as { bebederos?: unknown }).bebederos;
+    return Array.isArray(bebederos) ? (bebederos as Bebedero[]) : [];
+  }
+
+  return [];
+}
 
 export default function BebederosPanel() {
   const { apiFetch } = useApi();
   const { user } = useAuth();
 
-  const [bebederos, setBebederos] = useState<Bebedero[]>([]);
-  const [searchId, setSearchId] = useState("");
-  const [selectedId, setSelectedId] = useState<number | null>(null); // ✔ ID seleccionado por radio
+  const [bebederos, setBebederos] = useState<BebederoRow[]>([]);
+  const [search, setSearch] = useState("");
   const [editBebedero, setEditBebedero] = useState<Bebedero | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
 
-  /**
-   * Carga los bebederos según el rol del usuario
-   */
   async function loadBebederos() {
-    let all: Bebedero[] = [];
+    const role = user?.role ?? user?.rol;
 
-    // CLIENTE
-    if (user?.role === "cliente") { console.log("USER:", user);
-      const res = await apiFetch("/api/v1/clientes/mis-establecimientos");
-      if (!res) return;
+    if (!role) {
+      setBebederos([]);
+      return;
+    }
 
-      const establecimientos: Establecimiento[] = await res.json();
+    if (role === "cliente") {
+      const profileRes = await apiFetch("/api/v1/clientes/me");
+      if (!profileRes || !profileRes.ok) return;
 
-      for (const est of establecimientos) {
-        const r2 = await apiFetch(`/api/v1/establecimientos/${est.id}/bebederos`);
-        if (!r2) continue;
+      const profile: ClienteProfileResponse = await profileRes.json();
+      let establecimientos = normalizeEstablecimientos(profile.establecimientos);
 
-        const beb: Bebedero[] = await r2.json();
-        all = [...all, ...beb];
+      if (establecimientos.length === 0) {
+        const establecimientosRes = await apiFetch("/api/v1/clientes/mis-establecimientos");
+        if (!establecimientosRes || !establecimientosRes.ok) return;
+
+        const payload = await establecimientosRes.json();
+        establecimientos = normalizeEstablecimientos(payload);
       }
+
+      const rows = await Promise.all(
+        establecimientos.map(async (establecimiento) => {
+          const bebederosRes = await apiFetch(`/api/v1/establecimientos/${establecimiento.id}/bebederos`);
+          if (!bebederosRes || !bebederosRes.ok) {
+            return [] as BebederoRow[];
+          }
+
+          const payload = await bebederosRes.json();
+          const bebederosEstablecimiento = normalizeBebederos(payload);
+
+          return bebederosEstablecimiento.map((bebedero) => ({
+            ...bebedero,
+            establecimientoNombre: establecimiento.nombre,
+          }));
+        })
+      );
+
+      setBebederos(rows.flat());
+      return;
     }
 
-    // VETERINARIO
-    if (user?.role === "veterinario") {
-      const res = await apiFetch("/api/v1/veterinarios/me");
-      if (!res) return;
+    if (role === "veterinario") {
+      const [profileRes, clientesRes] = await Promise.all([
+        apiFetch("/api/v1/veterinarios/me"),
+        apiFetch("/api/v1/veterinarios/clientes"),
+      ]);
 
-      const veterinario = await res.json();
-      const clientes = veterinario?.clientes ?? [];
+      if (!profileRes || !profileRes.ok || !clientesRes || !clientesRes.ok) return;
 
-      for (const cliente of clientes) {
-        const r2 = await apiFetch(
-          `/api/v1/veterinarios/clientes/${cliente.id}/establecimientos`
-        );
-        if (!r2) continue;
+      const profile: VeterinarioProfileResponse = await profileRes.json();
+      const clientesPayload: VeterinarioClientesResponse = await clientesRes.json();
+      const clientes = clientesPayload.clientes ?? [];
 
-        const establecimientos: Establecimiento[] = await r2.json();
+      const rows = await Promise.all(
+        clientes.map(async (cliente) => {
+          const establecimientosRes = await apiFetch(
+            `/api/v1/veterinarios/${profile.veterinario_id}/clientes/${cliente.cliente_id}/establecimientos`
+          );
 
-        for (const est of establecimientos) {
-          const r3 = await apiFetch(`/api/v1/establecimientos/${est.id}/bebederos`);
-          if (!r3) continue;
+          if (!establecimientosRes || !establecimientosRes.ok) {
+            return [] as BebederoRow[];
+          }
 
-          const beb: Bebedero[] = await r3.json();
-          all = [...all, ...beb];
-        }
-      }
+          const establecimientosPayload = await establecimientosRes.json();
+          const establecimientos = normalizeEstablecimientos(establecimientosPayload);
+
+          const bebederosPorEstablecimiento = await Promise.all(
+            establecimientos.map(async (establecimiento) => {
+              const bebederosRes = await apiFetch(`/api/v1/establecimientos/${establecimiento.id}/bebederos`);
+              if (!bebederosRes || !bebederosRes.ok) {
+                return [] as BebederoRow[];
+              }
+
+              const payload = await bebederosRes.json();
+              const bebederosEstablecimiento = normalizeBebederos(payload);
+
+              return bebederosEstablecimiento.map((bebedero) => ({
+                ...bebedero,
+                establecimientoNombre: establecimiento.nombre,
+              }));
+            })
+          );
+
+          return bebederosPorEstablecimiento.flat();
+        })
+      );
+
+      setBebederos(rows.flat());
+      return;
     }
 
-    // ADMIN
-    if (user?.role === "admin") {
-      console.warn("Admin: falta endpoint directo para bebederos.");
-    }
-
-    setBebederos(all);
+    setBebederos([]);
   }
 
   useEffect(() => {
     loadBebederos();
   }, [user]);
 
-  /**
-   * Filtro por ID
-   */
-  const filtrados = bebederos.filter((b) =>
-    searchId === "" ? true : b.id.toString().includes(searchId)
-  );
+  const filtrados = bebederos.filter((b) => {
+    if (search === "") return true;
 
-  /**
-   * Toggle de estado (igual que UsersPanel)
-   */
+    const searchValue = search.toLowerCase();
+    return (
+      b.id.toString().includes(search) ||
+      b.nombre.toLowerCase().includes(searchValue) ||
+      b.establecimientoNombre.toLowerCase().includes(searchValue)
+    );
+  });
+
   async function toggleEstadoBebedero(id: number) {
     const nuevos = bebederos.map((b) =>
       b.id === id ? { ...b, estado: !b.estado } : b
     );
     setBebederos(nuevos);
 
-    await apiFetch(`/api/v1/admin/bebederos/${id}/estado`, {
+    const res = await apiFetch(`/api/v1/admin/bebederos/${id}/estado`, {
       method: "PATCH",
       body: JSON.stringify({
         estado: nuevos.find((b) => b.id === id)?.estado,
       }),
     });
+
+    if (!res || !res.ok) {
+      setBebederos(bebederos);
+      alert("No se pudo cambiar el estado del bebedero.");
+    }
   }
 
-  /**
-   * Guardar cambios del formulario de edición
-   */
   async function guardarCambios(bebederoActualizado: Bebedero) {
     const nuevos = bebederos.map((b) =>
-      b.id === bebederoActualizado.id ? bebederoActualizado : b
+      b.id === bebederoActualizado.id
+        ? { ...b, ...bebederoActualizado }
+        : b
     );
     setBebederos(nuevos);
 
@@ -122,97 +212,65 @@ export default function BebederosPanel() {
     setEditBebedero(null);
   }
 
-  /**
-   * Botón global "Editar"
-   * - Verifica que haya un bebedero seleccionado
-   * - Pide los datos al backend
-   * - Abre el modal con el formulario cargado
-   */
-  async function handleEditClick() {
-    if (!selectedId) {
-      alert("Seleccioná un bebedero para editar.");
-      return;
-    }
-
-    const res = await apiFetch(`/api/v1/bebederos/${selectedId}`);
+  async function handleEditClick(id: number) {
+    const res = await apiFetch(`/api/v1/bebederos/${id}`);
     if (!res || !res.ok) {
       alert("No se pudo cargar el bebedero.");
       return;
     }
 
     const data = await res.json();
-    setEditBebedero(data); // ✔ abre el modal con datos cargados
+    setEditBebedero(data);
+  }
+
+  function clearFilters() {
+    setSearch("");
   }
 
   return (
     <div className={styles.container}>
 
-      {/* HEADER: buscador + botones */}
-      <div className={styles.headerRow}>
-        
-        {/* Buscador */}
-        <div className={styles.searchRow}>
+      <div className={styles.searchRow}>
+        <div className={styles.searchGroup}>
           <input
             type="text"
-            placeholder="Buscar por ID…"
+            placeholder="Buscar por ID, nombre o establecimiento…"
             className={styles.searchInput}
-            value={searchId}
-            onChange={(e) => setSearchId(e.target.value)}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
           />
+
+          <button className={styles.clearBtn} onClick={clearFilters}>
+            Clear
+          </button>
         </div>
 
-        {/* Botones */}
-        <div className={styles.actionsRow}>
-          <Button
-            label="+ Nuevo dispositivo"
-            variant="tertiary"
-            fullWidth={false}
-            onClick={() => setShowCreateModal(true)}
-          />
-          
-          <Button
-            label="Editar"
-            variant="tertiary"
-            fullWidth={false}
-            onClick={handleEditClick}
-          />
+        <div className={styles.filters}>
+          <button className={styles.newUserBtn} onClick={() => setShowCreateModal(true)}>
+            + Nuevo dispositivo
+          </button>
         </div>
       </div>
 
-      {/* TABLA */}
       <table className={styles.table}>
         <thead>
           <tr>
-            <th></th> {/* radio */}
             <th>ID</th>
             <th>Nombre</th>
             <th>Establecimiento</th>
             <th>Estado</th>
             <th>Tiempo de Dosis</th>
+            <th></th>
           </tr>
         </thead>
 
         <tbody>
           {filtrados.map((b) => (
-            <tr
-              key={b.id}
-              className={selectedId === b.id ? styles.selectedRow : ""}
-            >
-              {/* Radio button para seleccionar */}
-              <td>
-                <input
-                  type="radio"
-                  name="bebederoSeleccionado"
-                  checked={selectedId === b.id}
-                  onChange={() => setSelectedId(b.id)}
-                />
-              </td>
-
+            <tr key={b.id}>
               <td>{b.id}</td>
               <td>{b.nombre}</td>
-              <td>{b.establecimiento}</td>
+              <td>{b.establecimientoNombre}</td>
 
-              {/* Toggle estado */}
               <td>
                 <label className={styles.switch}>
                   <input
@@ -225,12 +283,24 @@ export default function BebederosPanel() {
               </td>
 
               <td>{b.tiempoDosis}</td>
+              <td>
+                <button className={styles.editBtn} onClick={() => handleEditClick(b.id)}>
+                  Editar
+                </button>
+              </td>
             </tr>
           ))}
+
+          {filtrados.length === 0 && (
+            <tr>
+              <td colSpan={6} className={styles.emptyCell}>
+                No hay bebederos para mostrar.
+              </td>
+            </tr>
+          )}
         </tbody>
       </table>
 
-      {/* MODAL EDITAR */}
       {editBebedero && (
         <div className={styles.modalOverlay} onClick={() => setEditBebedero(null)}>
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
@@ -246,7 +316,6 @@ export default function BebederosPanel() {
         </div>
       )}
 
-      {/* MODAL CREAR */}
       {showCreateModal && (
         <div className={styles.modalOverlay} onClick={() => setShowCreateModal(false)}>
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
