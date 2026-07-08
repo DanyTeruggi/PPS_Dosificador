@@ -50,11 +50,11 @@
 
 /* HERO */
 .hero {
-  padding: 14px 32px;
-  font-size: 15px;
+  padding: 14px 20px;
+  font-size: 14px;
   font-weight: 600;
   background: rgba(0, 0, 0, 0.45);
-  color: #c9c6c6;
+  color: #fffefe;
   border-radius: 12px;
   backdrop-filter: blur(4px);
   transition: all 0.3s ease;
@@ -63,4 +63,32 @@
 .hero:hover {
   background: rgba(0, 0, 0, 0.65);
   transform: scale(1.05);
+}
+
+/* VARIANTE CON ÍCONO (back + dashboard) */
+.iconButton {
+  width: 40px;
+  height: 40px;
+  background: #8a4fa3;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  transition: transform .15s ease, background .2s ease;
+}
+
+.iconButton:hover {
+  background-color: #7a4591;
+  transform: scale(1.05);
+}
+
+/* IMAGEN DE LOS ICONOS */
+.icon {
+  width: 20px;
+  height: 20px;
+  display: block;
 }

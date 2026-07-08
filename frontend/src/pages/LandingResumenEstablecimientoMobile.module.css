@@ -7,33 +7,36 @@
   color: #17141c;
 }
 
+/* TÍTULO A LA DERECHA DEL BOTÓN, SIN SALTO DE LÍNEA */
+.title {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1.2;
+
+  white-space: nowrap;        /* NO SALTA DE LÍNEA */
+  overflow: hidden;           /* Recorta si es largo */
+  text-overflow: ellipsis;    /* Muestra "..." */
+}
+
 .sectionHeader {
   display: flex;
   align-items: center;
   gap: 12px;
-}
-
-.title {
-  margin: 0;
-  flex: 1;
-  text-align: center;
-  font-size: 42px;
-  line-height: 1.05;
-  letter-spacing: -0.5px;
-  font-weight: 700;
+  width: 100%;
 }
 
 .columnsHeader {
   display: grid;
-  grid-template-columns: 0.85fr 1.35fr 0.7fr 28px;
+  grid-template-columns: 0.8fr 1.25fr 0.75fr 24px;
   align-items: center;
   padding: 4px 10px;
-  font-size: 21px;
+  font-size: 16px;
   font-weight: 600;
 }
 
 .iconColumnTitle {
-  width: 28px;
+  width: 24px;
 }
 
 .historyList {
@@ -45,14 +48,14 @@
 
 .rowCard {
   display: grid;
-  grid-template-columns: 0.85fr 1.35fr 0.7fr 28px;
+  grid-template-columns: 0.8fr 1.25fr 0.75fr 24px;
   align-items: center;
   gap: 8px;
   border: 3px solid #0f0b14;
   border-radius: 18px;
   padding: 12px 10px;
   background: rgba(255, 255, 255, 0.06);
-  font-size: 20px;
+  font-size: 16px;
 }
 
 .cellBebedero,
@@ -72,8 +75,8 @@
 .iconOk,
 .iconDesvio,
 .iconSinDato {
-  width: 23px;
-  height: 23px;
+  width: 20px;
+  height: 20px;
 }
 
 .iconOk {
@@ -99,21 +102,4 @@
   color: #8f1122;
 }
 
-@media (max-width: 380px) {
-  .title {
-    font-size: 34px;
-  }
-
-  .columnsHeader,
-  .rowCard {
-    font-size: 16px;
-    grid-template-columns: 0.8fr 1.25fr 0.75fr 24px;
-  }
-
-  .iconOk,
-  .iconDesvio,
-  .iconSinDato {
-    width: 20px;
-    height: 20px;
-  }
-}
+  

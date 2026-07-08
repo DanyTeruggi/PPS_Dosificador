@@ -123,20 +123,20 @@ export default function LandingBebederosMobile() {
         {!loading && !error && establecimientoNombre && (
           <>
           <section className={styles.sectionHeader}>
-          <Button
-            label="←"
-            variant="tertiary"
-            fullWidth={false}
-            onClick={handleBackClick}
-          />
-            <h1 className={styles.title}>{establecimientoNombre}</h1>
-            <Button
-            label="+"
-            variant="tertiary"
-            fullWidth={false}
-            onClick={() => navigate(`/establecimiento/${id}/resumen`)}
-          />
+          
+              <Button variant="back" onClick={handleBackClick} label="" />
+              
+              <h1 className={styles.title}>{establecimientoNombre}</h1>
+          
+              <Button
+                variant="dashboard"
+                fullWidth={false}
+                label=""
+                onClick={() => navigate(`/establecimiento/${id}/resumen`)}
+              />
+
           </section>
+
             <div className={styles.bebederosList}>
               {bebederos.map((bebedero) => (
                 <div key={bebedero.id} className={styles.cardWrapper}>

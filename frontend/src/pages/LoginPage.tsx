@@ -8,6 +8,7 @@ import Button from "../components/Button/Button";
 import styles from "./LoginPage.module.css";
 import Footer from "../components/Footer/Footer";
 
+
 export default function LoginPage() {
   const { token, login } = useAuth();
   const navigate = useNavigate();
@@ -48,8 +49,9 @@ export default function LoginPage() {
       <LoginForm onLogin={handleLogin} />
 
       <div className={styles.actions}>
+        <p>Si no tienes una cuenta, puedes registrarte:</p>
         <Button
-          label="Registrarme"
+          label="Nuevo Usuario"
           variant="hero"
           fullWidth={true}
           onClick={handleNuevoUsuario}

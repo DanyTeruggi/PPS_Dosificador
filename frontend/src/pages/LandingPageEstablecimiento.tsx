@@ -134,8 +134,7 @@ export default function LandingPageEstablecimiento() {
       </header>
 
       <section className={styles.section}>
-        {/* <h2 className={styles.sectionTitle}>Establecimientos asociados</h2> */}
-
+        
         {loading && <p className={styles.message}>Cargando establecimientos...</p>}
         {error && <p className={styles.error}>{error}</p>}
 

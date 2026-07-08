@@ -207,9 +207,10 @@ export default function LandingResumenEstablecimientoMobile() {
         {!loading && !error && establecimientoNombre && (
           <>
             <section className={styles.sectionHeader}>
+              
               <Button
-                label="←"
-                variant="tertiary"
+                label=""
+                variant="back"
                 fullWidth={false}
                 onClick={handleBackClick}
               />
