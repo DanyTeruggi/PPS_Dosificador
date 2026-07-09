@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
-import { FiCheck, FiMinusCircle, FiXCircle } from "react-icons/fi";
 
 import Button from "../components/Button/Button";
 import Footer from "../components/Footer/Footer";
 import { useAuth } from "../context/AuthContext";
 import { useApi } from "../utils/apiFetch";
 import styles from "./LandingResumenEstablecimientoMobile.module.css";
+import okIcon from "../assets/OK.png";
+import cruzIcon from "../assets/CRUZ.png";
 
 type MonitoreoDetalle = {
   fecha?: string;
@@ -18,6 +19,7 @@ type MonitoreoDetalle = {
 type BebederoDetalle = {
   id: number;
   nombre: string;
+  ubicacion?: string | null;
   cobertura_objetivo?: number | null;
   coberturaObjetivo?: number | null;
   cobertura_minima?: number | null;
@@ -37,10 +39,16 @@ type EstablecimientoDetalleResponse = {
 
 type HistorialFila = {
   key: string;
-  bebederoNombre: string;
   medicionTexto: string;
   coberturaTexto: string;
   estado: "ok" | "desvio" | "sin-dato";
+};
+
+type BebederoHistorial = {
+  id: number;
+  nombre: string;
+  ubicacion?: string | null;
+  filas: HistorialFila[];
 };
 
 function parseMonitoreoDate(monitoreo: MonitoreoDetalle): Date | null {
@@ -59,7 +67,7 @@ function parseMonitoreoDate(monitoreo: MonitoreoDetalle): Date | null {
 
 function formatMedicion(raw?: string | null): string {
   if (!raw) {
-    return "Sin dato";
+    return "s/n";
   }
 
   const parsed = new Date(raw);
@@ -67,19 +75,14 @@ function formatMedicion(raw?: string | null): string {
     return raw;
   }
 
-  return parsed.toLocaleString("es-AR", {
+  return `${parsed.toLocaleString("es-AR", {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
     hour: "2-digit",
     minute: "2-digit",
     hour12: false,
-  });
-}
-
-function getCoberturaMinima(bebedero: BebederoDetalle): number | null {
-  const value = bebedero.cobertura_minima ?? bebedero.coberturaMinima ?? null;
-  return typeof value === "number" ? value : null;
+  })} Hs`;
 }
 
 function getCoberturaLectura(monitoreo: MonitoreoDetalle): number | null {
@@ -122,7 +125,7 @@ export default function LandingResumenEstablecimientoMobile() {
         const detalles = await Promise.all(
           establecimiento.bebederos.map(async (bebederoResumen) => {
             const detalleResponse = await apiFetch(`/api/v1/bebederos/${bebederoResumen.id}`);
-
+        
             if (!detalleResponse || !detalleResponse.ok) {
               throw new Error(`No se pudo obtener el detalle del bebedero ${bebederoResumen.id}`);
             }
@@ -143,49 +146,56 @@ export default function LandingResumenEstablecimientoMobile() {
     fetchData();
   }, [apiFetch, id]);
 
-  const filas = useMemo<HistorialFila[]>(() => {
-    return bebederos.flatMap((bebedero) => {
-      const coberturaMinima = getCoberturaMinima(bebedero);
-
+  const historialPorBebedero = useMemo<BebederoHistorial[]>(() => {
+    return bebederos.map((bebedero) => {
       const ordenados = [...bebedero.monitoreos].sort((a, b) => {
         const da = parseMonitoreoDate(a)?.getTime() ?? 0;
         const db = parseMonitoreoDate(b)?.getTime() ?? 0;
         return db - da;
       });
 
-      const monitoreosTop = ordenados.slice(0, 10);
+      const monitoreosTop = ordenados.slice(0, 8);
 
       if (monitoreosTop.length === 0) {
-        return [
-          {
-            key: `${bebedero.id}-sin-dato`,
-            bebederoNombre: bebedero.nombre,
-            medicionTexto: "Sin dato",
-            coberturaTexto: "Sin dato",
-            estado: "sin-dato",
-          },
-        ];
+        return {
+          id: bebedero.id,
+          nombre: bebedero.nombre,
+          ubicacion: bebedero.ubicacion,
+          filas: [
+            {
+              key: `${bebedero.id}-sin-dato`,
+              medicionTexto: "s/n",
+              coberturaTexto: "s/n",
+              estado: "sin-dato",
+            },
+          ],
+        };
       }
 
-      return monitoreosTop.map((monitoreo, index) => {
-        const lectura = getCoberturaLectura(monitoreo);
-        const estado: HistorialFila["estado"] =
-          lectura == null || coberturaMinima == null
-            ? "sin-dato"
-            : lectura >= coberturaMinima
-              ? "ok"
-              : "desvio";
-
-        return {
-          key: `${bebedero.id}-${index}`,
-          bebederoNombre: bebedero.nombre,
-          medicionTexto: formatMedicion(
-            monitoreo.timestamp ?? monitoreo.fecha ?? bebedero.ultima_medicion ?? null
-          ),
-          coberturaTexto: lectura != null ? `${lectura}%` : "Sin dato",
-          estado,
-        };
-      });
+      return {
+        id: bebedero.id,
+        nombre: bebedero.nombre,
+        ubicacion: bebedero.ubicacion,
+        filas: monitoreosTop.map((monitoreo, index) => {
+          const lectura = getCoberturaLectura(monitoreo);
+          const estado: HistorialFila["estado"] =
+          
+            lectura == null || bebedero.cobertura_objetivo == null
+              ? "sin-dato"
+              : lectura >= bebedero.cobertura_objetivo
+                ? "ok"
+                : "desvio";
+       
+          return {
+            key: `${bebedero.id}-${index}`,
+            medicionTexto: formatMedicion(
+              monitoreo.timestamp ?? monitoreo.fecha ?? bebedero.ultima_medicion ?? null
+            ),
+            coberturaTexto: lectura != null ? `${lectura}%` : "s/n",
+            estado,
+          };
+        }),
+      };
     });
   }, [bebederos]);
 
@@ -217,28 +227,41 @@ export default function LandingResumenEstablecimientoMobile() {
               <h1 className={styles.title}>{establecimientoNombre}</h1>
             </section>
 
-            <section className={styles.columnsHeader}>
-              <span>Bebedero</span>
-              <span>Medicion</span>
-              <span>Cobertura</span>
-              <span aria-hidden="true" className={styles.iconColumnTitle}></span>
-            </section>
-
             <section className={styles.historyList}>
-              {filas.map((fila) => (
-                <article key={fila.key} className={styles.rowCard}>
-                  <span className={styles.cellBebedero}>{fila.bebederoNombre}</span>
-                  <span className={styles.cellMedicion}>{fila.medicionTexto}</span>
-                  <span className={styles.cellCobertura}>{fila.coberturaTexto}</span>
-                  <span className={styles.cellEstado}>
-                    {fila.estado === "ok" && <FiCheck className={styles.iconOk} aria-label="Dentro de rango" />}
-                    {fila.estado === "desvio" && (
-                      <FiXCircle className={styles.iconDesvio} aria-label="Debajo del minimo" />
-                    )}
-                    {fila.estado === "sin-dato" && (
-                      <FiMinusCircle className={styles.iconSinDato} aria-label="Sin dato" />
-                    )}
-                  </span>
+              {historialPorBebedero.map((bloque) => (
+                <article key={bloque.id} className={styles.bebederoBlock}>
+                  <h2 className={styles.bebederoTitle}>
+                    {bloque.nombre} - {bloque.ubicacion?.trim() || "s/n"}
+                  </h2>
+
+                  <div className={styles.tableCard}>
+                    <div className={styles.columnsHeader}>
+                      <span>Mediciones</span>
+                      <span>Cobertura</span>
+                      <span aria-hidden="true" className={styles.iconColumnTitle}></span>
+                    </div>
+
+                    <div className={styles.rowsWrapper}>
+                      {bloque.filas.map((fila) => ( 
+                        <div key={fila.key} className={styles.rowCard}>
+                         
+                          <span className={styles.cellMedicion}>{fila.medicionTexto}</span>
+                          <span className={styles.cellCobertura}>{fila.coberturaTexto}</span>
+                          <span className={styles.cellEstado}>
+                            {fila.estado === "ok" && (
+                              <img className={styles.iconOk} src={okIcon} alt="Dentro de rango" />
+                            )}
+                            {fila.estado === "desvio" && (
+                              <img className={styles.iconDesvio} src={cruzIcon} alt="Debajo del minimo" />
+                            )}
+                            {fila.estado === "sin-dato" && (
+                              <span className={styles.sinDatoTag} aria-label="Sin dato">s/n</span>
+                            )}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </article>
               ))}
             </section>

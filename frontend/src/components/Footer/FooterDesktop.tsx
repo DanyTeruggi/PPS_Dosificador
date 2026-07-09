@@ -12,7 +12,8 @@ export default function FooterDesktop() {
         <img src={logoFCV} alt="FCV" className={styles.logo} />
         <img src={logoCivetan} alt="CIVETAN" className={styles.logo} />
         <img src={logoEXACTAS} alt="Facultad de Exactas" className={styles.logo} />
-      </div>
+      
+</div>
 
       <div className={styles.contact}>
         <p>Facultad de Ciencias Veterinarias - UNCPBA</p>
@@ -20,7 +21,6 @@ export default function FooterDesktop() {
         <p>Email: contacto@civetan.edu.ar</p>
         <p>Tel: +54 249 442-1234</p>
       </div>
-
     </footer>
   );
 }

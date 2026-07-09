@@ -44,7 +44,6 @@
 /* WRAPPER DE CADA CARD */
 .cardWrapper {
   background: rgba(255, 255, 255, 0.14);
-  padding: 12px;
   border-radius: 16px;
   box-shadow: 0 10px 24px rgba(24, 31, 47, 0.08);
 }

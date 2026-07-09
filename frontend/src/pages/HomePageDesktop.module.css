@@ -13,8 +13,8 @@
 .section {
   width: 100%;
   height: 100%;              /* Ocupa TODO el alto del monitor */
-  overflow: hidden;
-  background-image: url("../assets/UNICEN.jpg");
+  overflow: hidden; 
+  background-image: url("../assets/fondo.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -39,6 +39,7 @@
   background: rgba(255, 255, 255, 0.25);
   backdrop-filter: blur(6px);
   border-radius: 12px;
+  margin-top: -150px;
 }
 
 .title {

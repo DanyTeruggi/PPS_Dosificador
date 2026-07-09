@@ -1,12 +1,15 @@
 .footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
   width: 100%;
   padding: 20px 40px;
-  background: rgba(255, 255, 255, 0.4);
+  background: rgba(170, 147, 147, 0.55);
   backdrop-filter: blur(6px);
-
   display: flex;
   justify-content: space-around;
-  align-items: center;
+
+ 
 
   border-top: 1px solid rgba(255, 255, 255, 0.5);
 }
@@ -14,7 +17,15 @@
 .logos {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 60px;
+  transform-origin: bottom center; /*  define el punto de expansión */
+}
+
+.logos:hover,
+.contact:hover {
+  transform: scale(1.5);
+  transition: transform 0.3s linear;
+  background: rgba(128, 123, 123, 0.65);
 }
 
 .logo {
@@ -27,6 +38,7 @@
   text-align: right;
   font-size: 14px;
   color: #222;
+  transform-origin: bottom center; /*  define el punto de expansión */
 }
 
 .contact p {

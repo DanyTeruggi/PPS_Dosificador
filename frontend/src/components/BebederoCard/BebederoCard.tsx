@@ -24,10 +24,30 @@ interface BebederoCardProps {
   bebedero: BebederoDetalle;
 }
 
-export default function BebederoCard({ bebedero }: BebederoCardProps) {
-  const apiBase = import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, "") ?? "";
+function formatMedicion(raw?: string | null): string {
+  if (!raw) {
+    return "s/n";
+  }
 
-  const buildImageSrc = (imageUrl?: string | null) => {
+  const parsed = new Date(raw);
+  if (Number.isNaN(parsed.getTime())) {
+    return raw;
+  }
+
+  return `${parsed.toLocaleString("es-AR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  })} Hs`;
+}
+
+export default function BebederoCard({ bebedero }: BebederoCardProps) {
+  const apiBase = import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, "") ?? ""; 
+
+  const buildImageSrc = (imageUrl?: string | null) => { 
     if (!imageUrl) {
       return null;
     }
@@ -35,7 +55,7 @@ export default function BebederoCard({ bebedero }: BebederoCardProps) {
     if (imageUrl.startsWith("http")) {
       return imageUrl;
     }
-
+    
     return `${apiBase}${imageUrl}`;
   };
 
@@ -46,7 +66,7 @@ export default function BebederoCard({ bebedero }: BebederoCardProps) {
           bebedero.monitoreos.map((monitoreo, index) => {
             const latestImage = monitoreo.imagenes[0];
             const imageSrc = buildImageSrc(latestImage?.image_url);
-
+            
             return (
               <div key={`${bebedero.id}-${index}`} className={styles.block}>
                 <div className={styles.imageWrapper}>
@@ -64,13 +84,13 @@ export default function BebederoCard({ bebedero }: BebederoCardProps) {
                   <strong>Ubicación:</strong> {bebedero.ubicacion}
                 </p>
                 <p>
-                  <strong>Cobertura:</strong> {bebedero.cobertura_objetivo}%
+                  <strong>Medición:</strong> {formatMedicion(monitoreo.timestamp ?? monitoreo.fecha ?? bebedero.ultima_medicion ?? null)}
                 </p>
                 <p>
-                  <strong>Medición:</strong> {monitoreo.timestamp ?? monitoreo.fecha ?? bebedero.ultima_medicion ?? "Sin dato"}
+                  <strong>Target:</strong> {bebedero.cobertura_objetivo}%
                 </p>
                 <p>
-                  <strong>Monitoreo:</strong> {monitoreo.cobertura_capsulas_porciento ?? "Sin dato"}%
+                  <strong>Cobertura:</strong> {monitoreo.cobertura_capsulas_porciento ?? "s/n"}%
                 </p>
               </div>
             );
@@ -91,7 +111,7 @@ export default function BebederoCard({ bebedero }: BebederoCardProps) {
               <strong>Cobertura:</strong> {bebedero.cobertura_objetivo}%
             </p>
             <p>
-              <strong>Medición:</strong> {bebedero.ultima_medicion ?? "Sin dato"}
+              <strong>Medición:</strong> {formatMedicion(bebedero.ultima_medicion ?? null)}
             </p>
           </div>
         )}
