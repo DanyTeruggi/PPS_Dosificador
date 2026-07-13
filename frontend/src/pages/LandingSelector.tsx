@@ -8,7 +8,6 @@ export default function LandingSelector() {
   const isDesktop = useIsDesktop();
   const { token } = useAuth();
 
-  console.log("LandingSelector montado, token:", token);
 
   // Si NO hay token → mostrar la home pública, no el login directo
   if (!token) {

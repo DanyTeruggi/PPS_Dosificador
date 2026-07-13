@@ -15,6 +15,7 @@ type EstablecimientoRow = Establecimiento & {
 
 type ClienteProfileResponse = {
   cliente_id: number;
+  razon_social?: string;
   usuario?: {
     nombre?: string;
   };
@@ -36,6 +37,8 @@ type VeterinarioCliente = {
 type VeterinarioClientesResponse = {
   clientes?: VeterinarioCliente[];
 };
+
+
 
 function normalizeEstablecimientos(payload: unknown): Establecimiento[] {
   if (Array.isArray(payload)) {
@@ -88,13 +91,14 @@ export default function EstablecimientoPanel() {
         establecimientosCliente = normalizeEstablecimientos(payload);
       }
 
-      const clienteNombre = profile.usuario?.nombre || user?.nombre || "Cliente";
+      const clienteNombre = profile.razon_social || profile.usuario?.nombre || user?.nombre || "Cliente";
       setEstablecimientos(
         establecimientosCliente.map((establecimiento) => ({
           ...establecimiento,
           clienteNombre,
         }))
       );
+      
       return;
     }
 
@@ -136,31 +140,40 @@ export default function EstablecimientoPanel() {
     }
 
     if (role === "admin") {
-      // Endpoint objetivo para listar todos los establecimientos desde admin.
-      // Si todavía no existe en backend (404), mostramos un aviso amigable en la UI.
-      const adminRes = await apiFetch("/api/v1/admin/establecimientos");
-      if (!adminRes) return;
+      const [establecimientosRes, clientesRes] = await Promise.all([
+        apiFetch("/api/v1/admin/establecimientos"),
+        apiFetch("/api/v1/admin/clientes"),
+      ]);
 
-      if (adminRes.status === 404) {
-        setEstablecimientos([]);
-        setAdminEndpointUnavailable(true);
-        return;
-      }
-
-      if (!adminRes.ok) {
+      if (
+        !establecimientosRes?.ok ||
+        !clientesRes?.ok
+      ) {
         setEstablecimientos([]);
         return;
       }
 
-      const payload = await adminRes.json();
-      const establecimientosAdmin = normalizeEstablecimientos(payload);
+      const establecimientosAdmin = normalizeEstablecimientos(
+        await establecimientosRes.json()
+      );
+
+      const clientes: VeterinarioCliente[] = await clientesRes.json();
 
       setEstablecimientos(
-        establecimientosAdmin.map((establecimiento) => ({
-          ...establecimiento,
-          clienteNombre: `Cliente ${establecimiento.cliente_id}`,
-        }))
+        establecimientosAdmin.map((establecimiento) => {
+          const cliente = clientes.find(
+            (cliente) => cliente.cliente_id === establecimiento.cliente_id
+          );
+
+          return {
+            ...establecimiento,
+            clienteNombre:
+              cliente?.razon_social ||
+              `Cliente ${establecimiento.cliente_id}`,
+          };
+        })
       );
+
       return;
     }
 
@@ -193,19 +206,42 @@ export default function EstablecimientoPanel() {
     setEditEstablecimiento(data);
   }
 
+  async function handleDeleteClick(id: number, nombre: string) {
+    const confirmed = window.confirm(
+      `¿Seguro que deseas eliminar el establecimiento "${nombre}"?`
+    );
+
+    if (!confirmed) return;
+
+    const res = await apiFetch(
+      `/api/v1/admin/establecimientos/${id}`,
+      { method: "DELETE" }
+    );
+
+    if (!res?.ok) {
+      alert("No se pudo eliminar el establecimiento.");
+      return;
+    }
+
+    setEstablecimientos((actuales) =>
+      actuales.filter((establecimiento) => establecimiento.id !== id)
+    );
+  }
+
   function clearFilters() {
     setSearch("");
   }
 
-  function guardarCambios(estActualizado: Establecimiento) {
-    const nuevos = establecimientos.map((e) =>
-      e.id === estActualizado.id
-        ? { ...e, ...estActualizado }
-        : e
+  async function guardarCambios(estActualizado: Establecimiento) {
+    setEstablecimientos((actuales) =>
+      actuales.map((establecimiento) =>
+        Number(establecimiento.id) === Number(estActualizado.id)
+          ? { ...establecimiento, ...estActualizado }
+          : establecimiento
+      )
     );
-
-    setEstablecimientos(nuevos);
     setEditEstablecimiento(null);
+    await loadEstablecimientos();
   }
 
   return (
@@ -239,7 +275,7 @@ export default function EstablecimientoPanel() {
             <th>ID</th>
             <th>Nombre</th>
             <th>Ubicación</th>
-            <th>Cliente</th>
+            <th>Razon Social</th>
             <th></th>
           </tr>
         </thead>
@@ -251,9 +287,15 @@ export default function EstablecimientoPanel() {
               <td>{e.nombre}</td>
               <td>{e.ubicacion || "-"}</td>
               <td>{e.clienteNombre}</td>
-              <td>
+              <td className={styles.actionsCell}>
                 <button className={styles.editBtn} onClick={() => handleEditClick(e.id)}>
                   Editar
+                </button>
+                <button
+                  className={styles.deleteBtn}
+                  onClick={() => handleDeleteClick(e.id, e.nombre)}
+                >
+                  Borrar
                 </button>
               </td>
             </tr>

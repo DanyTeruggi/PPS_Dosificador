@@ -7,7 +7,7 @@ import type { Establecimiento } from "../../../types/Establecimiento";
 
 interface Props {
   establecimiento: Establecimiento;
-  onSave: (updated: Establecimiento) => void;
+  onSave: (updated: Establecimiento) => void | Promise<void>;
 }
 
 /**
@@ -37,8 +37,10 @@ export default function EditarEstablecimientoForm({ establecimiento, onSave }: P
     setLoading(true);
 
     try {
-      const res = await apiFetch(`/api/v1/establecimientos/${form.id}`, {
-        method: "PUT",
+      const res = await apiFetch(
+        `/api/v1/admin/establecimientos/${form.id}`,
+      {
+        method: "PATCH",
         body: JSON.stringify({
           nombre: form.nombre,
           ubicacion: form.ubicacion,
@@ -50,12 +52,8 @@ export default function EditarEstablecimientoForm({ establecimiento, onSave }: P
         throw new Error("No se pudo actualizar el establecimiento");
       }
 
-      onSave({
-        id: form.id,
-        nombre: form.nombre,
-        ubicacion: form.ubicacion,
-        cliente_id: Number(form.cliente_id),
-      });
+      const updated: Establecimiento = await res.json();
+      await onSave(updated);
     } catch (err) {
       console.error(err);
       setError("No se pudo actualizar el establecimiento.");

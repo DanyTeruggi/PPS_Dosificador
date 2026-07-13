@@ -10,8 +10,8 @@ import styles from "./HomePageDesktop.module.css";
 
 
 export default function HomePageDesktop() {
- //const isDesktop = useIsDesktop();
-  const { token, login, logout } = useAuth();
+
+  const { login, logout } = useAuth();
   const navigate = useNavigate();
 
   const [showContent, setShowContent] = useState(false);
@@ -22,8 +22,6 @@ export default function HomePageDesktop() {
     const timer = setTimeout(() => setShowContent(true), 300);
     return () => clearTimeout(timer);
   }, []);
-  console.log("HomePageDesktop montado, token:", token);
-  console.log("HomePageDesktop montado DESDE RUTA /");
 
 
 
@@ -62,7 +60,7 @@ export default function HomePageDesktop() {
                 }
 
                 const user = JSON.parse(localStorage.getItem("user") || "{}");
-                console.log("rol del usuario:", user.role);
+                
                 if (user.role === "admin") {
                   navigate("/dashboard");
                   return;

@@ -29,7 +29,7 @@ export default function NuevoEstablecimientoForm({ onClose }: Props) {
     setLoading(true);
 
     try {
-      const res = await apiFetch(`/api/v1/establecimientos`, {
+      const res = await apiFetch(`/api/v1/admin/establecimientos`, {
         method: "POST",
         body: JSON.stringify({
           nombre: form.nombre,

@@ -65,10 +65,24 @@
   border-bottom: 1px solid #f0f0f0;
 }
 
+.actionsCell {
+  display: flex;
+  gap: 8px;
+}
+
 .editBtn {
   padding: 6px 12px;
   border-radius: 6px;
   background: #eee;
+  border: none;
+  cursor: pointer;
+}
+
+.deleteBtn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  background: #b4535d;
+  color: white;
   border: none;
   cursor: pointer;
 }

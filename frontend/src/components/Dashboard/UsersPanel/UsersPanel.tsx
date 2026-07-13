@@ -7,13 +7,25 @@ import { useAuth } from "../../../context/AuthContext";
 import UserForm from "../../UserForm/UserForm";
 import type { UsuarioPanel } from "../../../types/UsuarioPanel";
 
+type UsuarioApi = {
+  id: number;
+  email: string;
+  nombre: string;
+  rol: string;
+  activo: boolean;
+};
+
+type PerfilApi = {
+  usuario: UsuarioApi;
+};
+
 export default function UsersPanel() {
   const { apiFetch } = useApi();
   const { user } = useAuth();
 
   const [usuarios, setUsuarios] = useState<UsuarioPanel[]>([]);
   const [showModal, setShowModal] = useState(false);
-  const [backendUnavailable, setBackendUnavailable] = useState(false);
+ 
 
   // FILTROS
   const [search, setSearch] = useState("");
@@ -30,12 +42,49 @@ export default function UsersPanel() {
    */
   useEffect(() => {
     async function loadUsuarios() {
-      if (user?.role !== "admin") return;
+      const role = user?.role ?? user?.rol;
+      if (role !== "admin") return;
 
-      // El backend actual no expone un listado de usuarios.
-      // Evitamos llamar a un endpoint inexistente para no romper el dashboard.
-      setUsuarios([]);
-      setBackendUnavailable(true);
+      // TODO: Reemplazar estas dos consultas por GET /api/v1/admin/usuarios
+      // cuando el backend implemente el endpoint para listar todos los usuarios.
+      const [veterinariosRes, clientesRes] = await Promise.all([
+        apiFetch("/api/v1/admin/veterinarios"),
+        apiFetch("/api/v1/admin/clientes"),
+      ]);
+
+      if (!veterinariosRes?.ok || !clientesRes?.ok) {
+        setUsuarios([]);
+      
+        return;
+      }
+
+      const veterinarios: PerfilApi[] = await veterinariosRes.json();
+      const clientes: PerfilApi[] = await clientesRes.json();
+
+      const perfiles = [...veterinarios, ...clientes];
+
+      const todosLosUsuarios: UsuarioPanel[] = perfiles.map(
+        ({ usuario }) => ({
+          id: usuario.id,
+          userName: usuario.email,
+          nombre: usuario.nombre,
+          rol: usuario.rol,
+          activo: usuario.activo,
+        })
+      );
+
+      // Conserva un solo registro por usuario aunque aparezca en ambos endpoints.
+      const usuariosSinDuplicados = Array.from(
+        new Map(
+          todosLosUsuarios.map((usuario) => [
+            usuario.id,
+            usuario,
+          ])
+        ).values()
+      );
+
+      setUsuarios(usuariosSinDuplicados);
+      
     }
 
     loadUsuarios();
@@ -48,10 +97,7 @@ export default function UsersPanel() {
     setEstadoFilter("todos");
   }
 
-  // SWITCH GLOBAL
-  function toggleEstadoGlobal() {
-    setEstadoFilter((prev) => (prev === "activo" ? "inactivo" : "activo"));
-  }
+
 
   // FILTROS COMBINADOS
   const usuariosFiltrados = usuarios
@@ -132,7 +178,8 @@ export default function UsersPanel() {
           />
 
           <button className={styles.clearBtn} onClick={clearFilters}>
-            Clear
+           Limpiar filtros
+            
           </button>
         </div>
 
@@ -169,16 +216,6 @@ export default function UsersPanel() {
             <th>
               <div className={styles.estadoHeader}>
                 <span>Estado</span>
-                <span className={styles.filterIcon}>⏷</span>
-
-                <label className={styles.switch}>
-                  <input
-                    type="checkbox"
-                    checked={estadoFilter === "activo"}
-                    onChange={toggleEstadoGlobal}
-                  />
-                  <span className={styles.slider}></span>
-                </label>
               </div>
             </th>
 
@@ -245,11 +282,7 @@ export default function UsersPanel() {
         </tbody>
       </table>
 
-      {backendUnavailable && user?.role === "admin" && (
-        <p style={{ marginTop: 12, opacity: 0.8 }}>
-          El backend actual no expone un listado de usuarios. El panel queda disponible para altas, pero no para consultar ni editar usuarios existentes.
-        </p>
-      )}
+   
 
       {/* MODAL */}
       {showModal && (
