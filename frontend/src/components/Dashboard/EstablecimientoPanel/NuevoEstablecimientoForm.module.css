@@ -39,6 +39,7 @@
   display: flex;
   flex-direction: column;
   width: 100%;
+  position: relative; /* NECESARIO para el dropdown */
 }
 
 /* Label */
@@ -80,4 +81,34 @@
   justify-content: flex-end;
   gap: 12px;
   margin-top: 16px;
+}
+
+/* ========================= */
+/* AUTOCOMPLETE / DROPDOWN   */
+/* ========================= */
+
+.dropdown {
+  position: absolute;
+  top: 100%; /* justo debajo del input */
+  left: 8px;
+  right: 8px;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin-top: 4px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 20; /* encima de todo */
+  box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+}
+
+.dropdownItem {
+  padding: 10px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #333;
+}
+
+.dropdownItem:hover {
+  background: #f3e9ff; /* tono suave violeta */
 }

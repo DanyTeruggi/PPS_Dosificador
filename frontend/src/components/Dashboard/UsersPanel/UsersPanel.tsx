@@ -5,6 +5,8 @@ import { useApi } from "../../../utils/apiFetch";
 import { useAuth } from "../../../context/AuthContext";
 
 import UserForm from "../../UserForm/UserForm";
+import AsignarVeterinarioModal from "./AsignarVeterinario"; // 
+
 import type { UsuarioPanel } from "../../../types/UsuarioPanel";
 
 type UsuarioApi = {
@@ -24,8 +26,12 @@ export default function UsersPanel() {
   const { user } = useAuth();
 
   const [usuarios, setUsuarios] = useState<UsuarioPanel[]>([]);
-  const [showModal, setShowModal] = useState(false);
- 
+  const [showModalNuevoUsuario, setShowModalNuevoUsuario] = useState(false);
+
+  // Modal para asignar veterinario
+  const [showAsignarVetModal, setShowAsignarVetModal] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+  const [selectedUserRol, setSelectedUserRol] = useState<string>("");
 
   // FILTROS
   const [search, setSearch] = useState("");
@@ -38,15 +44,12 @@ export default function UsersPanel() {
 
   /**
    * Carga inicial de usuarios desde el backend.
-   * Solo el ADMIN puede acceder a este panel.
    */
   useEffect(() => {
     async function loadUsuarios() {
       const role = user?.role ?? user?.rol;
       if (role !== "admin") return;
 
-      // TODO: Reemplazar estas dos consultas por GET /api/v1/admin/usuarios
-      // cuando el backend implemente el endpoint para listar todos los usuarios.
       const [veterinariosRes, clientesRes] = await Promise.all([
         apiFetch("/api/v1/admin/veterinarios"),
         apiFetch("/api/v1/admin/clientes"),
@@ -54,7 +57,6 @@ export default function UsersPanel() {
 
       if (!veterinariosRes?.ok || !clientesRes?.ok) {
         setUsuarios([]);
-      
         return;
       }
 
@@ -73,18 +75,11 @@ export default function UsersPanel() {
         })
       );
 
-      // Conserva un solo registro por usuario aunque aparezca en ambos endpoints.
       const usuariosSinDuplicados = Array.from(
-        new Map(
-          todosLosUsuarios.map((usuario) => [
-            usuario.id,
-            usuario,
-          ])
-        ).values()
+        new Map(todosLosUsuarios.map((u) => [u.id, u])).values()
       );
 
       setUsuarios(usuariosSinDuplicados);
-      
     }
 
     loadUsuarios();
@@ -96,8 +91,6 @@ export default function UsersPanel() {
     setRolFilter("todos");
     setEstadoFilter("todos");
   }
-
-
 
   // FILTROS COMBINADOS
   const usuariosFiltrados = usuarios
@@ -178,8 +171,7 @@ export default function UsersPanel() {
           />
 
           <button className={styles.clearBtn} onClick={clearFilters}>
-           Limpiar filtros
-            
+            Limpiar filtros
           </button>
         </div>
 
@@ -199,9 +191,20 @@ export default function UsersPanel() {
             Clientes
           </button>
 
-          <button className={styles.newUserBtn} onClick={() => setShowModal(true)}>
+          {/* NUEVO USUARIO */}
+          <button className={styles.newUserBtn} onClick={() => setShowModalNuevoUsuario(true)}>
             + Nuevo usuario
           </button>
+
+          {/* ASIGNAR VETERINARIO — SOLO SI EL USUARIO SELECCIONADO ES CLIENTE */}
+          {selectedUserRol === "cliente" && (
+            <button
+              className={styles.newUserBtn}
+              onClick={() => setShowAsignarVetModal(true)}
+            >
+              + Asignar Veterinario
+            </button>
+          )}
         </div>
       </div>
 
@@ -212,13 +215,11 @@ export default function UsersPanel() {
             <th>Nombre</th>
             <th>UserName</th>
             <th>Rol</th>
-
             <th>
               <div className={styles.estadoHeader}>
                 <span>Estado</span>
               </div>
             </th>
-
             <th></th>
           </tr>
         </thead>
@@ -228,7 +229,14 @@ export default function UsersPanel() {
             const isEditing = editIndex === index;
 
             return (
-              <tr key={u.id}>
+              <tr
+                key={u.id}
+                onClick={() => {
+                  setSelectedUserId(u.id);
+                  setSelectedUserRol(u.rol); 
+                }}
+                className={`${styles.rowClickable} ${selectedUserId === u.id ? styles.rowSelected : ""}`}
+              >
                 <td><strong>{u.nombre}</strong></td>
                 <td>{u.userName}</td>
 
@@ -267,7 +275,8 @@ export default function UsersPanel() {
                   ) : (
                     <button
                       className={styles.editBtn}
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.stopPropagation();
                         setEditIndex(index);
                         setTempRol(u.rol);
                       }}
@@ -282,21 +291,26 @@ export default function UsersPanel() {
         </tbody>
       </table>
 
-   
-
-      {/* MODAL */}
-      {showModal && (
-        <div className={styles.modalOverlay} onClick={() => setShowModal(false)}>
+      {/* MODAL: NUEVO USUARIO */}
+      {showModalNuevoUsuario && (
+        <div className={styles.modalOverlay} onClick={() => setShowModalNuevoUsuario(false)}>
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-            <button className={styles.closeModalBtn} onClick={() => setShowModal(false)}>
+            <button className={styles.closeModalBtn} onClick={() => setShowModalNuevoUsuario(false)}>
               ✕
             </button>
 
-            <UserForm onClose={() => setShowModal(false)} />
+            <UserForm onClose={() => setShowModalNuevoUsuario(false)} />
           </div>
         </div>
       )}
 
+      {/* MODAL: ASIGNAR VETERINARIO */}
+      {showAsignarVetModal && selectedUserId && (
+        <AsignarVeterinarioModal
+          usuarioId={selectedUserId}
+          onClose={() => setShowAsignarVetModal(false)}
+        />
+      )}
     </div>
   );
 }

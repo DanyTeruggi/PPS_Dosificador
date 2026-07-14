@@ -96,6 +96,13 @@
   margin-right: 4px;
 }
 
+/* Row selected */
+.rowSelected {
+  background: #e2e1d7; /* violeta suave */
+  transition: background 0.2s ease;
+}
+
+
 /* --------------------------------------------- */
 /* SWITCH */
 /* --------------------------------------------- */

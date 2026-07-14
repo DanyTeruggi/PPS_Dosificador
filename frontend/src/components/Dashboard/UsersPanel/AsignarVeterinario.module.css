@@ -1,0 +1,192 @@
+/* --------------------------------------------- */
+/* OVERLAY DEL MODAL (fondo oscuro) */
+/* --------------------------------------------- */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+/* CONTENEDOR DEL MODAL (centra el formulario) */
+.modalContent {
+  max-width: 520px;
+  width: 100%;
+  padding: 0; /* el padding lo maneja .form */
+}
+
+/* --------------------------------------------- */
+/* CONTENEDOR GENERAL (igual que UserForm) */
+/* --------------------------------------------- */
+.wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* --------------------------------------------- */
+/* FORMULARIO */
+/* --------------------------------------------- */
+.form {
+  width: 100%;
+  max-width: 480px;
+  padding: 24px 32px;
+  border-radius: 12px;
+  background: var(--background-form);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  text-align: left;
+  box-sizing: border-box;
+}
+
+@media (max-width: 480px) {
+  .form {
+    padding: 20px 20px;
+  }
+}
+
+/* Título */
+.title {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  color: #222;
+  padding-left: 8px;
+  letter-spacing: -0.3px;
+  text-align: center;   
+}
+
+/* Subtítulo */
+.subtitle {
+  font-size: 15px;
+  opacity: 0.75;
+  margin-bottom: 22px;
+  padding-left: 8px;
+}
+
+/* --------------------------------------------- */
+/* GRUPOS DE INPUTS */
+/* --------------------------------------------- */
+.group {
+  margin-bottom: 14px;
+  padding: 0 8px;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Label */
+.label {
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 3px;
+}
+
+/* --------------------------------------------- */
+/* INPUT */
+/* --------------------------------------------- */
+.input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #bbb;
+  background-color: var(--color-input-bg);
+  font-size: 15px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.input:focus {
+  border-color: #6a3dad;
+  box-shadow: 0 0 4px rgba(106, 61, 173, 0.4);
+  outline: none;
+}
+
+/* --------------------------------------------- */
+/* LISTA DE VETERINARIOS */
+/* --------------------------------------------- */
+.vetList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0 8px;
+}
+
+.vetItem {
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #bbb;
+  background: var(--color-input-bg);
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+  font-size: 14px;
+}
+
+.vetItem:hover {
+  background: #f3e9ff;
+  border-color: #6a3dad;
+}
+
+.vetItemSelected {
+  margin-top: 8px;
+  padding: 12px;
+  border-radius: 8px;
+  border: 2px solid #6a3dad;
+  background: #f3e9ff;
+  font-size: 14px;
+}
+
+/* --------------------------------------------- */
+/* ERRORES */
+/* --------------------------------------------- */
+.error {
+  color: #b00020;
+  font-size: 13px;
+  margin-top: 4px;
+  padding-left: 12px;
+}
+
+/* --------------------------------------------- */
+/* ACCIONES */
+/* --------------------------------------------- */
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 20px;
+  padding: 0 8px;
+}
+
+.cancelBtn {
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: #ddd;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.cancelBtn:hover {
+  background: #ccc;
+}
+
+.saveBtn {
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: #8a4fa3;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.saveBtn:hover {
+  background: #6a3dad;
+}

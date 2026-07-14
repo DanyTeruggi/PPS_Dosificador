@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styles from "./NuevoEstablecimientoForm.module.css";
 import Button from "../../Button/Button";
 import { useApi } from "../../../utils/apiFetch";
@@ -10,19 +10,58 @@ interface Props {
 export default function NuevoEstablecimientoForm({ onClose }: Props) {
   const { apiFetch } = useApi();
 
+  // Estado principal del formulario
   const [form, setForm] = useState({
     nombre: "",
     ubicacion: "",
     cliente_id: "",
   });
 
+  // Estados de carga y error
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Autocomplete: inicializado correctamente para evitar errores TS
+  const [search, setSearch] = useState("");
+  const [clientes, setClientes] = useState<any[]>([]); // ← FIX
+  const [showDropdown, setShowDropdown] = useState(false);
+
+  // Actualiza un campo del formulario
   function updateField(field: keyof typeof form, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }));
   }
 
+  // Busca clientes cuando el usuario escribe
+  useEffect(() => {
+    const fetchClientes = async () => {
+      try {
+        const res = await apiFetch("/api/v1/admin/clientes");
+
+        if (!res) return; // ← FIX para TypeScript
+
+        const data = await res.json();
+
+        const filtrados = data.filter((c: any) =>
+          c.razon_social.toLowerCase().includes(search.toLowerCase()) ||
+          c.usuario.email.toLowerCase().includes(search.toLowerCase())
+        );
+
+        setClientes(filtrados);
+        setShowDropdown(true);
+      } catch (err) {
+        console.error("Error buscando clientes", err);
+      }
+    };
+
+    if (search.length > 1) {
+      fetchClientes();
+    } else {
+      setClientes([]);
+      setShowDropdown(false);
+    }
+  }, [search]);
+
+  // Envía el formulario al backend
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
@@ -38,7 +77,7 @@ export default function NuevoEstablecimientoForm({ onClose }: Props) {
         }),
       });
 
-      if (!res || !res.ok) {
+      if (!res || !res.ok) { // ← FIX para TypeScript
         throw new Error("No se pudo crear el establecimiento");
       }
 
@@ -84,17 +123,35 @@ export default function NuevoEstablecimientoForm({ onClose }: Props) {
           />
         </div>
 
-        {/* Cliente ID */}
+        {/* Buscador de Cliente */}
         <div className={styles.group}>
-          <label className={styles.label}>ID Cliente</label>
+          <label className={styles.label}>Cliente</label>
+
           <input
-            type="number"
+            type="text"
             className={styles.input}
-            required
-            value={form.cliente_id}
-            onChange={(e) => updateField("cliente_id", e.target.value)}
-            placeholder="Ej: 12"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Buscar por razón social o email"
           />
+
+          {showDropdown && clientes.length > 0 && (
+            <div className={styles.dropdown}>
+              {clientes.map((c) => (
+                <div
+                  key={c.cliente_id}
+                  className={styles.dropdownItem}
+                  onClick={() => {
+                    updateField("cliente_id", String(c.cliente_id));
+                    setSearch(`${c.razon_social} (${c.usuario.email})`);
+                    setShowDropdown(false);
+                  }}
+                >
+                  {c.razon_social} — {c.usuario.email}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {error && <p className={styles.error}>{error}</p>}
