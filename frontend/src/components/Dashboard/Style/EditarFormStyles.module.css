@@ -1,65 +1,121 @@
-/* ================================
-   FORMULARIO PRINCIPAL
-   ================================ */
-.form {
+/*estilos del formulario */
+.wrapper {
+  width: 100%;
   display: flex;
-  flex-direction: column;
-  gap: 18px;
+  justify-content: center;
+}
+
+.form {
+  width: 100%;
+  max-width: 480px;
+  padding: 24px 32px;
+  border-radius: 12px;
+  background: var(--background-form);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
 .title {
-  font-size: 20px;
-  font-weight: 600;
-  margin-bottom: -6px;
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 24px;
+  color: #222;;
+  text-align: center;
+  background-color: rgb(205, 200, 200);
+  border-radius: 12px;
+  padding: 8px 10px;
 }
 
 .subtitle {
-  font-size: 14px;
-  opacity: 0.8;
-  margin-bottom: 10px;
+  margin: 0 0 8px;
+  color: #000000;
+  font-size: 16px;
+  padding: 10px 0px 20px 0px;
 }
 
-/* ================================
-   GRUPOS DE INPUTS
-   ================================ */
 .group {
+  margin-bottom: 14px;
+  padding: 0 8px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  width: 100%;
+  box-sizing: border-box;
+  position: relative;
 }
 
 .label {
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 3px;;
 }
 
 .input {
-  padding: 10px 14px;
+  width: 100%;
+  padding: 10px 12px;
   border-radius: 8px;
-  border: 1px solid #ccc;
-  font-size: 14px;
-  outline: none;
-  transition: border-color 0.2s ease;
+  border: 1px solid #bbb;
+  background-color: var(--color-input-bg);
+  font-size: 15px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .input:focus {
-  border-color: #7b4eff;
+  border-color: #6a3dad;
+  box-shadow: 0 0 4px rgba(106, 61, 173, 0.4);
+  outline: none;
 }
 
-/* ================================
-   ERROR
-   ================================ */
+.input::placeholder {
+  color: #444;
+  opacity: 0.7;
+}
+
 .error {
-  color: #d9534f;
-  font-size: 14px;
+  color: #b00020;
+  font-size: 13px;
+  margin-top: 4px;
+  padding-left: 12px;
 }
 
-/* ================================
-   ACCIONES (botones)
-   ================================ */
+/* clases propias del Bebedero */
+
+.row {
+  display: flex;
+  gap: 12px;
+}
+
 .actions {
   display: flex;
-  justify-content: flex-end;
   gap: 12px;
-  margin-top: 10px;
+  margin-top: 16px;
+}
+
+.checkboxRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 8px 16px;;
+}
+
+/* estilos del dropdown */
+.dropdown {
+  position: absolute;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  width: 100%;
+  max-height: 180px;
+  overflow-y: auto;
+  margin-top: 4px;
+  z-index: 999;
+}
+
+.dropdownItem {
+  padding: 10px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.dropdownItem:hover {
+  background: #f0f0f0;
 }

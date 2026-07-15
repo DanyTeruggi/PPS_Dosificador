@@ -65,6 +65,13 @@
   transform: scale(1.05);
 }
 
+
+/* DANGER */
+.danger {
+  background-color: #e74c3c;
+  color: white;
+}
+
 /* VARIANTE CON ÍCONO (back + dashboard) */
 .iconButton {
   width: 40px;

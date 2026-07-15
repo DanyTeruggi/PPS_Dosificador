@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import styles from "./NuevoEstablecimientoForm.module.css";
+import styles from "./../Style/EditarFormStyles.module.css";
 import Button from "../../Button/Button";
 import { useApi } from "../../../utils/apiFetch";
 
 interface Props {
   onClose: () => void;
+  onCreated?: () => void;
 }
 
 export default function NuevoEstablecimientoForm({ onClose }: Props) {
@@ -37,7 +38,7 @@ export default function NuevoEstablecimientoForm({ onClose }: Props) {
       try {
         const res = await apiFetch("/api/v1/admin/clientes");
 
-        if (!res) return; // ← FIX para TypeScript
+        if (!res) return; 
 
         const data = await res.json();
 
@@ -77,10 +78,13 @@ export default function NuevoEstablecimientoForm({ onClose }: Props) {
         }),
       });
 
-      if (!res || !res.ok) { // ← FIX para TypeScript
+      if (!res || !res.ok) { 
+        alert("❌ Error creando establecimiento");
         throw new Error("No se pudo crear el establecimiento");
       }
 
+      alert("✅ Establecimiento creado con éxito");
+      
       onClose();
     } catch (err) {
       console.error(err);

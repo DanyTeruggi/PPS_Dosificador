@@ -5,14 +5,15 @@ import { useApi } from "../../../utils/apiFetch";
 import { useAuth } from "../../../context/AuthContext";
 
 import UserForm from "../../UserForm/UserForm";
-import AsignarVeterinarioModal from "./AsignarVeterinario"; // 
+import AsignarVeterinarioModal from "./AsignarVeterinario";
 
-import type { UsuarioPanel } from "../../../types/UsuarioPanel";
+
 
 type UsuarioApi = {
   id: number;
   email: string;
   nombre: string;
+  telefono: string;
   rol: string;
   activo: boolean;
 };
@@ -25,7 +26,7 @@ export default function UsersPanel() {
   const { apiFetch } = useApi();
   const { user } = useAuth();
 
-  const [usuarios, setUsuarios] = useState<UsuarioPanel[]>([]);
+  const [usuarios, setUsuarios] = useState<UsuarioApi[]>([]);
   const [showModalNuevoUsuario, setShowModalNuevoUsuario] = useState(false);
 
   // Modal para asignar veterinario
@@ -43,45 +44,49 @@ export default function UsersPanel() {
   const [tempRol, setTempRol] = useState("");
 
   /**
-   * Carga inicial de usuarios desde el backend.
+   * 🔥 FUNCIÓN GLOBAL PARA RECARGAR USUARIOS
    */
-  useEffect(() => {
-    async function loadUsuarios() {
-      const role = user?.role ?? user?.rol;
-      if (role !== "admin") return;
+  async function loadUsuarios() {
+    const role = user?.role ?? user?.rol;
+    if (role !== "admin") return;
 
-      const [veterinariosRes, clientesRes] = await Promise.all([
-        apiFetch("/api/v1/admin/veterinarios"),
-        apiFetch("/api/v1/admin/clientes"),
-      ]);
+    const [veterinariosRes, clientesRes] = await Promise.all([
+      apiFetch("/api/v1/admin/veterinarios"),
+      apiFetch("/api/v1/admin/clientes"),
+    ]);
 
-      if (!veterinariosRes?.ok || !clientesRes?.ok) {
-        setUsuarios([]);
-        return;
-      }
-
-      const veterinarios: PerfilApi[] = await veterinariosRes.json();
-      const clientes: PerfilApi[] = await clientesRes.json();
-
-      const perfiles = [...veterinarios, ...clientes];
-
-      const todosLosUsuarios: UsuarioPanel[] = perfiles.map(
-        ({ usuario }) => ({
-          id: usuario.id,
-          userName: usuario.email,
-          nombre: usuario.nombre,
-          rol: usuario.rol,
-          activo: usuario.activo,
-        })
-      );
-
-      const usuariosSinDuplicados = Array.from(
-        new Map(todosLosUsuarios.map((u) => [u.id, u])).values()
-      );
-
-      setUsuarios(usuariosSinDuplicados);
+    if (!veterinariosRes?.ok || !clientesRes?.ok) {
+      setUsuarios([]);
+      return;
     }
 
+    const veterinarios: PerfilApi[] = await veterinariosRes.json();
+    const clientes: PerfilApi[] = await clientesRes.json();
+
+    const perfiles = [...veterinarios, ...clientes];
+
+    const todosLosUsuarios: UsuarioApi[] = perfiles.map(
+      ({ usuario }) => ({
+        id: usuario.id,
+        email: usuario.email,
+        nombre: usuario.nombre,
+        telefono: usuario.telefono,
+        rol: usuario.rol,
+        activo: usuario.activo,
+      })
+    );
+
+    const usuariosSinDuplicados = Array.from(
+      new Map(todosLosUsuarios.map((u) => [u.id, u])).values()
+    );
+
+    setUsuarios(usuariosSinDuplicados);
+  }
+
+  /**
+   * Carga inicial
+   */
+  useEffect(() => {
     loadUsuarios();
   }, [user]);
 
@@ -98,7 +103,8 @@ export default function UsersPanel() {
       const texto = search.toLowerCase();
       return (
         u.nombre.toLowerCase().includes(texto) ||
-        u.userName.toLowerCase().includes(texto)
+        u.email.toLowerCase().includes(texto) ||
+        u.telefono.toLowerCase().includes(texto)
       );
     })
     .filter((u) => {
@@ -196,7 +202,7 @@ export default function UsersPanel() {
             + Nuevo usuario
           </button>
 
-          {/* ASIGNAR VETERINARIO — SOLO SI EL USUARIO SELECCIONADO ES CLIENTE */}
+          {/* ASIGNAR VETERINARIO */}
           {selectedUserRol === "cliente" && (
             <button
               className={styles.newUserBtn}
@@ -213,13 +219,10 @@ export default function UsersPanel() {
         <thead>
           <tr>
             <th>Nombre</th>
-            <th>UserName</th>
+            <th>Correo Electronico</th>
+            <th>Telefono</th>
             <th>Rol</th>
-            <th>
-              <div className={styles.estadoHeader}>
-                <span>Estado</span>
-              </div>
-            </th>
+            <th>Estado</th>
             <th></th>
           </tr>
         </thead>
@@ -233,13 +236,14 @@ export default function UsersPanel() {
                 key={u.id}
                 onClick={() => {
                   setSelectedUserId(u.id);
-                  setSelectedUserRol(u.rol); 
+                  setSelectedUserRol(u.rol);
                 }}
                 className={`${styles.rowClickable} ${selectedUserId === u.id ? styles.rowSelected : ""}`}
               >
                 <td><strong>{u.nombre}</strong></td>
-                <td>{u.userName}</td>
-
+                <td>{u.email}</td>
+                <td>{u.telefono}</td>
+                
                 <td>
                   {isEditing ? (
                     <select
@@ -299,18 +303,42 @@ export default function UsersPanel() {
               ✕
             </button>
 
-            <UserForm onClose={() => setShowModalNuevoUsuario(false)} />
+            <UserForm
+              onClose={() => setShowModalNuevoUsuario(false)}
+              onCreated={() => loadUsuarios()}   
+            />
           </div>
         </div>
       )}
 
       {/* MODAL: ASIGNAR VETERINARIO */}
       {showAsignarVetModal && selectedUserId && (
-        <AsignarVeterinarioModal
-          usuarioId={selectedUserId}
-          onClose={() => setShowAsignarVetModal(false)}
-        />
+        <div
+          className={styles.modalOverlay}
+          onClick={() => setShowAsignarVetModal(false)}
+        >
+          <div
+            className={styles.modalContent}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className={styles.closeModalBtn}
+              onClick={() => setShowAsignarVetModal(false)}
+            >
+              ✕
+            </button>
+
+            <AsignarVeterinarioModal
+              usuarioId={selectedUserId}
+              onClose={() => {
+                setShowAsignarVetModal(false);
+                loadUsuarios();   {/* 🔥 refresca la tabla */}
+              }}
+            />
+          </div>
+        </div>
       )}
+
     </div>
   );
 }

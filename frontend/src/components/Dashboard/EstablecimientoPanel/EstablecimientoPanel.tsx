@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import styles from "./../Style/PanelStyles.module.css";
+import stylesDelete from "./../Style/EditarFormStyles.module.css";
 
 import { useApi } from "../../../utils/apiFetch";
 import { useAuth } from "../../../context/AuthContext";
@@ -8,6 +9,7 @@ import NuevoEstablecimientoForm from "./NuevoEstablecimientoForm";
 import EditarEstablecimientoForm from "./EditarEstablecimientoForm";
 
 import type { Establecimiento } from "../../../types/Establecimiento";
+import Button from "../../Button/Button";
 
 type EstablecimientoRow = Establecimiento & {
   clienteNombre: string;
@@ -67,6 +69,10 @@ export default function EstablecimientoPanel() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editEstablecimiento, setEditEstablecimiento] = useState<Establecimiento | null>(null);
   const [selectedRowId, setSelectedRowId] = useState<number | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<{
+    id: number;
+    nombre: string;
+  } | null>(null);
 
 
 
@@ -217,11 +223,13 @@ export default function EstablecimientoPanel() {
   }
 
   async function handleDeleteClick(id: number, nombre: string) {
-    const confirmed = window.confirm(
-      `¿Seguro que deseas eliminar el establecimiento "${nombre}"?`
-    );
+    setDeleteConfirm({ id, nombre });
+  }
 
-    if (!confirmed) return;
+  async function confirmDelete() {
+    if (!deleteConfirm) return;
+
+    const { id } = deleteConfirm;
 
     const res = await apiFetch(
       `/api/v1/admin/establecimientos/${id}`,
@@ -232,6 +240,12 @@ export default function EstablecimientoPanel() {
       alert("No se pudo eliminar el establecimiento.");
       return;
     }
+
+      // refrescar lista
+    loadEstablecimientos();
+
+     // cerrar modal
+    setDeleteConfirm(null);
 
     setEstablecimientos((actuales) =>
       actuales.filter((establecimiento) => establecimiento.id !== id)
@@ -268,7 +282,7 @@ export default function EstablecimientoPanel() {
           />
 
           <button className={styles.clearBtn} onClick={clearFilters}>
-            Clear
+            Limpiar filtros
           </button>
         </div>
 
@@ -342,6 +356,10 @@ export default function EstablecimientoPanel() {
             <EditarEstablecimientoForm
               establecimiento={editEstablecimiento}
               onSave={guardarCambios}
+              onClose={() => {
+                setEditEstablecimiento(null)
+                loadEstablecimientos(); 
+              }}
             />
           </div>
         </div>
@@ -357,12 +375,52 @@ export default function EstablecimientoPanel() {
             <NuevoEstablecimientoForm
               onClose={() => {
                 setShowCreateModal(false);
-                loadEstablecimientos(); // refresca la tabla
+                loadEstablecimientos(); 
               }}
             />
           </div>
         </div>
       )}
+
+      {deleteConfirm && (
+  <div className={styles.modalOverlay} onClick={() => setDeleteConfirm(null)}>
+    <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+      
+      <button
+        className={styles.closeModalBtn}
+        onClick={() => setDeleteConfirm(null)}
+      >
+        ✕
+      </button>
+
+      <h2 className={stylesDelete.title}>
+        Eliminar "{deleteConfirm.nombre}"
+      </h2>
+
+      <p className={stylesDelete.subtitle}>
+        ¿Seguro que deseas eliminar este Establecimiento?
+      </p>
+
+            <div className={stylesDelete.actions}>
+
+              <Button
+                label="Cancelar"
+                variant="secondary"
+                onClick={() => setDeleteConfirm(null)}
+              />
+
+              <Button
+                label="Eliminar"
+                variant="danger"
+                onClick={confirmDelete}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+
+
 
     </div>
   );

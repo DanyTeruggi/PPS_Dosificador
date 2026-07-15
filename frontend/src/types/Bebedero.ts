@@ -12,4 +12,5 @@ export interface Bebedero {
   tiempoDosis: number;
   capacidadTolva: number;
   estado: boolean;
+  establecimiento_id: number; 
 }

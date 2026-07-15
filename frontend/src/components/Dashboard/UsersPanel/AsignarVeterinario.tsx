@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import styles from "./AsignarVeterinario.module.css";
+import styles from "./../Style/EditarFormStyles.module.css";
+import Button from "../../Button/Button";
 import { useApi } from "../../../utils/apiFetch";
 
 interface Props {
@@ -16,12 +17,10 @@ export default function AsignarVeterinario({ usuarioId, onClose }: Props) {
   const [searchVet, setSearchVet] = useState("");
   const [nuevoVetId, setNuevoVetId] = useState<number | null>(null);
   const [veterinarioSeleccionado, setVeterinarioSeleccionado] = useState<any | null>(null);
-  const [mostrarBuscador, setMostrarBuscador] = useState(true);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Cargar cliente
   useEffect(() => {
     async function loadCliente() {
       const res = await apiFetch("/api/v1/admin/clientes");
@@ -37,7 +36,6 @@ export default function AsignarVeterinario({ usuarioId, onClose }: Props) {
     loadCliente();
   }, [usuarioId]);
 
-  // Cargar veterinarios filtrados
   useEffect(() => {
     async function loadVets() {
       const res = await apiFetch("/api/v1/admin/veterinarios");
@@ -69,7 +67,6 @@ export default function AsignarVeterinario({ usuarioId, onClose }: Props) {
     setError(null);
 
     try {
-      // TODO: implementar PATCH real en el backend
       console.log("TODO PATCH → cliente_id:", cliente.cliente_id, "nuevo veterinario:", nuevoVetId);
       onClose();
     } catch (err) {
@@ -82,106 +79,90 @@ export default function AsignarVeterinario({ usuarioId, onClose }: Props) {
 
   if (!cliente) {
     return (
-      <div className={styles.modalOverlay} onClick={onClose}>
-        <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-          <p>Cargando datos del cliente…</p>
-        </div>
-      </div>
+      <form className={styles.form}>
+        <h2 className={styles.title}>Asignar Veterinario</h2>
+        <p className={styles.subtitle}>Cargando datos del cliente…</p>
+      </form>
     );
   }
 
   return (
-    <div className={styles.modalOverlay} onClick={onClose}>
-      <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-        
-        {/* FORMULARIO IGUAL AL USERFORM */}
-        <div className={styles.wrapper}>
-          <form className={styles.form}>
+    <form className={styles.form}>
+      <h2 className={styles.title}>Asignar Veterinario</h2>
+      <p className={styles.subtitle}>Modificá el veterinario asignado a este cliente.</p>
 
-            <h2 className={styles.title}>Asignar Veterinario</h2>
-            <p className={styles.subtitle}>Modificá el veterinario asignado a este cliente.</p>
+      <div className={styles.group}>
+        <p><strong>Cliente:</strong> {cliente.usuario.nombre}</p>
+        <p><strong>Email:</strong> {cliente.usuario.email}</p>
+        <p><strong>Razón social:</strong> {cliente.razon_social}</p>
 
-            {/* Datos del cliente */}
-            <div className={styles.group}>
-              <p><strong>Cliente:</strong> {cliente.usuario.nombre}</p>
-              <p><strong>Email:</strong> {cliente.usuario.email}</p>
-              <p><strong>Razón social:</strong> {cliente.razon_social}</p>
-
-              {veterinarioActual && (
-                <p>
-                  <strong>Veterinario actual:</strong>{" "}
-                  {veterinarioActual.usuario.nombre} ({veterinarioActual.usuario.email})
-                </p>
-              )}
-            </div>
-
-            {/* Buscador */}
-            {mostrarBuscador && (
-              <div className={styles.group}>
-                <label className={styles.label}>Buscar veterinario</label>
-                <input
-                  type="text"
-                  className={styles.input}
-                  placeholder="Buscar veterinario…"
-                  value={searchVet}
-                  onChange={(e) => setSearchVet(e.target.value)}
-                />
-              </div>
-            )}
-
-            {/* Lista de veterinarios */}
-            {veterinarios.length > 0 && (
-              <div className={styles.vetList}>
-                {veterinarios.map((v) => (
-                  <div
-                    key={v.veterinario_id}
-                    className={styles.vetItem}
-                    onClick={() => {
-                      setNuevoVetId(v.veterinario_id);
-                      setVeterinarioSeleccionado(v);
-                      setSearchVet("");
-                      setVeterinarios([]);
-                      setMostrarBuscador(false);
-                    }}
-                  >
-                    <strong>{v.usuario.nombre}</strong> — {v.usuario.email}
-                    <br />
-                    <small>Especialidad: {v.especialidad}</small>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* Veterinario seleccionado */}
-            {veterinarioSeleccionado && (
-              <div className={styles.vetItemSelected}>
-                <strong>{veterinarioSeleccionado.usuario.nombre}</strong> — {veterinarioSeleccionado.usuario.email}
-                <br />
-                <small>Especialidad: {veterinarioSeleccionado.especialidad}</small>
-              </div>
-            )}
-
-            {error && <p className={styles.error}>{error}</p>}
-
-            {/* Botones */}
-            <div className={styles.actions}>
-              <button type="button" className={styles.cancelBtn} onClick={onClose}>
-                Cancelar
-              </button>
-              <button
-                type="button"
-                className={styles.saveBtn}
-                onClick={handleGuardar}
-                disabled={loading}
-              >
-                {loading ? "Guardando…" : "Guardar cambios"}
-              </button>
-            </div>
-
-          </form>
-        </div>
-
+        {veterinarioActual && (
+          <p>
+            <strong>Veterinario actual:</strong>{" "}
+            {veterinarioActual.usuario.nombre} ({veterinarioActual.usuario.email})
+          </p>
+        )}
       </div>
-    </div>
+
+      <div className={styles.group}>
+        <label className={styles.label}>Buscar veterinario</label>
+        <input
+          type="text"
+          className={styles.input}
+          placeholder="Buscar veterinario…"
+          value={searchVet}
+          onChange={(e) => setSearchVet(e.target.value)}
+        />
+      </div>
+
+      {veterinarios.length > 0 && (
+        <div className={styles.group}>
+          {veterinarios.map((v) => (
+            <div
+              key={v.veterinario_id}
+              className={styles.input}
+              style={{ cursor: "pointer", padding: "12px" }}
+              onClick={() => {
+                setNuevoVetId(v.veterinario_id);
+                setVeterinarioSeleccionado(v);
+                setSearchVet("");
+                setVeterinarios([]);
+              }}
+            >
+              <strong>{v.usuario.nombre}</strong> — {v.usuario.email}
+              <br />
+              <small>Especialidad: {v.especialidad}</small>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {veterinarioSeleccionado && (
+        <div className={styles.group}>
+          <div className={styles.input} style={{ padding: "12px" }}>
+            <strong>{veterinarioSeleccionado.usuario.nombre}</strong> — {veterinarioSeleccionado.usuario.email}
+            <br />
+            <small>Especialidad: {veterinarioSeleccionado.especialidad}</small>
+          </div>
+        </div>
+      )}
+
+      {error && <p className={styles.error}>{error}</p>}
+
+      <div className={styles.actions}>
+        <Button
+          label="Cancelar"
+          variant="secondary"
+          type="button"
+          onClick={onClose}
+        />
+        <Button
+          label={loading ? "Guardando…" : "Guardar cambios"}
+          variant="primary"
+          type="button"
+          onClick={handleGuardar}
+        />
+      </div>
+    </form>
   );
 }

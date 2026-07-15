@@ -6,9 +6,10 @@ import dashboardIcon from "../../assets/dashboard.png";
 
 interface ButtonProps {
   label: string;
-  onClick?: () => void;
+  //onClick?: () => void;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   type?: "button" | "submit";
-  variant?: "primary" | "secondary" | "tertiary" | "hero" | "back" | "dashboard" | "selected"  | "selectedActive";
+  variant?: "primary" | "secondary" | "tertiary" | "hero" | "back" | "dashboard" | "selected"  | "selectedActive" | "danger";
   fullWidth?: boolean;
 }
 

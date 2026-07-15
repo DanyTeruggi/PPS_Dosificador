@@ -1,5 +1,5 @@
 import { useState } from "react";
-import styles from "./EditarEstablecimientoForm.module.css";
+import styles from "./../Style/EditarFormStyles.module.css";
 import Button from "../../Button/Button";
 import { useApi } from "../../../utils/apiFetch";
 
@@ -7,6 +7,7 @@ import type { Establecimiento } from "../../../types/Establecimiento";
 
 interface Props {
   establecimiento: Establecimiento;
+  onClose: () => void;
   onSave: (updated: Establecimiento) => void | Promise<void>;
 }
 
@@ -14,14 +15,13 @@ interface Props {
  * Formulario para editar un establecimiento existente.
  * Se usa dentro del modal del EstablecimientoPanel.
  */
-export default function EditarEstablecimientoForm({ establecimiento, onSave }: Props) {
+export default function EditarEstablecimientoForm({ establecimiento, onClose, onSave }: Props) {
   const { apiFetch } = useApi();
 
   const [form, setForm] = useState({
     id: establecimiento.id,
     nombre: establecimiento.nombre,
     ubicacion: establecimiento.ubicacion || "",
-    cliente_id: establecimiento.cliente_id,
   });
 
   const [loading, setLoading] = useState(false);
@@ -44,7 +44,6 @@ export default function EditarEstablecimientoForm({ establecimiento, onSave }: P
         body: JSON.stringify({
           nombre: form.nombre,
           ubicacion: form.ubicacion,
-          cliente_id: Number(form.cliente_id),
         }),
       });
 
@@ -54,6 +53,7 @@ export default function EditarEstablecimientoForm({ establecimiento, onSave }: P
 
       const updated: Establecimiento = await res.json();
       await onSave(updated);
+      onClose();
     } catch (err) {
       console.error(err);
       setError("No se pudo actualizar el establecimiento.");
@@ -89,21 +89,11 @@ export default function EditarEstablecimientoForm({ establecimiento, onSave }: P
         />
       </div>
 
-      {/* Cliente ID */}
-      <div className={styles.group}>
-        <label className={styles.label}>ID Cliente</label>
-        <input
-          type="number"
-          className={styles.input}
-          required
-          value={form.cliente_id}
-          onChange={(e) => updateField("cliente_id", e.target.value)}
-        />
-      </div>
 
       {error && <p className={styles.error}>{error}</p>}
 
       <div className={styles.actions}>
+        <Button label="Cancelar" variant="secondary" onClick={onClose} />
         <Button label={loading ? "Guardando..." : "Guardar cambios"} type="submit" />
       </div>
     </form>

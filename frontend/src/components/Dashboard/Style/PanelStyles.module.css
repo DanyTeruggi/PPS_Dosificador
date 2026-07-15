@@ -16,6 +16,13 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 18px;
+      position: sticky;
+      top: -24px; /* compensa el padding superior del container */
+      z-index: 100;
+      background: #e8e8e9;
+      padding: 16px 20px;
+      border-bottom: 1px solid #ddd;
+       
 }
 
 .searchGroup {
@@ -77,15 +84,26 @@
   margin-top: 12px;
 }
 
+/* Encabezado de la tabla */
+.table thead {
+  position: sticky;
+  top: 48px; /* altura del searchRow */
+  z-index: 90;
+  background:  #e8e8e9;
+  
+}
+
+
 .table th {
   text-align: left;
   padding: 12px;
   color: #666;
   border-bottom: 1px solid #eee;
+  background:  #e8e8e9;
 }
 
 .table td {
-  padding: 14px 12px;
+  padding: 14px 8px;
   border-bottom: 1px solid #f0f0f0;
 }
 

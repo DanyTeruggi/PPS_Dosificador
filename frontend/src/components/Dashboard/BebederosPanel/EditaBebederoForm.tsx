@@ -3,28 +3,30 @@ import Button from "../../Button/Button";
 import { useApi } from "../../../utils/apiFetch";
 import styles from "./../Style/EditarFormStyles.module.css";
 
+import type { Bebedero } from "../../../types/Bebedero";
+
 interface Props {
+  bebedero: Bebedero;
   onClose: () => void;
+  onSave: (updated: Bebedero) => void | Promise<void>;
 }
 
-export default function NuevoBebederoForm({ onClose }: Props) {
+export default function EditarBebederoForm({ bebedero, onClose, onSave }: Props) {
   const { apiFetch } = useApi();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const [form, setForm] = useState({
-    establecimiento: "",
-    nombre: "",
-    largoBebedero: "",
-    anchoBebedero: "",
-    profundidadBebedero: "",
-    coberturaMinima: "",
-    tiempoDosis: "",
-    capacidadTolva: "",
-    estado: true,
+    nombre: bebedero.nombre || "",
+    largoBebedero: bebedero.largoBebedero || "",
+    anchoBebedero: bebedero.anchoBebedero || "",
+    profundidadBebedero: bebedero.profundidadBebedero || "",
+    coberturaMinima: bebedero.coberturaMinima || "",
+    tiempoDosis: bebedero.tiempoDosis || "",
+    capacidadTolva: bebedero.capacidadTolva || "",
   });
 
-  const updateField = (field: string, value: string | boolean) => {
+  const updateField = (field: string, value: string | number) => {
     setForm((current) => ({ ...current, [field]: value }));
   };
 
@@ -34,33 +36,29 @@ export default function NuevoBebederoForm({ onClose }: Props) {
     setLoading(true);
 
     try {
-      const establecimientoId = Number(form.establecimiento);
-
-      const response = await apiFetch(
-        `/api/v1/establecimientos/${establecimientoId}/bebederos`,
-        {
-          method: "POST",
-          body: JSON.stringify({
-            nombre: form.nombre,
-            establecimiento: establecimientoId,
-            largoBebedero: Number(form.largoBebedero),
-            anchoBebedero: Number(form.anchoBebedero),
-            profundidadBebedero: Number(form.profundidadBebedero),
-            coberturaMinima: Number(form.coberturaMinima),
-            tiempoDosis: Number(form.tiempoDosis),
-            capacidadTolva: Number(form.capacidadTolva),
-            estado: form.estado,
-          }),
-        }
-      );
+      const response = await apiFetch(`/api/v1/admin/bebederos/${bebedero.id}`, {
+        method: "PATCH",
+        body: JSON.stringify({
+          nombre: form.nombre,
+          largoBebedero: Number(form.largoBebedero),
+          anchoBebedero: Number(form.anchoBebedero),
+          profundidadBebedero: Number(form.profundidadBebedero),
+          coberturaMinima: Number(form.coberturaMinima),
+          tiempoDosis: Number(form.tiempoDosis),
+          capacidadTolva: Number(form.capacidadTolva),
+        }),
+      });
 
       if (!response || !response.ok) {
-        throw new Error("No se pudo crear el dispositivo.");
+        throw new Error("No se pudo actualizar el dispositivo.");
       }
 
+      const updated = await response.json();
+      await onSave(updated);
       onClose();
+
     } catch (submitError) {
-      setError("No se pudo crear el dispositivo. Revisá los datos e intentá de nuevo.");
+      setError("No se pudo actualizar el dispositivo. Revisá los datos e intentá de nuevo.");
       console.error(submitError);
     } finally {
       setLoading(false);
@@ -70,26 +68,9 @@ export default function NuevoBebederoForm({ onClose }: Props) {
   return (
     <div className={styles.wrapper}>
       <form className={styles.form} onSubmit={handleSubmit}>
-        <h2 className={styles.title}>Nuevo Dispositivo</h2>
-        <p className={styles.subtitle}>
-          Completá los datos para registrar un nuevo dispositivo.
-        </p>
+        <h2 className={styles.title}>Editar Dispositivo</h2>
+        <p className={styles.subtitle}>Modificá los datos del dispositivo seleccionado.</p>
 
-        {/* ID Establecimiento */}
-        {/*
-        <div className={styles.group}>
-          <label className={styles.label}>ID Establecimiento</label>
-          <input
-            className={styles.input}
-            type="number"
-            min="1"
-            required
-            value={form.establecimiento}
-            onChange={(e) => updateField("establecimiento", e.target.value)}
-            placeholder="Ej: 1"
-          />
-        </div>
-        */}
         {/* Nombre */}
         <div className={styles.group}>
           <label className={styles.label}>Nombre</label>
@@ -176,28 +157,11 @@ export default function NuevoBebederoForm({ onClose }: Props) {
           </div>
         </div>
 
-        {/* Checkbox */}
-        <div className={styles.checkboxRow}>
-          <input
-            type="checkbox"
-            checked={form.estado}
-            onChange={(e) => updateField("estado", e.target.checked)}
-          />
-          <span>Bebedero activo</span>
-        </div>
-
         {error && <p className={styles.error}>{error}</p>}
 
         <div className={styles.actions}>
-          <Button
-            label="Cancelar"
-            variant="secondary"
-            onClick={onClose}
-          />
-          <Button
-            label={loading ? "Guardando..." : "Guardar"}
-            type="submit"
-          />
+          <Button label="Cancelar" variant="secondary" onClick={onClose} />
+          <Button label={loading ? "Guardando..." : "Guardar"} type="submit" />
         </div>
       </form>
     </div>

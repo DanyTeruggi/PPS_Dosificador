@@ -1,14 +1,18 @@
 import { useState, useEffect } from "react";
 import styles from "./../Style/PanelStyles.module.css";
+import stylesDelete from "./../Style/EditarFormStyles.module.css";
+
 
 import { useApi } from "../../../utils/apiFetch";
 import { useAuth } from "../../../context/AuthContext";
 
 
 import NuevoBebederoForm from "./NuevoBebederoForm";
+import Button from "../../Button/Button";
 
 import type { Bebedero } from "../../../types/Bebedero";
 import type { Establecimiento } from "../../../types/Establecimiento";
+import EditarBebederoForm from "./EditaBebederoForm";
 
 /* ---------------------------------------------------------
  * Tipo local (igual que EstablecimientoPanel)
@@ -56,9 +60,14 @@ export default function BebederosPanel() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editBebedero, setEditBebedero] = useState<Bebedero | null>(null);
   const [selectedRowId, setSelectedRowId] = useState<number | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<{
+    id: number;
+    nombre: string;
+  } | null>(null);
+
+
   /* ---------------------------------------------------------
-   * loadBebederos()
-   * SOLO ADMIN — igual estructura que loadEstablecimientos()
+   * Carga inicial de datos   * 
    * --------------------------------------------------------- */
   async function loadBebederos() {
     const role = user?.role ?? user?.rol;
@@ -83,14 +92,13 @@ export default function BebederosPanel() {
 
     const bebederosAdmin = normalizeBebederos(await bebRes.json());
     const establecimientosAdmin = normalizeEstablecimientos(await estRes.json());
-        
+     
 
     setBebederos(
       bebederosAdmin.map((b) => {
-        const est = establecimientosAdmin.find((e) => e.id === b.establecimiento?.id);
-        
+        const est = establecimientosAdmin.find((e) => e.id === b.establecimiento_id);
         return {
-          ...b,
+          ...b, 
           establecimientoNombre: est?.nombre ?? "—",
         };
       })
@@ -147,22 +155,17 @@ export default function BebederosPanel() {
 
 
   /* ---------------------------------------------------------
-   * Editar
-   * --------------------------------------------------------- */
-  async function handleEditClick(id: number) {
-    const res = await apiFetch(`/api/v1/bebederos/${id}`);
-    if (!res?.ok) {
-      alert("No se pudo cargar el bebedero.");
-      return;
-    }
-    setEditBebedero(await res.json());
-  }
-
-  /* ---------------------------------------------------------
    * Borrar
    * --------------------------------------------------------- */
   async function handleDeleteClick(id: number, nombre: string) {
-    if (!confirm(`¿Seguro que deseas eliminar el bebedero "${nombre}"?`)) return;
+    setDeleteConfirm({ id, nombre });
+  }
+
+  async function confirmDelete() {
+    if (!deleteConfirm) 
+      return;
+
+    const { id } = deleteConfirm;
 
     const res = await apiFetch(`/api/v1/admin/bebederos/${id}`, {
       method: "DELETE",
@@ -173,6 +176,8 @@ export default function BebederosPanel() {
       return;
     }
 
+    await loadBebederos();
+    setDeleteConfirm(null);
     setBebederos((actuales) => actuales.filter((b) => b.id !== id));
   }
 
@@ -213,7 +218,7 @@ export default function BebederosPanel() {
           />
 
           <button className={styles.clearBtn} onClick={clearFilters}>
-            Clear
+            Limpiar filtros
           </button>
         </div>
 
@@ -263,7 +268,13 @@ export default function BebederosPanel() {
               <td>{b.tiempoDosis ?? "-"}</td>
 
               <td className={styles.actionsCell}>
-                <button className={styles.editBtn} onClick={() => handleEditClick(b.id)}>
+                <button 
+                  className={styles.editBtn}
+                  onClick={(e) => {
+                    e.stopPropagation();   // evita seleccionar fila
+                    setEditBebedero(b);    // abre el modal con el bebedero correcto
+                  }}
+                >
                   Editar
                 </button>
 
@@ -295,7 +306,11 @@ export default function BebederosPanel() {
               ✕
             </button>
 
-            <EditarBebederoForm bebedero={editBebedero} onSave={guardarCambios} />
+            <EditarBebederoForm
+              bebedero={editBebedero}
+              onSave={guardarCambios}
+              onClose={() => setEditBebedero(null)}
+            />
           </div>
         </div>
       )}
@@ -317,6 +332,45 @@ export default function BebederosPanel() {
           </div>
         </div>
       )}
+
+      {/* MODAL BORRAR */}
+      {deleteConfirm && (
+        <div className={styles.modalOverlay} onClick={() => setDeleteConfirm(null)}>
+          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+
+            <button
+              className={styles.closeModalBtn}
+              onClick={() => setDeleteConfirm(null)}
+            >
+              ✕
+            </button>
+
+            <h2 className={stylesDelete.title}>
+              Eliminar "{deleteConfirm.nombre}"
+            </h2>
+
+            <p className={stylesDelete.subtitle}>
+              ¿Seguro que deseas eliminarlo?
+            </p>
+
+            <div className={stylesDelete.actions}>
+
+              <Button
+                label="Cancelar"
+                variant="secondary"
+                onClick={() => setDeleteConfirm(null)}
+              />
+
+              <Button
+                label="Eliminar"
+                variant="danger"
+                onClick={confirmDelete}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
 
     </div>
   );

@@ -2,10 +2,11 @@ import { useForm } from "react-hook-form";
 import { useApi } from "../../utils/apiFetch";
 //import { useAuth } from "../../context/AuthContext";
 import Button from "../Button/Button";
-import styles from "./UserForm.module.css";
+import styles from "./../../components/Dashboard/Style/EditarFormStyles.module.css";
 
 interface UserFormProps {
   onClose?: () => void;
+  onCreated?: () => void;
 }
 
 interface FormData {
@@ -19,7 +20,7 @@ interface FormData {
    *Al momento de crear un cliente, debe estar activo el veterinario al que se lo asocia.
    * por deafault, se asocia al primer veterinario con id=1.
    */
-  razonSocial?: string;
+  cuit?: string;
   telefonoCliente?: string;
   contactoPrincipal?: string;
 
@@ -30,7 +31,7 @@ interface FormData {
   fotoPerfil?: FileList;
 }
 
-export default function UserForm({ onClose }: UserFormProps) {
+export default function UserForm({ onClose, onCreated  }: UserFormProps) {
   const { apiFetch } = useApi();
   //const { user } = useAuth();
 
@@ -69,6 +70,7 @@ export default function UserForm({ onClose }: UserFormProps) {
 
         alert("Veterinario creado con éxito");
         onClose?.();
+        onCreated?.();
         return;
       }
 
@@ -80,7 +82,7 @@ export default function UserForm({ onClose }: UserFormProps) {
             nombre: data.nombre,
             email: data.email,
             password: data.password,
-            razon_social: data.razonSocial ?? "Sin razón social",
+            cuit: data.cuit,
             telefono: data.telefonoCliente ?? null,
             contacto_principal: data.contactoPrincipal ?? null,
             veterinario_id: 1,
@@ -94,30 +96,10 @@ export default function UserForm({ onClose }: UserFormProps) {
 
         alert("Cliente creado con éxito");
         onClose?.();
+        onCreated?.();
         return;
       }
 
-      // Admin TODO: falta implementar la ruta en el backend para crear administradores
-      // if (data.role === "admin") {
-      //   const resAdmin = await apiFetch("/admin/usuarios", {
-      //     method: "POST",
-      //     body: JSON.stringify({
-      //       nombre: data.nombre,
-      //       email: data.email,
-      //       password: data.password,
-      //       role: "admin",
-      //     }),
-      //   });
-
-      //   if (!resAdmin || !resAdmin.ok) {
-      //     alert("Error creando administrador");
-      //     return;
-      //   }
-
-      //   alert("Administrador creado con éxito");
-      //   onClose?.();
-      //   return;
-      // }
 
     } catch (error) {
       console.error(error);
@@ -128,6 +110,10 @@ export default function UserForm({ onClose }: UserFormProps) {
   return (
     <div className={styles.wrapper}>
       <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
+        <h2 className={styles.title}>Nuevo Usuario</h2>
+        <p className={styles.subtitle}>
+          Completá los datos para registrar un nuevo usuario.
+        </p>
 
         {/* Email */}
         <div className={styles.group}>
@@ -158,10 +144,20 @@ export default function UserForm({ onClose }: UserFormProps) {
         </div>
 
 
-        {/* Nombre */}
+        {/* Apellido y Nombre */}
         <div className={styles.group}>
-          <label className={styles.label}>Nombre</label>
-          <input className={styles.input} {...register("nombre", { required: true })} />
+          <label className={styles.label}>Apellido y Nombre</label>
+          <input className={styles.input} placeholder="Apellido, Nombre" {...register("nombre", { required: true })} />
+        </div>
+
+        <div className={styles.group}>
+          <label className={styles.label}>Clave Fiscal</label>
+          <input className={styles.input} {...register("cuit")} />
+        </div>
+
+        <div className={styles.group}>
+          <label className={styles.label}>Teléfono</label>
+          <input className={styles.input} {...register("telefonoCliente")} />
         </div>
 
         {/* Rol dinámico */}
@@ -178,16 +174,6 @@ export default function UserForm({ onClose }: UserFormProps) {
         {selectedRole === "cliente" && (
           <>
             <div className={styles.group}>
-              <label className={styles.label}>Razón Social</label>
-              <input className={styles.input} {...register("razonSocial")} />
-            </div>
-
-            <div className={styles.group}>
-              <label className={styles.label}>Teléfono</label>
-              <input className={styles.input} {...register("telefonoCliente")} />
-            </div>
-
-            <div className={styles.group}>
               <label className={styles.label}>Contacto Principal</label>
               <input className={styles.input} {...register("contactoPrincipal")} />
             </div>
@@ -200,11 +186,6 @@ export default function UserForm({ onClose }: UserFormProps) {
             <div className={styles.group}>
               <label className={styles.label}>Especialidad</label>
               <input className={styles.input} {...register("especialidad")} />
-            </div>
-
-            <div className={styles.group}>
-              <label className={styles.label}>Teléfono</label>
-              <input className={styles.input} {...register("telefonoVet")} />
             </div>
 
             <div className={styles.group}>
