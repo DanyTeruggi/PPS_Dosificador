@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import styles from "./EstablecimientoPanel.module.css";
+import styles from "./../Style/PanelStyles.module.css";
 
 import { useApi } from "../../../utils/apiFetch";
 import { useAuth } from "../../../context/AuthContext";
@@ -66,6 +66,9 @@ export default function EstablecimientoPanel() {
   const [search, setSearch] = useState("");
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editEstablecimiento, setEditEstablecimiento] = useState<Establecimiento | null>(null);
+  const [selectedRowId, setSelectedRowId] = useState<number | null>(null);
+
+
 
   async function loadEstablecimientos() {
     const role = user?.role ?? user?.rol;
@@ -195,6 +198,13 @@ export default function EstablecimientoPanel() {
     );
   });
 
+  // HANDLE ROW CLICK
+  function handleRowClick(id: number) {
+    setSelectedRowId(id);
+  }
+
+
+
   async function handleEditClick(id: number) {
     const res = await apiFetch(`/api/v1/establecimientos/${id}`);
     if (!res || !res.ok) {
@@ -282,8 +292,12 @@ export default function EstablecimientoPanel() {
 
         <tbody>
           {filtrados.map((e) => (
-            <tr key={e.id}>
-              <td>{e.id}</td>
+            <tr 
+              key={e.id}
+              onClick={() => handleRowClick(e.id)}
+              className={`${styles.rowClickable} ${selectedRowId === e.id ? styles.rowSelected : ""}`}
+            >
+                <td>{e.id}</td>
               <td>{e.nombre}</td>
               <td>{e.ubicacion || "-"}</td>
               <td>{e.clienteNombre}</td>

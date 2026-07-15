@@ -1,39 +1,40 @@
 import { useState, useEffect } from "react";
-import styles from "./BebederosPanel.module.css";
+import styles from "./../Style/PanelStyles.module.css";
 
 import { useApi } from "../../../utils/apiFetch";
 import { useAuth } from "../../../context/AuthContext";
 
-import BebederoForm from "./BebederoForm";
+
 import NuevoBebederoForm from "./NuevoBebederoForm";
 
 import type { Bebedero } from "../../../types/Bebedero";
 import type { Establecimiento } from "../../../types/Establecimiento";
 
+/* ---------------------------------------------------------
+ * Tipo local (igual que EstablecimientoPanel)
+ * --------------------------------------------------------- */
 type BebederoRow = Bebedero & {
   establecimientoNombre: string;
 };
 
-type ClienteProfileResponse = {
-  establecimientos?: Establecimiento[];
-};
+/* ---------------------------------------------------------
+ * Normalizadores (solo lo necesario)
+ * --------------------------------------------------------- */
+function normalizeBebederos(payload: unknown): Bebedero[] {
+  // Caso A: ya es un array, lo devolvemos tal cual
+  if (Array.isArray(payload)) return payload as Bebedero[];
+  // Caso B: es un objeto que contiene "bebederos"
+  if (payload && typeof payload === "object") {
+    const maybe = (payload as any).bebederos;
+  
+    if (Array.isArray(maybe)) return maybe as Bebedero[];
+  }
 
-type VeterinarioProfileResponse = {
-  veterinario_id: number;
-};
-
-type VeterinarioCliente = {
-  cliente_id: number;
-};
-
-type VeterinarioClientesResponse = {
-  clientes?: VeterinarioCliente[];
-};
+  return [];
+}
 
 function normalizeEstablecimientos(payload: unknown): Establecimiento[] {
-  if (Array.isArray(payload)) {
-    return payload as Establecimiento[];
-  }
+  if (Array.isArray(payload)) return payload as Establecimiento[];
 
   if (payload && typeof payload === "object" && "establecimientos" in payload) {
     const establecimientos = (payload as { establecimientos?: unknown }).establecimientos;
@@ -43,190 +44,161 @@ function normalizeEstablecimientos(payload: unknown): Establecimiento[] {
   return [];
 }
 
-function normalizeBebederos(payload: unknown): Bebedero[] {
-  if (Array.isArray(payload)) {
-    return payload as Bebedero[];
-  }
-
-  if (payload && typeof payload === "object" && "bebederos" in payload) {
-    const bebederos = (payload as { bebederos?: unknown }).bebederos;
-    return Array.isArray(bebederos) ? (bebederos as Bebedero[]) : [];
-  }
-
-  return [];
-}
-
+/* ---------------------------------------------------------
+ * Panel
+ * --------------------------------------------------------- */
 export default function BebederosPanel() {
   const { apiFetch } = useApi();
   const { user } = useAuth();
 
   const [bebederos, setBebederos] = useState<BebederoRow[]>([]);
   const [search, setSearch] = useState("");
-  const [editBebedero, setEditBebedero] = useState<Bebedero | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
-
+  const [editBebedero, setEditBebedero] = useState<Bebedero | null>(null);
+  const [selectedRowId, setSelectedRowId] = useState<number | null>(null);
+  /* ---------------------------------------------------------
+   * loadBebederos()
+   * SOLO ADMIN — igual estructura que loadEstablecimientos()
+   * --------------------------------------------------------- */
   async function loadBebederos() {
     const role = user?.role ?? user?.rol;
+ 
 
-    if (!role) {
+    if (role !== "admin") {
       setBebederos([]);
       return;
     }
 
-    if (role === "cliente") {
-      const profileRes = await apiFetch("/api/v1/clientes/me");
-      if (!profileRes || !profileRes.ok) return;
-
-      const profile: ClienteProfileResponse = await profileRes.json();
-      let establecimientos = normalizeEstablecimientos(profile.establecimientos);
-
-      if (establecimientos.length === 0) {
-        const establecimientosRes = await apiFetch("/api/v1/clientes/mis-establecimientos");
-        if (!establecimientosRes || !establecimientosRes.ok) return;
-
-        const payload = await establecimientosRes.json();
-        establecimientos = normalizeEstablecimientos(payload);
-      }
-
-      const rows = await Promise.all(
-        establecimientos.map(async (establecimiento) => {
-          const bebederosRes = await apiFetch(`/api/v1/establecimientos/${establecimiento.id}/bebederos`);
-          if (!bebederosRes || !bebederosRes.ok) {
-            return [] as BebederoRow[];
-          }
-
-          const payload = await bebederosRes.json();
-          const bebederosEstablecimiento = normalizeBebederos(payload);
-
-          return bebederosEstablecimiento.map((bebedero) => ({
-            ...bebedero,
-            establecimientoNombre: establecimiento.nombre,
-          }));
-        })
-      );
-
-      setBebederos(rows.flat());
+    const [bebRes, estRes] = await Promise.all([
+      apiFetch("/api/v1/admin/bebederos"),
+      apiFetch("/api/v1/admin/establecimientos"),
+    ]);
+    
+     
+      
+    if (!bebRes?.ok || !estRes?.ok) {
+      setBebederos([]);
       return;
     }
 
-    if (role === "veterinario") {
-      const [profileRes, clientesRes] = await Promise.all([
-        apiFetch("/api/v1/veterinarios/me"),
-        apiFetch("/api/v1/veterinarios/clientes"),
-      ]);
+    const bebederosAdmin = normalizeBebederos(await bebRes.json());
+    const establecimientosAdmin = normalizeEstablecimientos(await estRes.json());
+        
 
-      if (!profileRes || !profileRes.ok || !clientesRes || !clientesRes.ok) return;
-
-      const profile: VeterinarioProfileResponse = await profileRes.json();
-      const clientesPayload: VeterinarioClientesResponse = await clientesRes.json();
-      const clientes = clientesPayload.clientes ?? [];
-
-      const rows = await Promise.all(
-        clientes.map(async (cliente) => {
-          const establecimientosRes = await apiFetch(
-            `/api/v1/veterinarios/${profile.veterinario_id}/clientes/${cliente.cliente_id}/establecimientos`
-          );
-
-          if (!establecimientosRes || !establecimientosRes.ok) {
-            return [] as BebederoRow[];
-          }
-
-          const establecimientosPayload = await establecimientosRes.json();
-          const establecimientos = normalizeEstablecimientos(establecimientosPayload);
-
-          const bebederosPorEstablecimiento = await Promise.all(
-            establecimientos.map(async (establecimiento) => {
-              const bebederosRes = await apiFetch(`/api/v1/establecimientos/${establecimiento.id}/bebederos`);
-              if (!bebederosRes || !bebederosRes.ok) {
-                return [] as BebederoRow[];
-              }
-
-              const payload = await bebederosRes.json();
-              const bebederosEstablecimiento = normalizeBebederos(payload);
-
-              return bebederosEstablecimiento.map((bebedero) => ({
-                ...bebedero,
-                establecimientoNombre: establecimiento.nombre,
-              }));
-            })
-          );
-
-          return bebederosPorEstablecimiento.flat();
-        })
-      );
-
-      setBebederos(rows.flat());
-      return;
-    }
-
-    setBebederos([]);
+    setBebederos(
+      bebederosAdmin.map((b) => {
+        const est = establecimientosAdmin.find((e) => e.id === b.establecimiento?.id);
+        
+        return {
+          ...b,
+          establecimientoNombre: est?.nombre ?? "—",
+        };
+      })
+    );
   }
 
   useEffect(() => {
     loadBebederos();
   }, [user]);
 
+  /* ---------------------------------------------------------
+   * Filtros (igual que EstablecimientoPanel)
+   * --------------------------------------------------------- */
   const filtrados = bebederos.filter((b) => {
-    if (search === "") return true;
-
-    const searchValue = search.toLowerCase();
+    if (!search) return true;
+    const s = search.toLowerCase();
     return (
+      b.nombre.toLowerCase().includes(s) ||
       b.id.toString().includes(search) ||
-      b.nombre.toLowerCase().includes(searchValue) ||
-      b.establecimientoNombre.toLowerCase().includes(searchValue)
+      b.establecimientoNombre.toLowerCase().includes(s)
     );
   });
 
+ /* ---------------------------------------------------------
+   * Toggle row selection 
+   * --------------------------------------------------------- */
+  function handleRowClick(id: number) {
+    setSelectedRowId(id);
+  }
+
+  /* ---------------------------------------------------------
+   * Toggle Estado 
+   * --------------------------------------------------------- */
   async function toggleEstadoBebedero(id: number) {
-    const nuevos = bebederos.map((b) =>
+    const bebedero = bebederos.find((b) => b.id === id);
+    if (!bebedero) return; // seguridad
+
+    const updated = bebederos.map((b) =>
       b.id === id ? { ...b, estado: !b.estado } : b
     );
-    setBebederos(nuevos);
 
-    const res = await apiFetch(`/api/v1/admin/bebederos/${id}/estado`, {
+    setBebederos(updated);
+
+    const res = await apiFetch(`/api/v1/admin/bebederos/${id}`, {
       method: "PATCH",
-      body: JSON.stringify({
-        estado: nuevos.find((b) => b.id === id)?.estado,
-      }),
+      body: JSON.stringify({ estado: !bebedero.estado }),
     });
 
-    if (!res || !res.ok) {
-      setBebederos(bebederos);
-      alert("No se pudo cambiar el estado del bebedero.");
+    if (!res?.ok) {
+      alert("No se pudo actualizar el estado del bebedero.");
+      setBebederos(bebederos); // revertir
     }
   }
 
-  async function guardarCambios(bebederoActualizado: Bebedero) {
-    const nuevos = bebederos.map((b) =>
-      b.id === bebederoActualizado.id
-        ? { ...b, ...bebederoActualizado }
-        : b
-    );
-    setBebederos(nuevos);
 
-    await apiFetch(`/api/v1/bebederos/${bebederoActualizado.id}`, {
-      method: "PUT",
-      body: JSON.stringify(bebederoActualizado),
-    });
-
-    setEditBebedero(null);
-  }
-
+  /* ---------------------------------------------------------
+   * Editar
+   * --------------------------------------------------------- */
   async function handleEditClick(id: number) {
     const res = await apiFetch(`/api/v1/bebederos/${id}`);
-    if (!res || !res.ok) {
+    if (!res?.ok) {
       alert("No se pudo cargar el bebedero.");
       return;
     }
+    setEditBebedero(await res.json());
+  }
 
-    const data = await res.json();
-    setEditBebedero(data);
+  /* ---------------------------------------------------------
+   * Borrar
+   * --------------------------------------------------------- */
+  async function handleDeleteClick(id: number, nombre: string) {
+    if (!confirm(`¿Seguro que deseas eliminar el bebedero "${nombre}"?`)) return;
+
+    const res = await apiFetch(`/api/v1/admin/bebederos/${id}`, {
+      method: "DELETE",
+    });
+
+    if (!res?.ok) {
+      alert("No se pudo eliminar el bebedero.");
+      return;
+    }
+
+    setBebederos((actuales) => actuales.filter((b) => b.id !== id));
   }
 
   function clearFilters() {
     setSearch("");
   }
 
+  /* ---------------------------------------------------------
+   * Guardar cambios
+   * --------------------------------------------------------- */
+  async function guardarCambios(bebActualizado: Bebedero) {
+    setBebederos((actuales) =>
+      actuales.map((b) =>
+        Number(b.id) === Number(bebActualizado.id)
+          ? { ...b, ...bebActualizado }
+          : b
+      )
+    );
+
+    setEditBebedero(null);
+    await loadBebederos();
+  }
+
+  /* ---------------------------------------------------------
+   * Render
+   * --------------------------------------------------------- */
   return (
     <div className={styles.container}>
 
@@ -234,7 +206,7 @@ export default function BebederosPanel() {
         <div className={styles.searchGroup}>
           <input
             type="text"
-            placeholder="Buscar por ID, nombre o establecimiento…"
+            placeholder="Buscar por nombre, ID o establecimiento…"
             className={styles.searchInput}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -245,11 +217,9 @@ export default function BebederosPanel() {
           </button>
         </div>
 
-        <div className={styles.filters}>
-          <button className={styles.newUserBtn} onClick={() => setShowCreateModal(true)}>
-            + Nuevo dispositivo
-          </button>
-        </div>
+        <button className={styles.newUserBtn} onClick={() => setShowCreateModal(true)}>
+          + Nuevo dispositivo
+        </button>
       </div>
 
       <table className={styles.table}>
@@ -258,7 +228,11 @@ export default function BebederosPanel() {
             <th>ID</th>
             <th>Nombre</th>
             <th>Establecimiento</th>
-            <th>Estado</th>
+            <th>  
+              <div className={styles.estadoHeader}>
+              <span>Estado</span>
+              </div>
+            </th>
             <th>Tiempo de Dosis</th>
             <th></th>
           </tr>
@@ -266,11 +240,14 @@ export default function BebederosPanel() {
 
         <tbody>
           {filtrados.map((b) => (
-            <tr key={b.id}>
+            <tr key={b.id}
+              onClick={() => handleRowClick(b.id)}
+              className={`${styles.rowClickable} ${selectedRowId === b.id ? styles.rowSelected : ""}`}>
               <td>{b.id}</td>
               <td>{b.nombre}</td>
               <td>{b.establecimientoNombre}</td>
 
+              {/* ESTADO  */}
               <td>
                 <label className={styles.switch}>
                   <input
@@ -282,10 +259,19 @@ export default function BebederosPanel() {
                 </label>
               </td>
 
-              <td>{b.tiempoDosis}</td>
-              <td>
+              
+              <td>{b.tiempoDosis ?? "-"}</td>
+
+              <td className={styles.actionsCell}>
                 <button className={styles.editBtn} onClick={() => handleEditClick(b.id)}>
                   Editar
+                </button>
+
+                <button
+                  className={styles.deleteBtn}
+                  onClick={() => handleDeleteClick(b.id, b.nombre)}
+                >
+                  Borrar
                 </button>
               </td>
             </tr>
@@ -301,6 +287,7 @@ export default function BebederosPanel() {
         </tbody>
       </table>
 
+      {/* MODAL EDITAR */}
       {editBebedero && (
         <div className={styles.modalOverlay} onClick={() => setEditBebedero(null)}>
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
@@ -308,14 +295,12 @@ export default function BebederosPanel() {
               ✕
             </button>
 
-            <BebederoForm
-              bebedero={editBebedero}
-              onSave={guardarCambios}
-            />
+            <EditarBebederoForm bebedero={editBebedero} onSave={guardarCambios} />
           </div>
         </div>
       )}
 
+      {/* MODAL CREAR */}
       {showCreateModal && (
         <div className={styles.modalOverlay} onClick={() => setShowCreateModal(false)}>
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
@@ -326,7 +311,7 @@ export default function BebederosPanel() {
             <NuevoBebederoForm
               onClose={() => {
                 setShowCreateModal(false);
-                loadBebederos(); // ✔ refresca la tabla
+                loadBebederos();
               }}
             />
           </div>

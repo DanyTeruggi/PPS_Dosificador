@@ -1,9 +1,10 @@
 export interface Bebedero {
   id: number;
   nombre: string;
-  latitud: number;
-  longitud: number;
-  establecimiento: number;
+  establecimiento?: {
+    id: number;
+    nombre: string;
+  };
   largoBebedero: number;
   anchoBebedero: number;
   profundidadBebedero: number;

@@ -15,8 +15,6 @@ export default function NuevoBebederoForm({ onClose }: Props) {
   const [form, setForm] = useState({
     establecimiento: "",
     nombre: "",
-    latitud: "",
-    longitud: "",
     largoBebedero: "",
     anchoBebedero: "",
     profundidadBebedero: "",
@@ -44,8 +42,6 @@ export default function NuevoBebederoForm({ onClose }: Props) {
           method: "POST",
           body: JSON.stringify({
             nombre: form.nombre,
-            latitud: Number(form.latitud),
-            longitud: Number(form.longitud),
             establecimiento: establecimientoId,
             largoBebedero: Number(form.largoBebedero),
             anchoBebedero: Number(form.anchoBebedero),
@@ -108,7 +104,7 @@ export default function NuevoBebederoForm({ onClose }: Props) {
         </div>
 
         {/* Latitud / Longitud */}
-        <div className={styles.row}>
+        {/* <div className={styles.row}>
           <div className={styles.group}>
             <label className={styles.label}>Latitud</label>
             <input
@@ -132,7 +128,7 @@ export default function NuevoBebederoForm({ onClose }: Props) {
               onChange={(e) => updateField("longitud", e.target.value)}
             />
           </div>
-        </div>
+        </div> */}
 
         {/* Largo / Ancho / Profundidad */}
         <div className={styles.row}>

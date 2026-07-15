@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
 import { useApi } from "../../utils/apiFetch";
-import { useAuth } from "../../context/AuthContext";
+//import { useAuth } from "../../context/AuthContext";
 import Button from "../Button/Button";
 import styles from "./UserForm.module.css";
 
@@ -32,7 +32,7 @@ interface FormData {
 
 export default function UserForm({ onClose }: UserFormProps) {
   const { apiFetch } = useApi();
-  const { user } = useAuth();
+  //const { user } = useAuth();
 
   const {
     register,
@@ -42,7 +42,7 @@ export default function UserForm({ onClose }: UserFormProps) {
   } = useForm<FormData>();
 
   const selectedRole = watch("role");
-  const isAdmin = user?.role === "admin";
+// const isAdmin = user?.role === "admin";
 
   const onSubmit = async (data: FormData) => {
     try {
@@ -97,27 +97,27 @@ export default function UserForm({ onClose }: UserFormProps) {
         return;
       }
 
-      // Admin 
-      if (data.role === "admin") {
-        const resAdmin = await apiFetch("/admin/usuarios", {
-          method: "POST",
-          body: JSON.stringify({
-            nombre: data.nombre,
-            email: data.email,
-            password: data.password,
-            role: "admin",
-          }),
-        });
+      // Admin TODO: falta implementar la ruta en el backend para crear administradores
+      // if (data.role === "admin") {
+      //   const resAdmin = await apiFetch("/admin/usuarios", {
+      //     method: "POST",
+      //     body: JSON.stringify({
+      //       nombre: data.nombre,
+      //       email: data.email,
+      //       password: data.password,
+      //       role: "admin",
+      //     }),
+      //   });
 
-        if (!resAdmin || !resAdmin.ok) {
-          alert("Error creando administrador");
-          return;
-        }
+      //   if (!resAdmin || !resAdmin.ok) {
+      //     alert("Error creando administrador");
+      //     return;
+      //   }
 
-        alert("Administrador creado con éxito");
-        onClose?.();
-        return;
-      }
+      //   alert("Administrador creado con éxito");
+      //   onClose?.();
+      //   return;
+      // }
 
     } catch (error) {
       console.error(error);
@@ -170,7 +170,7 @@ export default function UserForm({ onClose }: UserFormProps) {
           <select className={styles.input} {...register("role")}>
             <option value="cliente">Productor</option>
             <option value="veterinario">Veterinario</option>
-            {isAdmin && <option value="admin">Administrador</option>}
+            {/* {isAdmin && <option value="admin">Administrador</option>} */}
           </select>
         </div>
 

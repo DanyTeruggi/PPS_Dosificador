@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import styles from "./UsersPanel.module.css";
+import styles from "./../Style/PanelStyles.module.css";
 
 import { useApi } from "../../../utils/apiFetch";
 import { useAuth } from "../../../context/AuthContext";
