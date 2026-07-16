@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import styles from "./../Style/PanelStyles.module.css";
 import stylesDelete from "./../Style/EditarFormStyles.module.css";
-
+import toast from "react-hot-toast";
 
 import { useApi } from "../../../utils/apiFetch";
 import { useAuth } from "../../../context/AuthContext";
@@ -14,15 +14,13 @@ import type { Bebedero } from "../../../types/Bebedero";
 import type { Establecimiento } from "../../../types/Establecimiento";
 import EditarBebederoForm from "./EditaBebederoForm";
 
-/* ---------------------------------------------------------
- * Tipo local (igual que EstablecimientoPanel)
- * --------------------------------------------------------- */
+
 type BebederoRow = Bebedero & {
   establecimientoNombre: string;
 };
 
 /* ---------------------------------------------------------
- * Normalizadores (solo lo necesario)
+ * Normalizadores 
  * --------------------------------------------------------- */
 function normalizeBebederos(payload: unknown): Bebedero[] {
   // Caso A: ya es un array, lo devolvemos tal cual
@@ -92,7 +90,7 @@ export default function BebederosPanel() {
 
     const bebederosAdmin = normalizeBebederos(await bebRes.json());
     const establecimientosAdmin = normalizeEstablecimientos(await estRes.json());
-     
+    
 
     setBebederos(
       bebederosAdmin.map((b) => {
@@ -100,6 +98,9 @@ export default function BebederosPanel() {
         return {
           ...b, 
           establecimientoNombre: est?.nombre ?? "—",
+          coberturaObjetivo: b.cobertura_objetivo,
+          tiempoDosis: b.tiempoDosis,
+          ubicacion: b.ubicacion,
         };
       })
     );
@@ -110,7 +111,7 @@ export default function BebederosPanel() {
   }, [user]);
 
   /* ---------------------------------------------------------
-   * Filtros (igual que EstablecimientoPanel)
+   * Filtros 
    * --------------------------------------------------------- */
   const filtrados = bebederos.filter((b) => {
     if (!search) return true;
@@ -161,25 +162,48 @@ export default function BebederosPanel() {
     setDeleteConfirm({ id, nombre });
   }
 
+
+
   async function confirmDelete() {
-    if (!deleteConfirm) 
-      return;
+    if (!deleteConfirm) return;
 
-    const { id } = deleteConfirm;
+    const { id, nombre } = deleteConfirm;
 
-    const res = await apiFetch(`/api/v1/admin/bebederos/${id}`, {
-      method: "DELETE",
-    });
+    try {
+      const res = await apiFetch(`/api/v1/admin/bebederos/${id}`, {
+        method: "DELETE",
+      });
 
-    if (!res?.ok) {
-      alert("No se pudo eliminar el bebedero.");
-      return;
+      if (!res) {
+        toast.error("No se recibió respuesta del servidor.");
+        return;
+      }
+
+      if (!res.ok) {
+        if (res.status === 400 || res.status === 409) {
+          // CASO DE ERROR: el bebedero tiene datos asociados y no se puede eliminar(falta implementar en el backend)
+          toast.error("No se puede eliminar el bebedero porque tiene datos asociados.");
+        } else {
+          toast.error("No se pudo eliminar el bebedero.");
+        }
+        return;
+      }
+
+      // CASO DE ÉXITO
+      toast.success(`El bebedero "${nombre}" fue eliminado correctamente.`);
+
+      await loadBebederos();
+      setBebederos((actuales) => actuales.filter((b) => b.id !== id));
+      setDeleteConfirm(null);
+
+    } catch (err) {
+      toast.error("Error de conexión con el servidor.");
+      console.error(err);
     }
-
-    await loadBebederos();
-    setDeleteConfirm(null);
-    setBebederos((actuales) => actuales.filter((b) => b.id !== id));
   }
+
+
+
 
   function clearFilters() {
     setSearch("");
@@ -233,24 +257,27 @@ export default function BebederosPanel() {
             <th>ID</th>
             <th>Nombre</th>
             <th>Establecimiento</th>
+            <th>Ubicación</th>
             <th>  
               <div className={styles.estadoHeader}>
               <span>Estado</span>
               </div>
             </th>
             <th>Tiempo de Dosis</th>
+            <th>Cobertura min</th>
             <th></th>
           </tr>
         </thead>
 
         <tbody>
-          {filtrados.map((b) => (
+          {filtrados.map((b) => ( 
             <tr key={b.id}
               onClick={() => handleRowClick(b.id)}
               className={`${styles.rowClickable} ${selectedRowId === b.id ? styles.rowSelected : ""}`}>
               <td>{b.id}</td>
               <td>{b.nombre}</td>
               <td>{b.establecimientoNombre}</td>
+              <td>{b.ubicacion ?? "-"}</td>
 
               {/* ESTADO  */}
               <td>
@@ -265,7 +292,14 @@ export default function BebederosPanel() {
               </td>
 
               
-              <td>{b.tiempoDosis ?? "-"}</td>
+              <td style={{ paddingLeft: "40px" }}>{b.tiempoDosis ?? "-"}</td>
+              <td style={{ paddingLeft: "40px" }}>
+                {b.cobertura_objetivo !== null && b.cobertura_objetivo !== undefined
+                  ? `${b.cobertura_objetivo} %`
+                  : "-"}
+              </td>
+
+
 
               <td className={styles.actionsCell}>
                 <button 

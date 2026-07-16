@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import styles from "./../Style/PanelStyles.module.css";
 import stylesDelete from "./../Style/EditarFormStyles.module.css";
+import toast from "react-hot-toast";
+
 
 import { useApi } from "../../../utils/apiFetch";
 import { useAuth } from "../../../context/AuthContext";
@@ -222,6 +224,9 @@ export default function EstablecimientoPanel() {
     setEditEstablecimiento(data);
   }
 
+   /* ---------------------------------------------------------
+   * Borrar
+   * --------------------------------------------------------- */
   async function handleDeleteClick(id: number, nombre: string) {
     setDeleteConfirm({ id, nombre });
   }
@@ -229,28 +234,50 @@ export default function EstablecimientoPanel() {
   async function confirmDelete() {
     if (!deleteConfirm) return;
 
-    const { id } = deleteConfirm;
+    const { id, nombre } = deleteConfirm;
 
-    const res = await apiFetch(
-      `/api/v1/admin/establecimientos/${id}`,
-      { method: "DELETE" }
-    );
+    try {
+      const res = await apiFetch(
+        `/api/v1/admin/establecimientos/${id}`,
+        { method: "DELETE" }
+      );
 
-    if (!res?.ok) {
-      alert("No se pudo eliminar el establecimiento.");
-      return;
+      // Si la respuesta no existe (CORS, red, etc.)
+      if (!res) {
+        toast.error("Error: no se recibió respuesta del servidor.");
+        return;
+      }
+
+      // Si el backend devuelve error
+      if (!res.ok) {
+        if (res.status === 400 || res.status === 409) {
+          toast.error("No se puede eliminar el establecimiento porque tiene datos asociados.");
+        } else {
+          toast.error("No se pudo eliminar el establecimiento.");
+        }
+        return;
+      }
+
+      // ⭐ Caso de éxito
+      toast.success(`El establecimiento "${nombre}" fue eliminado correctamente.`);
+
+      // Refrescar lista
+      await loadEstablecimientos();
+
+      // Cerrar modal
+      setDeleteConfirm(null);
+
+      // Actualizar estado local
+      setEstablecimientos((actuales) =>
+        actuales.filter((establecimiento) => establecimiento.id !== id)
+      );
+
+    } catch (err) {
+      toast.error("Error de conexión con el servidor.");
+      console.error(err);
     }
-
-      // refrescar lista
-    loadEstablecimientos();
-
-     // cerrar modal
-    setDeleteConfirm(null);
-
-    setEstablecimientos((actuales) =>
-      actuales.filter((establecimiento) => establecimiento.id !== id)
-    );
   }
+
 
   function clearFilters() {
     setSearch("");

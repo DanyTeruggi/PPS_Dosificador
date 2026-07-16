@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import styles from "./../Style/EditarFormStyles.module.css";
 import Button from "../../Button/Button";
 import { useApi } from "../../../utils/apiFetch";
+import toast from "react-hot-toast";
 
 interface Props {
   onClose: () => void;
@@ -78,17 +79,28 @@ export default function NuevoEstablecimientoForm({ onClose }: Props) {
         }),
       });
 
-      if (!res || !res.ok) { 
-        alert("❌ Error creando establecimiento");
-        throw new Error("No se pudo crear el establecimiento");
+      // Si no hay respuesta (CORS, red, etc.)
+      if (!res) {
+        toast.error("Error: no se recibió respuesta del servidor.");
+        throw new Error("No se recibió respuesta del servidor.");
       }
 
-      alert("✅ Establecimiento creado con éxito");
-      
+      // Si el backend devuelve error
+      if (!res.ok) {
+        toast.error("No se pudo crear el establecimiento.");
+        throw new Error("No se pudo crear el establecimiento.");
+      }
+
+      // ⭐ Caso de éxito
+      const created = await res.json();
+      toast.success(`Establecimiento "${created.nombre}" creado con éxito.`);
+
       onClose();
+
     } catch (err) {
       console.error(err);
       setError("No se pudo crear el establecimiento. Revisá los datos.");
+      // El toast ya se mostró arriba
     } finally {
       setLoading(false);
     }

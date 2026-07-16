@@ -2,6 +2,7 @@ import { useState } from "react";
 import styles from "./../Style/EditarFormStyles.module.css";
 import Button from "../../Button/Button";
 import { useApi } from "../../../utils/apiFetch";
+import toast from "react-hot-toast";
 
 import type { Establecimiento } from "../../../types/Establecimiento";
 
@@ -39,28 +40,43 @@ export default function EditarEstablecimientoForm({ establecimiento, onClose, on
     try {
       const res = await apiFetch(
         `/api/v1/admin/establecimientos/${form.id}`,
-      {
-        method: "PATCH",
-        body: JSON.stringify({
-          nombre: form.nombre,
-          ubicacion: form.ubicacion,
-        }),
-      });
+        {
+          method: "PATCH",
+          body: JSON.stringify({
+            nombre: form.nombre,
+            ubicacion: form.ubicacion,
+          }),
+        }
+      );
 
-      if (!res || !res.ok) {
-        throw new Error("No se pudo actualizar el establecimiento");
+      // Si no hay respuesta (CORS, red, etc.)
+      if (!res) {
+        toast.error("Error: no se recibió respuesta del servidor.");
+        throw new Error("No se recibió respuesta del servidor.");
       }
 
+      // Si el backend devuelve error
+      if (!res.ok) {
+        toast.error("No se pudo actualizar el establecimiento.");
+        throw new Error("No se pudo actualizar el establecimiento.");
+      }
+
+      // ⭐ Caso de éxito
       const updated: Establecimiento = await res.json();
+      toast.success(`Establecimiento "${updated.nombre}" actualizado correctamente.`);
+
       await onSave(updated);
       onClose();
+
     } catch (err) {
       console.error(err);
       setError("No se pudo actualizar el establecimiento.");
+      // Ya mostramos toast arriba, no repetimos aquí
     } finally {
       setLoading(false);
     }
   }
+
 
   return (
     <form className={styles.form} onSubmit={handleSubmit}>

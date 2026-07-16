@@ -8,9 +8,10 @@ export interface Bebedero {
   largoBebedero: number;
   anchoBebedero: number;
   profundidadBebedero: number;
-  coberturaMinima: number;
+  cobertura_objetivo: number;
   tiempoDosis: number;
   capacidadTolva: number;
   estado: boolean;
   establecimiento_id: number; 
+  ubicacion: string;
 }

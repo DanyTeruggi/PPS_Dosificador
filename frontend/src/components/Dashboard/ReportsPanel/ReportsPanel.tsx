@@ -4,6 +4,8 @@ import styles from "./ReportsPanel.module.css";
 import { useApi } from "../../../utils/apiFetch";
 import { useAuth } from "../../../context/AuthContext";
 
+import ReportsGraficos from "./ReportsGraficos";
+
 type AdminSummary = {
   total_usuarios: number;
   total_usuarios_activos: number;
@@ -128,6 +130,7 @@ export default function ReportsPanel() {
         </div>
 
       </div>
+      <ReportsGraficos />
     </div>
   );
 }

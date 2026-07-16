@@ -21,7 +21,7 @@ export default function EditarBebederoForm({ bebedero, onClose, onSave }: Props)
     largoBebedero: bebedero.largoBebedero || "",
     anchoBebedero: bebedero.anchoBebedero || "",
     profundidadBebedero: bebedero.profundidadBebedero || "",
-    coberturaMinima: bebedero.coberturaMinima || "",
+    coberturaMinima: bebedero.cobertura_objetivo || "",
     tiempoDosis: bebedero.tiempoDosis || "",
     capacidadTolva: bebedero.capacidadTolva || "",
   });
@@ -43,7 +43,7 @@ export default function EditarBebederoForm({ bebedero, onClose, onSave }: Props)
           largoBebedero: Number(form.largoBebedero),
           anchoBebedero: Number(form.anchoBebedero),
           profundidadBebedero: Number(form.profundidadBebedero),
-          coberturaMinima: Number(form.coberturaMinima),
+          cobertura_objetivo: Number(form.coberturaMinima),
           tiempoDosis: Number(form.tiempoDosis),
           capacidadTolva: Number(form.capacidadTolva),
         }),

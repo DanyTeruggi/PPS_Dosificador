@@ -20,11 +20,15 @@ import NuevoUsuarioPage from "./pages/NuevoUsuarioPage";
 import LandingBebederosMobile from "./pages/LandingBebederosMobile";
 import LandingResumenEstablecimientoMobile from "./pages/LandingResumenEstablecimientoMobile";
 
+import { Toaster } from "react-hot-toast";
+
 export default function App() {
   
 
   return (
-    <AuthProvider>
+    <>
+      <Toaster position="top-center" />
+      <AuthProvider>
       <BrowserRouter>
         <Routes>
 
@@ -95,6 +99,7 @@ export default function App() {
 
         </Routes>
       </BrowserRouter>
-    </AuthProvider>
+      </AuthProvider>
+    </>
   );
 }
