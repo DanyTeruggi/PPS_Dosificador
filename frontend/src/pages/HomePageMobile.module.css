@@ -17,6 +17,8 @@
   height: 180px;
   object-fit: contain;
   margin-bottom: 30px;
+  border-radius: 50%; 
+  
 }
 
 /* Barra inferior de logos */

@@ -8,22 +8,29 @@
   color: #222;
 }
 
-/* TÍTULO DEL ESTABLECIMIENTO */
+/* Título centrado y responsive */
 .title {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  font-size: 22px;
+  white-space: nowrap;        /* evita que se corte en 2 líneas */
+  font-size: clamp(18px, 5vw, 26px); /* se agranda o achica según espacio */
   font-weight: 700;
-  margin: 0;
-  line-height: 1.2;
   text-align: center;
+  max-width: 70%;             /* evita que choque con los botones */
+  overflow: hidden;           /* evita desbordes */
+  text-overflow: ellipsis;    /* agrega "..." si es demasiado largo */
+  pointer-events: none;       /* no bloquea los botones */
+  
 }
 
 .sectionHeader {
   position: relative;               /* Permite centrar el título */
   display: flex;
   justify-content: space-between;   /* Botón izquierda / botón derecha */
+  align-items: center; /* importante */
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.18);
 }
 
 .backButtonRow {

@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 
 import Button from "../components/Button/Button";
 import Footer from "../components/Footer/Footer";
+import HeaderMobile from "../components/Header/HeaderMobile";
 import { useAuth } from "../context/AuthContext";
 import { useApi } from "../utils/apiFetch";
 import styles from "./LandingResumenEstablecimientoMobile.module.css";
@@ -211,6 +212,7 @@ export default function LandingResumenEstablecimientoMobile() {
   return (
     <>
       <div className={styles.container}>
+        <HeaderMobile />
         {loading && <p className={styles.loading}>Cargando resumen...</p>}
         {error && <p className={styles.error}>{error}</p>}
 
@@ -225,6 +227,12 @@ export default function LandingResumenEstablecimientoMobile() {
                 onClick={handleBackClick}
               />
               <h1 className={styles.title}>{establecimientoNombre}</h1>
+                <Button
+                label=""
+                variant="back"
+                fullWidth={false}
+                onClick={handleBackClick}
+              />
             </section>
 
             <section className={styles.historyList}>

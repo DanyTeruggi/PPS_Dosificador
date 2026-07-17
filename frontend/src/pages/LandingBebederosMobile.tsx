@@ -5,6 +5,7 @@ import styles from "./LandingBebederosMobile.module.css";
 import BebederoCard from "../components/BebederoCard/BebederoCard";
 import Button from "../components/Button/Button";
 import { useApi } from "../utils/apiFetch";
+import HeaderMobile from "../components/Header/HeaderMobile";
 import Footer from "../components/Footer/Footer";
 import { useAuth } from "../context/AuthContext";
 
@@ -105,9 +106,7 @@ export default function LandingBebederosMobile() {
     <>
       <div className={styles.container}>
 
-        
-          
-       
+        <HeaderMobile />
 
         {/* LOADING */}
         {loading && (

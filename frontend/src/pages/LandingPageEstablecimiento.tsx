@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import styles from "./LandingPageEstablecimiento.module.css";
 import Footer from "../components/Footer/Footer";
-
+import  HeaderMobile  from "../components/Header/HeaderMobile";
+import { useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useApi } from "../utils/apiFetch";
 
@@ -40,13 +41,18 @@ export default function LandingPageEstablecimiento() {
   const { user } = useAuth();
   const { apiFetch } = useApi();
   const role = user?.role ?? user?.rol;
-  const clienteIdParam = searchParams.get("clienteId");
+  // const clienteIdParam = searchParams.get("clienteId");
+  const location = useLocation();
+  const clienteIdState = location.state?.clienteId;
+  const clienteIdParam = clienteIdState ?? searchParams.get("clienteId");
+
 
   const [cliente, setCliente] = useState<ClienteMe | null>(null);
   const [nombreClienteVeterinario, setNombreClienteVeterinario] = useState<string | null>(null);
   const [establecimientosVet, setEstablecimientosVet] = useState<EstablecimientoResumen[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
 
   useEffect(() => {
     async function fetchData() {
@@ -120,16 +126,16 @@ export default function LandingPageEstablecimiento() {
     : cliente?.establecimientos ?? [];
   const subtitle = role === "veterinario"
     ? `Cliente: ${nombreClienteVeterinario ?? ""}`
-    : "Seleccioná un establecimiento para ver sus bebederos.";
+    : "Seleccioná un establecimiento";
 
   return (
     <div className={styles.container}>
-
+      <HeaderMobile />
       <header className={styles.header}>
   
         <div>
-          <h1 className={styles.title}>Hola {nombreUsuario}</h1>
-          <p className={styles.subtitle}>{subtitle}</p>
+          {/* <h1 className={styles.title}>Hola {nombreUsuario}</h1> */}
+          <p className={styles.title}>{subtitle}</p>
         </div>
       </header>
 

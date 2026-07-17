@@ -72,6 +72,8 @@
   color: white;
 }
 
+
+
 /* VARIANTE CON ÍCONO (back + dashboard) */
 .iconButton {
   width: 40px;
@@ -104,8 +106,8 @@
 .selected {
   padding: 10px 18px;
   border-radius: 8px;
+  border: 1px solid #cacaca;
   background: transparent;
-  border: none;
   cursor: pointer;
   font-weight: 500;
   color: #555;

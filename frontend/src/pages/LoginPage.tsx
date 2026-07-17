@@ -7,6 +7,7 @@ import Button from "../components/Button/Button";
 
 import styles from "./LoginPage.module.css";
 import Footer from "../components/Footer/Footer";
+import logoVet from "../assets/facVeterinaria.jpeg";
 
 
 export default function LoginPage() {
@@ -44,19 +45,25 @@ export default function LoginPage() {
 
   return (
     <main className={styles.container}>
-      <h1 className={styles.title}>Centro de Control Bacteriológico</h1>
+        <img
+        src={logoVet}
+        alt="Logo"
+        className={styles.logo}
+      />
+      <h1 className={styles.title}>Ingresa tus credenciales</h1>
 
       <LoginForm onLogin={handleLogin} />
-
-      <div className={styles.actions}>
-        <p>Si no tienes una cuenta, puedes registrarte:</p>
-        <Button
-          label="Nuevo Usuario"
-          variant="hero"
-          fullWidth={true}
-          onClick={handleNuevoUsuario}
-        />
-      </div>
+      
+        <div className={styles.actions}>
+          <p className={styles.title}>Registrarte aquí:</p>
+          <Button
+            label=""
+            variant="add"
+            fullWidth={true}
+            onClick={handleNuevoUsuario}
+          />
+        </div>
+      
       <Footer />
     </main>
   );

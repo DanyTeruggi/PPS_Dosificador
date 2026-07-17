@@ -1,14 +1,20 @@
+
+
 .container {
   min-height: 100vh;
   padding-bottom: 80px;
-
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-
   text-align: center;
+
+
+
 }
+
+
+
 
 .title {
   font-size: 24px;
@@ -19,4 +25,17 @@
 .actions {
   margin-top: 50px;
   padding: 10px 0;
+  display: flex;
+  align-items: center;   /* centra verticalmente */
+  gap: 12px;             /* espacio entre texto y botón */
+}
+
+
+.logo {
+  width: 160px;        /* o el tamaño que quieras */
+  height: 160px;       /* debe ser igual al width */
+  border-radius: 50%;  /* esto la hace circular */
+  object-fit: cover;   /* evita deformaciones */
+  margin-top: -80px; /* súbela */
+  margin-bottom: 20px; /* espacio debajo del logo */
 }

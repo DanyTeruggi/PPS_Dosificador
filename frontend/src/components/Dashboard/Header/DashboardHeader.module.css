@@ -4,6 +4,11 @@
   align-items: center;
   padding: 18px 28px;
   border-bottom: 1px solid #ddd;
+  background: linear-gradient(to bottom, #cfcfdf, #ececee);
+  box-shadow: inset 0 -2px 4px rgba(0,0,0,0.07),
+              inset 0 2px 4px rgba(0,0,0,0.07);
+
+
 }
 
 .userInfo {
@@ -33,7 +38,7 @@
 }
 
 .title {
-  font-size: 24px;
+  font-size: 36px;
   font-weight: 600;
   color: #333;
   margin-right: 40px;

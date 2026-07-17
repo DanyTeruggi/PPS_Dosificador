@@ -195,6 +195,7 @@ export default function EstablecimientoPanel() {
     loadEstablecimientos();
   }, [user]);
 
+  // FILTROS COMBINADOS
   const filtrados = establecimientos.filter((e) => {
     if (search === "") return true;
 
@@ -297,8 +298,10 @@ export default function EstablecimientoPanel() {
 
   return (
     <div className={styles.container}>
-
+      {/* BUSCADOR + CLEAR + FILTROS */}
       <div className={styles.searchRow}>
+
+         {/* Grupo: buscador + clear */}
         <div className={styles.searchGroup}>
           <input
             type="text"

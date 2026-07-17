@@ -26,7 +26,7 @@ export default function HomePageMobile() {
     };
   }, [navigate]);
 
-  console.log("HomePageMobile montado");
+ 
 
   return (
     <div className={`${styles.container} ${fadeOut ? styles.fadeOut : ""}`}>

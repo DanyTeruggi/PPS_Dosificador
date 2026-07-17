@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./LandingPageEstablecimiento.module.css";
 import Footer from "../components/Footer/Footer";
+import HeaderMobile from "../components/Header/HeaderMobile";
 
 import { useAuth } from "../context/AuthContext";
 import { useApi } from "../utils/apiFetch";
+import Button from "../components/Button/Button";
 
 type ClienteAsignado = {
   id: number;
@@ -60,25 +62,24 @@ export default function LandingPageClientes() {
 
   return (
     <div className={styles.container}>
-
+      <HeaderMobile />
       <header className={styles.header}>
-        {/* <button
-          type="button"
-          className={styles.backButton}
+       
+        {/* <Button
+          label="Volver"
+          variant="back"
           onClick={() => navigate("/home")}
-          aria-label="Volver"
         >
-          &lt;
-        </button> */}
+        </Button> */}
+
         <div>
-          <h1 className={styles.title}>Hola {nombreUsuario}</h1>
-          <p className={styles.subtitle}>Seleccioná un Cliente.</p>
+          {/* <h1 className={styles.title}>Hola {nombreUsuario}</h1> */}
+          <h2 className={styles.title}>Seleccione un cliente.</h2>
         </div>
       </header>
 
       <section className={styles.section}>
-        {/* <h2 className={styles.sectionTitle}>Clientes asociados</h2> */}
-
+      
         {loading && <p className={styles.message}>Cargando clientes...</p>}
         {error && <p className={styles.error}>{error}</p>}
 
@@ -94,7 +95,10 @@ export default function LandingPageClientes() {
               <button
                 type="button"
                 className={styles.establecimientoItem}
-                onClick={() => navigate(`/cliente/establecimientos?clienteId=${cliente.id}`)}
+                // onClick={() => navigate(`/cliente/establecimientos?clienteId=${cliente.id}`)}
+                onClick={() => navigate(`/cliente/establecimientos`, 
+                  { state: { clienteId: cliente.id } }
+                )}
               >
                 {cliente.razon_social}
               </button>
