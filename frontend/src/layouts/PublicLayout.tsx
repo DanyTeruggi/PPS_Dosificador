@@ -7,7 +7,7 @@ export default function PublicLayout() {
   const isDesktop = useIsDesktop();
   const { pathname } = useLocation();
 
-  // Welcome mobile y Login usan toda la pantalla y no necesitan navegacion inferior.
+  // En mobile, Welcome y Login usan toda la pantalla. Desktop conserva su Footer.
   const hideFooter = pathname === "/login"
     || (!isDesktop && (pathname === "/" || pathname === "/home-mobile"));
 

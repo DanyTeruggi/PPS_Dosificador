@@ -1,7 +1,10 @@
 .container {
+  width: 100%;
   max-width: 420px;
+  min-height: 100dvh;
+  box-sizing: border-box;
   margin: 0 auto;
-  padding: 20px;
+  padding: 20px 16px;
   text-align: center;
 }
 

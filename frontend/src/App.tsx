@@ -8,12 +8,12 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import LandingSelector from "./pages/LandingSelector";
 
 import SmartHomeRedirect from "./components/SmartHomeRedirect";
-import HomePageDesktop from "./pages/HomePageDesktop";
 
-import HomePageDashboard from "./pages/HomePageDashboard";
+import HomePageDashboard from "./pages/LandingDesktop/HomePageDashboard";
 import BebederosPanel from "./components/Dashboard/BebederosPanel/BebederosPanel";
-import NuevoUsuarioPage from "./pages/NuevoUsuarioPage";
+import NuevoUsuarioPage from "./pages/LandingMobile/NuevoUsuarioPage";
 
+import DesktopLoginPage from "./pages/LandingDesktop/DesktopLoginPage";
 import LandingBebederos from "./pages/LandingMobile/LandingBebederos";
 import LandingClientes from "./pages/LandingMobile/LandingClientes";
 import LandingEstablecimientos from "./pages/LandingMobile/LandingEstablecimientos";
@@ -49,11 +49,7 @@ export default function App() {
             {/* Ruta para nuevo usuario */}
             <Route path="/nuevo-usuario" element={<NuevoUsuarioPage />} />
 
-
-            {/* Home desktop y mobile (decididos por LandingSelector) */}
-            <Route path="/home-desktop" element={<HomePageDesktop />} />
-
-         
+            <Route path="/home-desktop" element={<DesktopLoginPage />} />
 
             <Route path="/home-mobile" element={<WelcomePage />} />
           

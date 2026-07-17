@@ -6,12 +6,13 @@ import dashboardIcon from "../../assets/dashboard.png";
 import addIcon from "../../assets/add.png";
 interface ButtonProps {
   label: string;
+  ariaLabel?: string;
   //onClick?: () => void;
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   type?: "button" | "submit";
   variant?: "primary" | "secondary" | "tertiary" |
             "hero" | "back" | "dashboard" | "selected"  | "selectedActive" | 
-            "danger" | "add";
+            "danger" | "add" | "close";
   fullWidth?: boolean;
 }
 
@@ -24,6 +25,7 @@ const iconMap: Record<string, string> = {
 
 export default function Button({
   label,
+  ariaLabel,
   onClick,
   type = "button",
   variant = "primary",
@@ -35,6 +37,7 @@ export default function Button({
     <button
       type={type}
       onClick={onClick}
+      aria-label={ariaLabel}
       className={`
     ${styles.button}
     ${styles[variant]}

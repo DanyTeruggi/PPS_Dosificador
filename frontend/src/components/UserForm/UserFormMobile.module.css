@@ -1,0 +1,87 @@
+.wrapper {
+  width: 100%;
+  box-sizing: border-box;
+  padding-bottom: calc(90px + env(safe-area-inset-bottom));
+}
+
+.form {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 20px 16px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 20px rgba(24, 31, 47, 0.14);
+}
+
+.title {
+  margin: 0 0 18px;
+  padding: 9px 10px;
+  border-radius: 12px;
+  background: #8a4fa3;
+  color: white;
+  font-size: clamp(22px, 8vw, 27px);
+  font-weight: 700;
+  text-align: center;
+}
+
+.subtitle {
+  max-width: 280px;
+  margin: 0 auto 22px;
+  color: #493052;
+  font-size: 15px;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.group {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  gap: 5px;
+  margin-bottom: 15px;
+}
+
+.label {
+  color: #352d3b;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: left;
+}
+
+.input {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid #87959c;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.86);
+  color: #20282c;
+  font: inherit;
+}
+
+.input:focus {
+  border-color: #8a4fa3;
+  outline: 3px solid rgba(138, 79, 163, 0.22);
+}
+
+.input::placeholder {
+  overflow: hidden;
+  color: #5d6569;
+  text-overflow: ellipsis;
+}
+
+.error {
+  margin: 4px 0 0;
+  color: #9c1228;
+  font-size: 13px;
+  text-align: left;
+}
+
+@media (max-width: 350px) {
+  .form {
+    padding-inline: 12px;
+  }
+}

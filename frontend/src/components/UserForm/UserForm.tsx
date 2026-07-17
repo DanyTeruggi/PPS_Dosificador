@@ -1,12 +1,14 @@
 import { useForm } from "react-hook-form";
 import { useApi } from "../../utils/apiFetch";
-//import { useAuth } from "../../context/AuthContext";
+
 import Button from "../Button/Button";
-import styles from "./../../components/Dashboard/Style/EditarFormStyles.module.css";
+import desktopStyles from "./UserFormDesktop.module.css";
+import mobileStyles from "./UserFormMobile.module.css";
 
 interface UserFormProps {
   onClose?: () => void;
   onCreated?: () => void;
+  variant?: "desktop" | "mobile";
 }
 
 interface FormData {
@@ -31,8 +33,14 @@ interface FormData {
   fotoPerfil?: FileList;
 }
 
-export default function UserForm({ onClose, onCreated  }: UserFormProps) {
+export default function UserForm({
+  onClose,
+  onCreated,
+  variant = "desktop",
+}: UserFormProps) {
   const { apiFetch } = useApi();
+  // La logica es compartida; solo cambia el modulo de estilos segun el contexto.
+  const styles = variant === "mobile" ? mobileStyles : desktopStyles;
   //const { user } = useAuth();
 
   const {
@@ -152,7 +160,7 @@ export default function UserForm({ onClose, onCreated  }: UserFormProps) {
 
         <div className={styles.group}>
           <label className={styles.label}>Clave Fiscal</label>
-          <input className={styles.input} {...register("cuit")} />
+          <input className={styles.input} placeholder="Ingresá tu CLAVE FISCAL sin guiones" {...register("cuit")} />
         </div>
 
         <div className={styles.group}>
@@ -175,7 +183,7 @@ export default function UserForm({ onClose, onCreated  }: UserFormProps) {
           <>
             <div className={styles.group}>
               <label className={styles.label}>Contacto Principal</label>
-              <input className={styles.input} {...register("contactoPrincipal")} />
+              <input className={styles.input} placeholder="Administrador/Encargado" {...register("contactoPrincipal")} />
             </div>
           </>
         )}
@@ -204,7 +212,12 @@ C               ontent-Type: multipart/form-data
           </>
         )}
 
-        <Button label="Enviar" type="submit" fullWidth={true} />
+        <Button
+          label="Enviar"
+          type="submit"
+          variant={variant === "mobile" ? "tertiary" : "primary"}
+          fullWidth={true}
+        />
       </form>
     </div>
   );

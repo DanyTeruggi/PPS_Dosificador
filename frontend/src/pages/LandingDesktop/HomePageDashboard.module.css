@@ -3,7 +3,7 @@
   flex-direction: column;
   height: 100vh;
   /* background: linear-gradient(to bottom, #e7e7f3, #ececee); */
-  background-image: url("../assets/fondoPanel.png");
+  background-image: url("../../assets/fondoPanel.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

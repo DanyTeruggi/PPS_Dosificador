@@ -1,6 +1,5 @@
 import { useIsDesktop } from "../hooks/useIsDesktop";
-import HomePageDesktop from "../pages/HomePageDesktop";
-// import LegacyHomePageMobile from "../pages/HomePageMobil";
+import DesktopLoginPage from "./LandingDesktop/DesktopLoginPage";
 import WelcomePage from "./LandingMobile/WelcomePage";
 import { useAuth } from "../context/AuthContext";
 import SmartHomeRedirect from "../components/SmartHomeRedirect";
@@ -12,7 +11,7 @@ export default function LandingSelector() {
 
   // Si NO hay token → mostrar la home pública, no el login directo
   if (!token) {
-    return isDesktop ? <HomePageDesktop /> : <WelcomePage />;
+    return isDesktop ? <DesktopLoginPage /> : <WelcomePage />;
   }
 
   // Si hay token → redirigir según rol
