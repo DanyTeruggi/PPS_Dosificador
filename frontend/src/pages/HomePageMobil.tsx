@@ -12,13 +12,12 @@ export default function HomePageMobile() {
 
   useEffect(() => {
     const fadeTimer = setTimeout(() => {
-      console.log("fadeOut activado");
       setFadeOut(true);
-    }, 2000);
+    }, 3000);
 
     const loginTimer = setTimeout(() => {
       navigate("/login", { replace: true });
-    }, 2600);
+    }, 3000);
 
     return () => {
       clearTimeout(fadeTimer);
@@ -31,7 +30,7 @@ export default function HomePageMobile() {
   return (
     <div className={`${styles.container} ${fadeOut ? styles.fadeOut : ""}`}>
       <h1>Bienvenido</h1>
-      <h2>Control Bacteriológico</h2>
+      <h2>Monitoreo Bacteriológico</h2>
 
       <img
         src={logoVEWTERINARIA}

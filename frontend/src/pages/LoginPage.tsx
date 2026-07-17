@@ -26,9 +26,9 @@ export default function LoginPage() {
     if (!ok) throw new Error("AUTH_FAILED");
 
     const user = JSON.parse(localStorage.getItem("user") || "{}");
-    console.log("USER-id:", user.id);
+    
 
-    if (user.role === "admin") { console.log("USER:", user);
+    if (user.role === "admin") { 
       navigate("/dashboard", { replace: true });
     } else if (user.role === "veterinario") {
       navigate("/veterinarios/clientes", { replace: true });

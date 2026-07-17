@@ -6,6 +6,7 @@ import  HeaderMobile  from "../components/Header/HeaderMobile";
 import { useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useApi } from "../utils/apiFetch";
+import Button from "../components/Button/Button";
 
 type EstablecimientoResumen = {
   id: number;
@@ -62,7 +63,7 @@ export default function LandingPageEstablecimiento() {
 
         if (role === "veterinario") {
           if (!clienteIdParam) {
-            setError("Seleccioná un cliente para ver sus establecimientos.");
+            setError("Seleccione un cliente para ver sus establecimientos.");
             return;
           }
 
@@ -118,26 +119,44 @@ export default function LandingPageEstablecimiento() {
     fetchData();
   }, [apiFetch, role, clienteIdParam]);
 
-  const nombreUsuario = role === "veterinario"
-    ? user?.nombre ?? "usuario"
-    : cliente?.usuario.nombre ?? user?.nombre ?? "usuario";
+
   const establecimientos = role === "veterinario"
     ? establecimientosVet
     : cliente?.establecimientos ?? [];
-  const subtitle = role === "veterinario"
-    ? `Cliente: ${nombreClienteVeterinario ?? ""}`
-    : "Seleccioná un establecimiento";
+
+  const title = role === "veterinario"
+    ? `${nombreClienteVeterinario ?? ""}`
+    : "Seleccione un establecimiento";
+
+      const handleBackClick = () => {
+    if (role === "cliente") {
+      window.location.assign("/cliente/establecimientos");
+      return;
+    }
+
+    window.location.assign("/veterinarios/clientes");
+  };
 
   return (
     <div className={styles.container}>
       <HeaderMobile />
-      <header className={styles.header}>
-  
-        <div>
-          {/* <h1 className={styles.title}>Hola {nombreUsuario}</h1> */}
-          <p className={styles.title}>{subtitle}</p>
-        </div>
-      </header>
+      <section className={styles.sectionHeader}>
+              
+              <Button
+                label=""
+                variant="back"
+                fullWidth={false}
+                onClick={handleBackClick}
+              />
+              <h1 className={styles.title}>{title}</h1>
+                <Button
+                label=""
+                variant="back"
+                fullWidth={false}
+                onClick={handleBackClick}
+              />
+            </section>
+    
 
       <section className={styles.section}>
         

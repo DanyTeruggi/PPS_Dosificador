@@ -35,11 +35,13 @@
   margin-top: 20px;
 
   border-radius: 12px;
-  background: rgba(236, 232, 232, 0.25);
 }
 
 /* Logos institucionales */
 .institutionLogo {
+  background: rgba(236, 232, 232, 0.25);
+  padding: 8px 12px;
+  border-radius: 8px;
   max-height: 40px;
   width: auto;
   object-fit: contain;

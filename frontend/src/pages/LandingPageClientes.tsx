@@ -4,7 +4,7 @@ import styles from "./LandingPageEstablecimiento.module.css";
 import Footer from "../components/Footer/Footer";
 import HeaderMobile from "../components/Header/HeaderMobile";
 
-import { useAuth } from "../context/AuthContext";
+
 import { useApi } from "../utils/apiFetch";
 import Button from "../components/Button/Button";
 
@@ -21,7 +21,6 @@ type VeterinarioMe = {
 
 export default function LandingPageClientes() {
   const navigate = useNavigate();
-  const { user } = useAuth();
   const { apiFetch } = useApi();
 
   const [clientes, setClientes] = useState<ClienteAsignado[]>([]);
@@ -58,25 +57,34 @@ export default function LandingPageClientes() {
     fetchClientesVeterinario();
   }, [apiFetch]);
 
-  const nombreUsuario = user?.nombre ?? "usuario";
+  
+
+        const handleBackClick = () => {
+    window.location.assign("/veterinarios/clientes");
+  };
 
   return (
     <div className={styles.container}>
       <HeaderMobile />
-      <header className={styles.header}>
-       
-        {/* <Button
-          label="Volver"
-          variant="back"
-          onClick={() => navigate("/home")}
-        >
-        </Button> */}
 
-        <div>
-          {/* <h1 className={styles.title}>Hola {nombreUsuario}</h1> */}
-          <h2 className={styles.title}>Seleccione un cliente.</h2>
-        </div>
-      </header>
+        <section className={styles.sectionHeader}>
+              
+              <Button
+                label=""
+                variant="back"
+                fullWidth={false}
+                onClick={handleBackClick}
+              />
+              <h1 className={styles.title}>Seleccione un cliente</h1>
+                <Button
+                label=""
+                variant="back"
+                fullWidth={false}
+                onClick={handleBackClick}
+              />
+            </section>
+
+
 
       <section className={styles.section}>
       
