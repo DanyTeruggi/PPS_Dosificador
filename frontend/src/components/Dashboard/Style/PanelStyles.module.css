@@ -22,13 +22,19 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 18px;
-      position: sticky;
-      top: -24px; /* compensa el padding superior del container */
-      z-index: 200;
-      background: #e8e8e9;
-      padding: 16px 20px;
-      border-bottom: 1px solid #ddd;
-      
+  position: sticky;
+  top: -24px;
+  /* compensa el padding superior del container */
+  z-index: 200;
+ 
+ background: #7fa4c8;
+  
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.06);
+
+  padding: 16px 20px;
+  border-bottom: 1px solid #ddd;
+
 }
 
 .searchGroup {
@@ -52,33 +58,80 @@
 .filterBtn {
   padding: 8px 14px;
   border-radius: 8px;
-  border: 1px solid #ddd;
-  background: #eee;
+  border: 1px solid #a1a0a0;
+  background: #f7f6f6;
   cursor: pointer;
 }
 
 .activeFilter {
-  background: #8a4fa3;
+  background: #4f6f6d;
   color: white;
-  border-color: #8a4fa3;
+  border-color:black;
 }
 
 .newUserBtn {
   padding: 8px 14px;
   border-radius: 8px;
-  background: #8a4fa3;
+  /* background: #8a4fa3; */
+  background: #1F5FB8;
   color: white;
   border: none;
   cursor: pointer;
 }
 
+.newUserBtn:hover {
+  background: #145DA0;
+}
+
+.filterBtn,
+.newUserBtn {
+  transition: transform 120ms ease;
+}
+
+.filterBtn:active,
+.newUserBtn:active {
+  transform: scale(0.96);
+}
+
 .clearBtn {
   padding: 8px 14px;
   border-radius: 8px;
-  background: #ddd;
-  border: none;
+  background: #f7f6f6;
+  border: 1px solid #a1a0a0;
   cursor: pointer;
   margin-left: 10px;
+  transition:
+    transform 120ms ease,
+    background-color 180ms ease,
+    border-color 180ms ease,
+    opacity 180ms ease;
+}
+
+.clearBtn:hover:not(:disabled) {
+  background: #ebe5ee;
+  border-color: #8a4fa3;
+}
+
+.clearBtn:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+.clearBtn:focus-visible {
+  outline: 3px solid rgba(138, 79, 163, 0.28);
+  outline-offset: 2px;
+}
+
+.clearBtn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .clearBtn,
+  .filterBtn,
+  .newUserBtn {
+    transition: none;
+  }
 }
 
 /* --------------------------------------------- */
@@ -96,7 +149,6 @@
   top: 48px; /* altura del searchRow */
   z-index: 90;
   background:  #e8e8e9;
-  
 }
 
 .table thead::before {
@@ -112,9 +164,8 @@
 .table th {
   text-align: left;
   padding: 12px;
-  color: #666;
   border-bottom: 1px solid #eee;
-  background:  #e8e8e9;
+  background:  #B7CBE0;
 }
 
 .table td {
@@ -163,34 +214,43 @@
   padding: 6px 12px;
   border-radius: 6px;
   background: #eee;
-  border: none;
+  border: 0.3px solid #afaeae;
   cursor: pointer;
+}
+
+.editBtn:hover {
+  background: #e0dede;
 }
 
 .deleteBtn {
   padding: 6px 12px;
   border-radius: 6px;
-  background: #b4535d;
-  color: white;
+  /* background: #d36969; */
+  color: rgb(60, 59, 59);
   border: none;
   cursor: pointer;
+  background:
+  radial-gradient(rgba(211, 105, 105, 0.25) 1px, transparent 1px);
+background-size: 4px 4px;
+
 }
 
 .deleteBtn:hover {
-  background: #a9444d;
+  background: #e65754cb;
+  color: white;
 }
 
 .saveBtn {
   padding: 6px 12px;
   border-radius: 6px;
-  background: #6a4df5;
-  color: white;
+  background: #042452;
+  color: #E8EEF5;
   border: none;
   cursor: pointer;
 }
 
 .saveBtn:hover {
-  background: #5938d8;
+   background: #145DA0;
 }
 
 .selectRol {
@@ -238,7 +298,7 @@
 }
 
 input:checked + .slider {
-  background-color: #8a4fa3;
+  background-color:  #145DA0;
 }
 
 input:checked + .slider:before {

@@ -1,7 +1,7 @@
 import styles from "./DashboardHeader.module.css";
-import { useAuth } from "../../../context/AuthContext";
+import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import Button from "../../Button/Button";
+import Button from "../Button/Button";
 
 export default function DashboardHeader() {
   const { user, logout } = useAuth();

@@ -1,0 +1,55 @@
+/* Estructura general de las paginas Landing para celular. */
+.page {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  color: #222;
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  /* El Footer es fijo: reservamos espacio para que no tape el contenido. */
+  padding-bottom: calc(90px + env(safe-area-inset-bottom));
+}
+
+/* Encabezado compartido. */
+.header {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) 44px;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.title {
+  margin: 0;
+  overflow: hidden;
+  font-size: clamp(18px, 5vw, 26px);
+  font-weight: 700;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Mensajes de carga y error. */
+.message {
+  margin: 34px 0 0;
+  font-size: 18px;
+  text-align: center;
+}
+
+.error {
+  color: #8f1122;
+}

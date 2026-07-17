@@ -1,0 +1,11 @@
+.emptyState {
+  padding: 24px 16px;
+  border-radius: 16px;
+  background: rgba(250, 248, 248, 0.6);
+  color: #4f4658;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.4;
+  text-align: center;
+}
+

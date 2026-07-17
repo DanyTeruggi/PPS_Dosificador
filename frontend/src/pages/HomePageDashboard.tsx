@@ -3,7 +3,7 @@ import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 import BebederosPanel from "../components/Dashboard/BebederosPanel/BebederosPanel";
-import DashboardHeader from "../components/Dashboard/Header/DashboardHeader";
+import DashboardHeader from "../components/Header/DashboardHeader";
 import DashboardNavTabs from "../components/Dashboard/NavTabs/DashboardNavTabs";
 import UsersPanel from "../components/Dashboard/UsersPanel/UsersPanel";
 import ReportsPanel from "../components/Dashboard/ReportsPanel/ReportsPanel";

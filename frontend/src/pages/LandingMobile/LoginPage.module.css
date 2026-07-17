@@ -1,0 +1,204 @@
+.page {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  overflow-y: auto;
+  box-sizing: border-box;
+  padding: clamp(16px, 4vh, 32px) 20px;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+.card {
+  width: min(100%, 390px);
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: clamp(24px, 7vw, 34px);
+  border-top: 4px solid #8a4fa3;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.48);
+  box-shadow: 0 18px 36px rgba(53, 34, 62, 0.16);
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 28px;
+  text-align: center;
+}
+
+.title {
+  margin: 0;
+  color: #0c090d;
+  font-size: clamp(25px, 7vw, 30px);
+  line-height: 1.2;
+}
+
+.subtitle {
+  margin: 0;
+  color: #594e60;
+  font-size: 14px;
+}
+
+.form,
+.field {
+  display: flex;
+  flex-direction: column;
+}
+
+.form {
+  gap: 16px;
+}
+
+.field {
+  gap: 6px;
+  text-align: left;
+}
+
+.label {
+  color: #302737;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.input,
+.passwordInput {
+  min-height: 44px;
+  padding: 10px 12px;
+  box-sizing: border-box;
+  border: 1px solid #817588;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.86);
+  color: #222;
+  font: inherit;
+}
+
+.input:focus,
+.passwordInput:focus {
+  border-color: #6a3dad;
+  outline: 3px solid rgba(106, 61, 173, 0.2);
+}
+
+.passwordWrapper {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.passwordInput {
+  border-radius: 8px 0 0 8px;
+}
+
+.showPassword {
+  width: 48px;
+  padding: 0;
+  border: 1px solid #8d8395;
+  border-left: 0;
+  border-radius: 0 8px 8px 0;
+  background: #e7ddeb;
+  color: #352d3b;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.passwordIcon {
+  display: block;
+  width: 22px;
+  height: 22px;
+  margin: auto;
+  object-fit: contain;
+}
+
+.showPassword:hover {
+  background: #e8ddec;
+}
+
+.showPassword:focus-visible,
+.submitButton:focus-visible,
+.registerButton:focus-visible {
+  outline: 3px solid rgba(106, 61, 173, 0.3);
+  outline-offset: 2px;
+}
+
+.error {
+  margin: 0;
+  padding: 12px;
+  border-radius: 8px;
+  background: rgba(143, 17, 34, 0.1);
+  color: #8f1122;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.submitButton,
+.registerButton {
+  min-height: 44px;
+  padding: 11px 18px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.submitButton {
+  border: 0;
+  background: #8a4fa3;
+  color: white;
+  box-shadow: 0 7px 16px rgba(91, 47, 111, 0.2);
+}
+
+.submitButton:hover:not(:disabled) {
+  background: #7a4591;
+}
+
+.submitButton:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+.register {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 22px;
+  text-align: center;
+}
+
+.registerText {
+  margin: 0;
+  color: #4f4658;
+  font-size: 14px;
+}
+
+.registerButton {
+  border: 1px solid #8a4fa3;
+  background: transparent;
+  color: #6a3dad;
+}
+
+.registerButton:hover {
+  background: rgba(138, 79, 163, 0.08);
+}
+
+@media (max-height: 650px) {
+  .page {
+    padding-block: 12px;
+  }
+
+  .card {
+    padding: 18px;
+  }
+
+  .header {
+    margin-bottom: 18px;
+  }
+
+  .form {
+    gap: 12px;
+  }
+
+  .register {
+    margin-top: 16px;
+  }
+}

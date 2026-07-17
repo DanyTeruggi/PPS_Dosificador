@@ -1,0 +1,156 @@
+.page {
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: clamp(18px, 4vh, 32px) 16px;
+  text-align: center;
+}
+
+.content {
+  width: min(100%, 380px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(20px, 3.5vh, 30px);
+  min-height: calc(100dvh - clamp(36px, 8vh, 64px));
+}
+
+.intro {
+  display: flex;
+  flex-direction: column;
+  margin-top: clamp(36px, 8vh, 70px);
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(30px, 10vw, 44px);
+  line-height: 1.1;
+}
+
+.subtitle {
+  max-width: 320px;
+  margin: 0;
+  color: #493052;
+  font-size: clamp(24px, 8vw, 28px);
+  font-weight: 650;
+  line-height: 1.3;
+}
+
+.projectIdentity {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(18px, 3vh, 26px);
+}
+
+.mainLogo {
+  width: clamp(130px, 42vw, 180px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.enterButton {
+  width: min(100%, 332px);
+  padding: 13px 20px;
+  border: 0;
+  border-radius: 10px;
+  background: #8a4fa3;
+  color: white;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(80, 42, 98, 0.22);
+  transition: background-color 150ms ease, transform 150ms ease;
+}
+
+.enterButton:hover {
+  background: #7a4591;
+}
+
+.enterButton:active {
+  transform: scale(0.98);
+}
+
+.enterButton:focus-visible {
+  outline: 3px solid rgba(106, 61, 173, 0.35);
+  outline-offset: 3px;
+}
+
+.actions {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(28px, 5vh, 44px);
+  margin-top: 30px;
+}
+
+.logosBar {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: nowrap;
+  gap: 10px;
+  padding-top: 0;
+  margin-top: 5px;
+}
+
+.institutionLogo {
+  width: calc((100% - 10px) / 2);
+  max-width: 150px;
+  height: 58px;
+  box-sizing: border-box;
+  padding: 7px 9px;
+  border-radius: 8px;
+  background: rgba(236, 232, 232, 0.3);
+  object-fit: contain;
+}
+
+.fadeOut {
+  animation: fadeOut 600ms ease forwards;
+  pointer-events: none;
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fadeOut {
+    animation: none;
+  }
+}
+
+@media (max-height: 650px) {
+  .page {
+    padding-block: 16px;
+  }
+
+  .content {
+    min-height: calc(100dvh - 32px);
+    gap: 14px;
+  }
+
+  .intro {
+    margin-top: 12px;
+  }
+
+  .mainLogo {
+    width: 110px;
+  }
+
+  .logosBar {
+    padding-top: 0;
+  }
+
+  .actions {
+    gap: 20px;
+  }
+}

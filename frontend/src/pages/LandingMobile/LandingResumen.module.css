@@ -1,0 +1,83 @@
+.historyList {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding-bottom: 16px;
+}
+
+.bebederoBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.bebederoTitle {
+  margin: 0;
+  overflow: hidden;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tableCard {
+  padding: 8px 4px 10px;
+  border: 3px solid #0f0b14;
+  border-radius: 20px;
+}
+
+.columnsHeader,
+.rowCard {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto 20px;
+  align-items: center;
+  gap: 4px;
+  padding: 0 8px;
+}
+
+.columnsHeader {
+  padding-bottom: 8px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.rowsWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rowCard {
+  font-size: 16px;
+}
+
+.cell {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.statusCell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.statusIcon,
+.noData {
+  width: 18px;
+  height: 18px;
+}
+
+.noData {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #6f647d;
+  border-radius: 50%;
+  color: #6f647d;
+  font-size: 9px;
+  font-weight: 700;
+}
+

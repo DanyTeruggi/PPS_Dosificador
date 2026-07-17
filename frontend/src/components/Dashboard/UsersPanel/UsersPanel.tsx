@@ -11,6 +11,15 @@ import AsignarVeterinarioModal from "./AsignarVeterinario";
 
 type UsuarioApi = {
   id: number;
+  email?: string | null;
+  nombre?: string | null;
+  telefono?: string | null;
+  rol?: string | null;
+  activo: boolean;
+};
+
+type UsuarioRow = {
+  id: number;
   email: string;
   nombre: string;
   telefono: string;
@@ -26,7 +35,7 @@ export default function UsersPanel() {
   const { apiFetch } = useApi();
   const { user } = useAuth();
 
-  const [usuarios, setUsuarios] = useState<UsuarioApi[]>([]);
+  const [usuarios, setUsuarios] = useState<UsuarioRow[]>([]);
   const [showModalNuevoUsuario, setShowModalNuevoUsuario] = useState(false);
 
   // Modal para asignar veterinario
@@ -40,7 +49,7 @@ export default function UsersPanel() {
   const [estadoFilter, setEstadoFilter] = useState<"todos" | "activo" | "inactivo">("todos");
 
   // EDICIÓN
-  const [editIndex, setEditIndex] = useState<number | null>(null);
+  const [editingUserId, setEditingUserId] = useState<number | null>(null);
   const [tempRol, setTempRol] = useState("");
 
   /**
@@ -65,13 +74,14 @@ export default function UsersPanel() {
 
     const perfiles = [...veterinarios, ...clientes];
 
-    const todosLosUsuarios: UsuarioApi[] = perfiles.map(
+    // Normaliza los campos opcionales para que la tabla siempre reciba textos.
+    const todosLosUsuarios: UsuarioRow[] = perfiles.map(
       ({ usuario }) => ({
         id: usuario.id,
-        email: usuario.email,
-        nombre: usuario.nombre,
-        telefono: usuario.telefono,
-        rol: usuario.rol,
+        email: usuario.email ?? "",
+        nombre: usuario.nombre ?? "",
+        telefono: usuario.telefono ?? "",
+        rol: usuario.rol ?? "",
         activo: usuario.activo,
       })
     );
@@ -97,19 +107,28 @@ export default function UsersPanel() {
     setEstadoFilter("todos");
   }
 
+  const hasActiveFilters =
+    search !== "" || rolFilter !== "todos" || estadoFilter !== "todos";
+
   // FILTROS COMBINADOS
   const usuariosFiltrados = usuarios
     .filter((u) => {
-      const texto = search.toLowerCase();
+      const texto = search.trim().toLowerCase();
+
+      // String evita errores si la API devuelve null, undefined o un numero.
+      const nombre = String(u.nombre ?? "").toLowerCase();
+      const email = String(u.email ?? "").toLowerCase();
+      const telefono = String(u.telefono ?? "").toLowerCase();
+
       return (
-        u.nombre.toLowerCase().includes(texto) ||
-        u.email.toLowerCase().includes(texto) ||
-        u.telefono.toLowerCase().includes(texto)
+        nombre.includes(texto) ||
+        email.includes(texto) ||
+        telefono.includes(texto)
       );
     })
     .filter((u) => {
       if (rolFilter === "todos") return true;
-      return u.rol.toLowerCase() === rolFilter;
+      return String(u.rol ?? "").toLowerCase() === rolFilter;
     })
     .filter((u) => {
       if (estadoFilter === "todos") return true;
@@ -119,8 +138,9 @@ export default function UsersPanel() {
   /**
    * Guardar cambios de rol
    */
-  async function guardarCambios(index: number) {
-    const usuario = usuarios[index];
+  async function guardarCambios(usuarioId: number) {
+    const usuario = usuarios.find((item) => item.id === usuarioId);
+    if (!usuario) return;
 
     const res = await apiFetch(`/api/v1/admin/usuarios/${usuario.id}/rol`, {
       method: "PUT",
@@ -132,17 +152,22 @@ export default function UsersPanel() {
       return;
     }
 
-    const nuevos = [...usuarios];
-    nuevos[index].rol = tempRol;
-    setUsuarios(nuevos);
-    setEditIndex(null);
+    // Actualiza por ID para no depender de la posicion de la lista filtrada.
+    setUsuarios((actuales) =>
+      actuales.map((item) =>
+        item.id === usuarioId ? { ...item, rol: tempRol } : item
+      )
+    );
+    setEditingUserId(null);
   }
 
   /**
    * Activar / desactivar usuario
    */
-  async function toggleEstadoUsuario(index: number) {
-    const usuario = usuarios[index];
+  async function toggleEstadoUsuario(usuarioId: number) {
+    const usuario = usuarios.find((item) => item.id === usuarioId);
+    if (!usuario) return;
+
     const nuevoEstado = !usuario.activo;
 
     const res = await apiFetch(`/api/v1/admin/usuarios/${usuario.id}/estado`, {
@@ -155,9 +180,12 @@ export default function UsersPanel() {
       return;
     }
 
-    const nuevos = [...usuarios];
-    nuevos[index].activo = nuevoEstado;
-    setUsuarios(nuevos);
+    // Actualiza por ID porque el indice cambia cuando se aplica un filtro.
+    setUsuarios((actuales) =>
+      actuales.map((item) =>
+        item.id === usuarioId ? { ...item, activo: nuevoEstado } : item
+      )
+    );
   }
 
   return (
@@ -176,7 +204,12 @@ export default function UsersPanel() {
             onChange={(e) => setSearch(e.target.value)}
           />
 
-          <button className={styles.clearBtn} onClick={clearFilters}>
+          <button
+            type="button"
+            className={styles.clearBtn}
+            onClick={clearFilters}
+            disabled={!hasActiveFilters}
+          >
             Limpiar filtros
           </button>
         </div>
@@ -228,8 +261,8 @@ export default function UsersPanel() {
         </thead>
 
         <tbody>
-          {usuariosFiltrados.map((u, index) => {
-            const isEditing = editIndex === index;
+          {usuariosFiltrados.map((u) => {
+            const isEditing = editingUserId === u.id;
 
             return (
               <tr
@@ -265,7 +298,7 @@ export default function UsersPanel() {
                     <input
                       type="checkbox"
                       checked={u.activo}
-                      onChange={() => toggleEstadoUsuario(index)}
+                      onChange={() => toggleEstadoUsuario(u.id)}
                     />
                     <span className={styles.slider}></span>
                   </label>
@@ -273,7 +306,7 @@ export default function UsersPanel() {
 
                 <td>
                   {isEditing ? (
-                    <button className={styles.saveBtn} onClick={() => guardarCambios(index)}>
+                    <button className={styles.saveBtn} onClick={() => guardarCambios(u.id)}>
                       Guardar
                     </button>
                   ) : (
@@ -281,7 +314,7 @@ export default function UsersPanel() {
                       className={styles.editBtn}
                       onClick={(e) => {
                         e.stopPropagation();
-                        setEditIndex(index);
+                        setEditingUserId(u.id);
                         setTempRol(u.rol);
                       }}
                     >

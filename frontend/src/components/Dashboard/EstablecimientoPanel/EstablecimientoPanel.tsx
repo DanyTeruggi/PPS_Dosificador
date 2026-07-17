@@ -311,7 +311,12 @@ export default function EstablecimientoPanel() {
             onChange={(e) => setSearch(e.target.value)}
           />
 
-          <button className={styles.clearBtn} onClick={clearFilters}>
+          <button
+            type="button"
+            className={styles.clearBtn}
+            onClick={clearFilters}
+            disabled={search === ""}
+          >
             Limpiar filtros
           </button>
         </div>

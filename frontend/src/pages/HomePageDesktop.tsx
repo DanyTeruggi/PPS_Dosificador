@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import LoginForm from "../components/LoginForm/LoginForm";
 import Button from "../components/Button/Button";
-//import { useIsDesktop } from "../hooks/useIsDesktop";
+
 import { useAuth } from "../context/AuthContext";
 
 import styles from "./HomePageDesktop.module.css";

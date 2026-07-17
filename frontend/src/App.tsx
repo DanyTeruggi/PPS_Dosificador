@@ -6,19 +6,20 @@ import PrivateLayout from "./layouts/PrivateLayout";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 import LandingSelector from "./pages/LandingSelector";
-import LoginPage from "./pages/LoginPage";
 
 import SmartHomeRedirect from "./components/SmartHomeRedirect";
 import HomePageDesktop from "./pages/HomePageDesktop";
-import HomePageMobile from "./pages/HomePageMobil";
 
 import HomePageDashboard from "./pages/HomePageDashboard";
 import BebederosPanel from "./components/Dashboard/BebederosPanel/BebederosPanel";
-import LandingPageEstablecimiento from "./pages/LandingPageEstablecimiento";
-import LandingPageClientes from "./pages/LandingPageClientes";
 import NuevoUsuarioPage from "./pages/NuevoUsuarioPage";
-import LandingBebederosMobile from "./pages/LandingBebederosMobile";
-import LandingResumenEstablecimientoMobile from "./pages/LandingResumenEstablecimientoMobile";
+
+import LandingBebederos from "./pages/LandingMobile/LandingBebederos";
+import LandingClientes from "./pages/LandingMobile/LandingClientes";
+import LandingEstablecimientos from "./pages/LandingMobile/LandingEstablecimientos";
+import LoginPage from "./pages/LandingMobile/LoginPage";
+import LandingResumen from "./pages/LandingMobile/LandingResumen";
+import WelcomePage from "./pages/LandingMobile/WelcomePage";
 
 import { Toaster } from "react-hot-toast";
 
@@ -38,7 +39,8 @@ export default function App() {
             {/* Landing pública */}
             <Route path="/" element={<LandingSelector />} />
 
-            {/* Login */}
+
+            {/* Nuevo login mobile. */}
             <Route path="/login" element={<LoginPage />} />
 
             {/* Ruta que decide home según rol */}
@@ -50,7 +52,11 @@ export default function App() {
 
             {/* Home desktop y mobile (decididos por LandingSelector) */}
             <Route path="/home-desktop" element={<HomePageDesktop />} />
-            <Route path="/home-mobile" element={<HomePageMobile />} />
+
+         
+
+            <Route path="/home-mobile" element={<WelcomePage />} />
+          
           </Route>
 
           {/* RUTAS PRIVADAS */}
@@ -87,13 +93,11 @@ export default function App() {
             />
             
             <Route path="/bebederos" element={<BebederosPanel />} />
-
-            <Route path="/veterinarios/clientes" element={<LandingPageClientes />} />
-            
-            <Route path="/cliente/establecimientos" element={<LandingPageEstablecimiento />} />
-            
-            <Route path="/establecimiento/:id/bebederos" element={<LandingBebederosMobile />} />
-            <Route path="/establecimiento/:id/resumen" element={<LandingResumenEstablecimientoMobile />} />
+    
+            <Route path="/veterinarios/clientes" element={<LandingClientes />} />
+            <Route path="/cliente/establecimientos" element={<LandingEstablecimientos />} />
+            <Route path="/establecimiento/:id/bebederos" element={<LandingBebederos />} />
+            <Route path="/establecimiento/:id/resumen" element={<LandingResumen />} />
 
           </Route>
 
