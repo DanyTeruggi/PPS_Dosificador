@@ -64,7 +64,7 @@
 }
 
 .activeFilter {
-  background: #4f6f6d;
+  background: #145DA0;
   color: white;
   border-color:black;
 }
@@ -378,7 +378,8 @@ input:checked + .slider:before {
 }
 
 .card {
-  background: #6e56272f;
+  background: #eef3f8;
+  border: 1px solid #d5dee8;
   border-radius: 14px;
   padding: 20px;
   font-size: 18px;

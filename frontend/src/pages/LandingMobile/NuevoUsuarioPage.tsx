@@ -13,6 +13,7 @@ export default function NuevoUsuarioPage() {
     <main className={styles.container}>
 
       <UserForm
+        mode="self-register"
         variant="mobile"
         onClose={() => navigate("/login")}
       />

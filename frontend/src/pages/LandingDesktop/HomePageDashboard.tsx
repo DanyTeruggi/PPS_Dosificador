@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../context/useAuth";
 
 import BebederosPanel from "../../components/Dashboard/BebederosPanel/BebederosPanel";
 import DashboardHeader from "../../components/Header/DashboardHeader";
@@ -11,32 +11,34 @@ import ReportsPanel from "../../components/Dashboard/ReportsPanel/ReportsPanel";
 import styles from "./HomePageDashboard.module.css";
 import EstablecimientoPanel from "../../components/Dashboard/EstablecimientoPanel/EstablecimientoPanel";
 
+function getTabFromPath(pathname: string) {
+  if (pathname.includes("/establecimientos")) return "establecimientos";
+  if (pathname.includes("/reportes")) return "reportes";
+  if (pathname.includes("/dispositivos")) return "dispositivos";
+  return "usuarios";
+}
+
 export default function HomePageDashboard() {
   const { user } = useAuth();
   const location = useLocation();
   const role = user?.role;
 
+  const [activeTab, setActiveTab] = useState(() =>
+    getTabFromPath(location.pathname),
+  );
+
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      setActiveTab(getTabFromPath(location.pathname));
+    }, 0);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [location.pathname]);
+
   // Hardening extra: este componente solo se renderiza para admin.
   if (role !== "admin") {
     return <Navigate to="/home" replace />;
   }
-
-  const getTabFromPath = () => {
-    if (location.pathname.includes("/establecimientos")) return "establecimientos";
-    if (location.pathname.includes("/reportes")) return "reportes";
-    if (location.pathname.includes("/dispositivos")) return "dispositivos";
-    if (location.pathname.includes("/usuarios")) return "usuarios";
-
-    return "usuarios";
-  };
-
-  const getInitialTab = () => getTabFromPath();
-
-  const [activeTab, setActiveTab] = useState(getInitialTab);
-
-  useEffect(() => {
-    setActiveTab(getTabFromPath());
-  }, [location.pathname, user]);
 
   return (
     <div className={styles.container}>

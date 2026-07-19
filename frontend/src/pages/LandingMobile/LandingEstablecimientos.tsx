@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 import EmptyState from "../../components/EmptyState/EmptyState";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../context/useAuth";
 import { useApi } from "../../utils/apiFetch";
 import LandingHeader from "./LandingHeader";
 import LandingMobileLayout from "./LandingMobileLayout";
@@ -109,4 +109,3 @@ export default function LandingEstablecimientos() {
     </LandingMobileLayout>
   );
 }
-

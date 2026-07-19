@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/useAuth";
 
 export function useApi() {
   const { token, logout } = useAuth();
@@ -19,18 +19,22 @@ export function useApi() {
       ? `${normalizedBase}/${normalizedPath}`
       : `${normalizedBase}/${normalizedPrefix}/${normalizedPath}`;
 
-    const headers = {
-      ...options.headers,
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json"
-    };
+    const headers = new Headers(options.headers);
+
+    if (token) {
+      headers.set("Authorization", `Bearer ${token}`);
+    }
+
+    if (!headers.has("Content-Type")) {
+      headers.set("Content-Type", "application/json");
+    }
 
     const response = await fetch(url, {
       ...options,
       headers
     });
 
-    if (response.status === 401) {
+    if (response.status === 401 && token) {
       console.warn("Token expirado o inválido. Cerrando sesión...");
       logout();
       window.location.href = "/";

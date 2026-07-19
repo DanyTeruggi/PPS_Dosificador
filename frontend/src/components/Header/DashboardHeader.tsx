@@ -1,5 +1,5 @@
 import styles from "./DashboardHeader.module.css";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../context/useAuth";
 import { useNavigate } from "react-router-dom";
 import Button from "../Button/Button";
 

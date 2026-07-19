@@ -1,5 +1,14 @@
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
+import toast from "react-hot-toast";
 import { useApi } from "../../utils/apiFetch";
+import { getApiErrorMessage } from "../../utils/apiError";
+import type {
+  AdminCreateRequest,
+  ClienteCreateRequest,
+  ClienteRegisterRequest,
+  VeterinarioCreateRequest,
+  VeterinarioRegisterRequest,
+} from "../../types/ApiContracts";
 
 import Button from "../Button/Button";
 import desktopStyles from "./UserFormDesktop.module.css";
@@ -9,12 +18,15 @@ interface UserFormProps {
   onClose?: () => void;
   onCreated?: () => void;
   variant?: "desktop" | "mobile";
+  mode: "self-register" | "admin-create";
 }
 
 interface FormData {
   nombre: string;
   email: string;
   password: string;
+  telefono: string;
+  clave_fiscal: string;
   role: "admin" | "veterinario" | "cliente";
 
   // Cliente
@@ -22,13 +34,10 @@ interface FormData {
    *Al momento de crear un cliente, debe estar activo el veterinario al que se lo asocia.
    * por deafault, se asocia al primer veterinario con id=1.
    */
-  cuit?: string;
-  telefonoCliente?: string;
-  contactoPrincipal?: string;
+  razon_social: string;
 
   // Veterinario
   especialidad?: string;
-  telefonoVet?: string;
   ubicacionVet?: string;
   fotoPerfil?: FileList;
 }
@@ -37,6 +46,7 @@ export default function UserForm({
   onClose,
   onCreated,
   variant = "desktop",
+  mode,
 }: UserFormProps) {
   const { apiFetch } = useApi();
   // La logica es compartida; solo cambia el modulo de estilos segun el contexto.
@@ -46,81 +56,130 @@ export default function UserForm({
   const {
     register,
     handleSubmit,
-    watch,
+    control,
     formState: { errors },
-  } = useForm<FormData>();
+  } = useForm<FormData>({
+    defaultValues: { role: "cliente" },
+    shouldUnregister: true,
+  });
 
-  const selectedRole = watch("role");
-// const isAdmin = user?.role === "admin";
+  const selectedRole = useWatch({ control, name: "role" });
+
+  const handleCreationResponse = async (
+    response: Response | undefined,
+    successMessage: string,
+    fallbackError: string,
+  ) => {
+    if (!response?.ok) {
+      const message = response
+        ? await getApiErrorMessage(response, fallbackError)
+        : "No se recibió respuesta del servidor.";
+      toast.error(message);
+      return false;
+    }
+
+    toast.success(successMessage);
+    onClose?.();
+    onCreated?.();
+    return true;
+  };
 
   const onSubmit = async (data: FormData) => {
     try {
-      // Veterinario
-      if (data.role === "veterinario") {
-        
-        const resVet = await apiFetch("/admin/veterinarios", {
+      if (data.role === "admin" && mode === "admin-create") {
+        const payload: AdminCreateRequest = {
+          nombre: data.nombre,
+          email: data.email,
+          password: data.password,
+        };
+        const response = await apiFetch("/admin/administradores", {
           method: "POST",
-          body: JSON.stringify({
-            nombre: data.nombre,
-            email: data.email,
-            password: data.password,
-            especialidad: data.especialidad ?? null,
-            telefono: data.telefonoVet ?? null,
-            ubicacion: data.ubicacionVet ?? null,
-            //fotoPerfil: data.fotoPerfil ?? null,
-          }),
+          body: JSON.stringify(payload),
         });
 
-        if (!resVet || !resVet.ok) {
-          alert("Error creando veterinario");
-          return;
-        }
-
-        alert("Veterinario creado con éxito");
-        onClose?.();
-        onCreated?.();
+        await handleCreationResponse(
+          response,
+          "Administrador creado con éxito.",
+          "No se pudo crear el administrador.",
+        );
         return;
       }
 
-      // Cliente
-      if (data.role === "cliente") {
-        const resCliente = await apiFetch("/admin/clientes", {
+      if (data.role === "veterinario") {
+        const basePayload: VeterinarioCreateRequest = {
+          nombre: data.nombre,
+          email: data.email,
+          password: data.password,
+          clave_fiscal: data.clave_fiscal,
+          especialidad: data.especialidad || null,
+          telefono: data.telefono,
+          ubicacion: data.ubicacionVet || null,
+        };
+        const payload: VeterinarioCreateRequest | VeterinarioRegisterRequest =
+          mode === "self-register"
+            ? { ...basePayload, rol: "veterinario" }
+            : basePayload;
+        const endpoint =
+          mode === "self-register" ? "/auth/register" : "/admin/veterinarios";
+        const resVet = await apiFetch(endpoint, {
           method: "POST",
-          body: JSON.stringify({
-            nombre: data.nombre,
-            email: data.email,
-            password: data.password,
-            cuit: data.cuit,
-            telefono: data.telefonoCliente ?? null,
-            contacto_principal: data.contactoPrincipal ?? null,
-            veterinario_id: 1,
-          }),
+          body: JSON.stringify(payload),
         });
 
-        if (!resCliente || !resCliente.ok) {
-          alert("Error creando cliente");
-          return;
-        }
+        await handleCreationResponse(
+          resVet,
+          "Veterinario creado con éxito.",
+          "No se pudo crear el veterinario.",
+        );
+        return;
+      }
 
-        alert("Cliente creado con éxito");
-        onClose?.();
-        onCreated?.();
+      if (data.role === "cliente") {
+        const basePayload: ClienteCreateRequest = {
+          nombre: data.nombre,
+          email: data.email,
+          password: data.password,
+          clave_fiscal: data.clave_fiscal,
+          telefono: data.telefono,
+          razon_social: data.razon_social,
+          veterinario_id: 1,
+        };
+        const payload: ClienteCreateRequest | ClienteRegisterRequest =
+          mode === "self-register"
+            ? { ...basePayload, rol: "cliente" }
+            : basePayload;
+        const endpoint =
+          mode === "self-register" ? "/auth/register" : "/admin/clientes";
+        const resCliente = await apiFetch(endpoint, {
+          method: "POST",
+          body: JSON.stringify(payload),
+        });
+
+        await handleCreationResponse(
+          resCliente,
+          "Cliente creado con éxito.",
+          "No se pudo crear el cliente.",
+        );
         return;
       }
 
 
     } catch (error) {
       console.error(error);
-      alert("Error de red");
+      toast.error("Error de conexión con el servidor.");
     }
   };
 
   return (
     <div className={styles.wrapper}>
       <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
-        <h2 className={styles.title}>Nuevo Usuario</h2>
+        <h2 className={styles.title}>
+          {mode === "self-register" ? "Crear cuenta" : "Nuevo Usuario"}
+        </h2>
         <p className={styles.subtitle}>
-          Completá los datos para registrar un nuevo usuario.
+          {mode === "self-register"
+            ? "Completá tus datos para registrarte."
+            : "Completá los datos para registrar un nuevo usuario."}
         </p>
 
         {/* Email */}
@@ -158,15 +217,35 @@ export default function UserForm({
           <input className={styles.input} placeholder="Apellido, Nombre" {...register("nombre", { required: true })} />
         </div>
 
-        <div className={styles.group}>
+        {selectedRole !== "admin" && <div className={styles.group}>
           <label className={styles.label}>Clave Fiscal</label>
-          <input className={styles.input} placeholder="Ingresá tu CLAVE FISCAL sin guiones" {...register("cuit")} />
-        </div>
+          <input
+            className={styles.input}
+            type="text"
+            inputMode="numeric"
+            placeholder="Ingresá la clave fiscal sin guiones"
+            {...register("clave_fiscal", {
+              required: "La clave fiscal es obligatoria",
+            })}
+          />
+          {errors.clave_fiscal && (
+            <p className={styles.error}>{errors.clave_fiscal.message}</p>
+          )}
+        </div>}
 
-        <div className={styles.group}>
+        {selectedRole !== "admin" && <div className={styles.group}>
           <label className={styles.label}>Teléfono</label>
-          <input className={styles.input} {...register("telefonoCliente")} />
-        </div>
+          <input
+            className={styles.input}
+            type="tel"
+            {...register("telefono", {
+              required: "El teléfono es obligatorio",
+            })}
+          />
+          {errors.telefono && (
+            <p className={styles.error}>{errors.telefono.message}</p>
+          )}
+        </div>}
 
         {/* Rol dinámico */}
         <div className={styles.group}>
@@ -174,7 +253,7 @@ export default function UserForm({
           <select className={styles.input} {...register("role")}>
             <option value="cliente">Productor</option>
             <option value="veterinario">Veterinario</option>
-            {/* {isAdmin && <option value="admin">Administrador</option>} */}
+            {mode === "admin-create" && <option value="admin">Administrador</option>}
           </select>
         </div>
 
@@ -182,9 +261,18 @@ export default function UserForm({
         {selectedRole === "cliente" && (
           <>
             <div className={styles.group}>
-              <label className={styles.label}>Contacto Principal</label>
-              <input className={styles.input} placeholder="Administrador/Encargado" {...register("contactoPrincipal")} />
+              <label className={styles.label}>Razón social</label>
+              <input
+                className={styles.input}
+                {...register("razon_social", {
+                  required: "La razón social es obligatoria",
+                })}
+              />
+              {errors.razon_social && (
+                <p className={styles.error}>{errors.razon_social.message}</p>
+              )}
             </div>
+
           </>
         )}
 

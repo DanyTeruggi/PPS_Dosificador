@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import hidePasswordIcon from "../../assets/esconder.png";
 import showPasswordIcon from "../../assets/mostrar.png";
 import Button from "../../components/Button/Button";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../context/useAuth";
 import styles from "./DesktopLoginPage.module.css";
 
 /** Nueva pantalla de acceso exclusiva para administradores. */

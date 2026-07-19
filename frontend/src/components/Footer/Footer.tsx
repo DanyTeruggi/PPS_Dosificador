@@ -1,7 +1,7 @@
 import { BsHouse, BsPeopleFill, BsXCircle } from "react-icons/bs";
 import styles from "./Footer.module.css";
 
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../context/useAuth";
 import { useNavigate } from "react-router-dom";
 
 export default function Footer() {

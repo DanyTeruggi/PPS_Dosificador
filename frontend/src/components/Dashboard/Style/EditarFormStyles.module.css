@@ -99,24 +99,188 @@
 }
 
 /* estilos del dropdown */
-.dropdown {
-  position: absolute;
+.dropdownPortal {
+  position: fixed;
   background: white;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  width: 100%;
-  max-height: 180px;
+  border: 1px solid #aeb8c4;
+  border-radius: 10px;
+  max-height: 240px;
   overflow-y: auto;
-  margin-top: 4px;
-  z-index: 999;
+  z-index: 2000;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.2);
+}
+
+.roleHighlight {
+  display: inline-block;
+  margin: 0 3px 0 1px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #e8f1ff;
+  color: #174f9e;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 7px;
+  color: #333;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
 }
 
 .dropdownItem {
-  padding: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 0;
+  border-bottom: 1px solid #edf0f3;
+  background: white;
+  color: #1f2937;
   cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  text-align: left;
   transition: background 0.2s ease;
 }
 
-.dropdownItem:hover {
-  background: #f0f0f0;
+.dropdownItem:last-child {
+  border-bottom: 0;
+}
+
+.dropdownItem span {
+  color: #5f6b7a;
+  font-size: 13px;
+}
+
+.dropdownItem:hover,
+.dropdownItem:focus-visible {
+  background: #eef5ff;
+  outline: none;
+}
+
+.dropdownEmpty {
+  margin: 0;
+  padding: 14px 12px;
+  color: #5f6b7a;
+  font-size: 14px;
+}
+
+.selectedClient {
+  margin-top: 8px;
+  padding: 9px 11px;
+  border: 1px solid #8eadd0;
+  border-radius: 8px;
+  background: #eef5ff;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.selectedClient span {
+  color: #4f5f72;
+  font-size: 13px;
+}
+
+.selectedClientHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.selectedClientHeader button {
+  border: 0;
+  padding: 3px 6px;
+  background: transparent;
+  color: #1f5fb8;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.selectedClientHeader button:hover,
+.selectedClientHeader button:focus-visible {
+  text-decoration: underline;
+  outline: none;
+}
+
+.assignmentForm {
+  max-width: 560px;
+}
+
+.clientList {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin-bottom: 22px;
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.clientCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid #8eadd0;
+  border-radius: 8px;
+  background: #eef5ff;
+}
+
+.clientCard > div:first-child {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.clientCard span,
+.hint {
+  color: #4f5f72;
+  font-size: 13px;
+}
+
+.inlineAction,
+.reassignControls button {
+  border: 0;
+  background: transparent;
+  color: #1f5fb8;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.inlineAction:hover,
+.reassignControls button:hover {
+  text-decoration: underline;
+}
+
+.reassignControls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.reassignControls .input {
+  width: 210px;
+  padding: 7px 9px;
+}
+
+.searchResults {
+  margin-top: 6px;
+  max-height: 230px;
+  overflow-y: auto;
+  border: 1px solid #aeb8c4;
+  border-radius: 10px;
+  background: white;
+}
+
+.statusMessage {
+  margin: 10px 8px 20px;
+  color: #4f5f72;
 }

@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { createPortal } from "react-dom";
 import styles from "./../Style/EditarFormStyles.module.css";
 import Button from "../../Button/Button";
 import { useApi } from "../../../utils/apiFetch";
@@ -7,6 +8,20 @@ import toast from "react-hot-toast";
 interface Props {
   onClose: () => void;
   onCreated?: () => void;
+}
+
+interface ClienteOption {
+  cliente_id: number;
+  razon_social: string;
+  usuario: {
+    email: string;
+  };
+}
+
+interface DropdownPosition {
+  top: number;
+  left: number;
+  width: number;
 }
 
 export default function NuevoEstablecimientoForm({ onClose }: Props) {
@@ -23,50 +38,103 @@ export default function NuevoEstablecimientoForm({ onClose }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Autocomplete: inicializado correctamente para evitar errores TS
+  // Autocomplete de clientes
   const [search, setSearch] = useState("");
-  const [clientes, setClientes] = useState<any[]>([]); // ← FIX
+  const [clientes, setClientes] = useState<ClienteOption[]>([]);
+  const [selectedCliente, setSelectedCliente] = useState<ClienteOption | null>(null);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [dropdownPosition, setDropdownPosition] = useState<DropdownPosition | null>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   // Actualiza un campo del formulario
   function updateField(field: keyof typeof form, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }));
   }
 
-  // Busca clientes cuando el usuario escribe
+  const updateDropdownPosition = useCallback(() => {
+    const input = searchInputRef.current;
+    if (!input) return;
+
+    const rect = input.getBoundingClientRect();
+    setDropdownPosition({
+      top: rect.bottom + 6,
+      left: rect.left,
+      width: rect.width,
+    });
+  }, []);
+
+  // Busca clientes con una pequeña espera para no consultar en cada tecla.
   useEffect(() => {
+    if (search.trim().length < 2 || selectedCliente) return;
+
+    let active = true;
     const fetchClientes = async () => {
       try {
         const res = await apiFetch("/api/v1/admin/clientes");
 
-        if (!res) return; 
+        if (!res?.ok) return;
 
-        const data = await res.json();
+        const data = (await res.json()) as ClienteOption[];
+        const normalizedSearch = search.trim().toLowerCase();
 
-        const filtrados = data.filter((c: any) =>
-          c.razon_social.toLowerCase().includes(search.toLowerCase()) ||
-          c.usuario.email.toLowerCase().includes(search.toLowerCase())
-        );
+        const filtrados = data
+          .filter((cliente) =>
+            cliente.razon_social.toLowerCase().includes(normalizedSearch) ||
+            cliente.usuario.email.toLowerCase().includes(normalizedSearch)
+          )
+          .slice(0, 10);
 
-        setClientes(filtrados);
-        setShowDropdown(true);
+        if (active) {
+          setClientes(filtrados);
+          updateDropdownPosition();
+          setShowDropdown(true);
+        }
       } catch (err) {
         console.error("Error buscando clientes", err);
       }
     };
 
-    if (search.length > 1) {
-      fetchClientes();
-    } else {
-      setClientes([]);
-      setShowDropdown(false);
-    }
-  }, [search]);
+    const timeoutId = window.setTimeout(() => {
+      void fetchClientes();
+    }, 250);
+
+    return () => {
+      active = false;
+      window.clearTimeout(timeoutId);
+    };
+  }, [apiFetch, search, selectedCliente, updateDropdownPosition]);
+
+  useEffect(() => {
+    if (!showDropdown) return;
+
+    window.addEventListener("resize", updateDropdownPosition);
+    window.addEventListener("scroll", updateDropdownPosition, true);
+
+    return () => {
+      window.removeEventListener("resize", updateDropdownPosition);
+      window.removeEventListener("scroll", updateDropdownPosition, true);
+    };
+  }, [showDropdown, updateDropdownPosition]);
+
+  function selectCliente(cliente: ClienteOption) {
+    updateField("cliente_id", String(cliente.cliente_id));
+    setSelectedCliente(cliente);
+    setSearch(cliente.razon_social);
+    setShowDropdown(false);
+  }
 
   // Envía el formulario al backend
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+
+    if (!form.cliente_id) {
+      const message = "Seleccioná un cliente de la lista.";
+      setError(message);
+      toast.error(message);
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -144,31 +212,70 @@ export default function NuevoEstablecimientoForm({ onClose }: Props) {
           <label className={styles.label}>Cliente</label>
 
           <input
+            ref={searchInputRef}
             type="text"
             className={styles.input}
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            required
+            autoComplete="off"
+            role="combobox"
+            aria-expanded={showDropdown}
+            aria-controls="clientes-autocomplete"
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setSelectedCliente(null);
+              updateField("cliente_id", "");
+              if (e.target.value.trim().length < 2) {
+                setShowDropdown(false);
+                setClientes([]);
+              }
+            }}
+            onFocus={() => {
+              if (!selectedCliente && clientes.length > 0) {
+                updateDropdownPosition();
+                setShowDropdown(true);
+              }
+            }}
+            onBlur={() => {
+              window.setTimeout(() => setShowDropdown(false), 100);
+            }}
             placeholder="Buscar por razón social o email"
           />
 
-          {showDropdown && clientes.length > 0 && (
-            <div className={styles.dropdown}>
-              {clientes.map((c) => (
-                <div
-                  key={c.cliente_id}
-                  className={styles.dropdownItem}
-                  onClick={() => {
-                    updateField("cliente_id", String(c.cliente_id));
-                    setSearch(`${c.razon_social} (${c.usuario.email})`);
-                    setShowDropdown(false);
-                  }}
-                >
-                  {c.razon_social} — {c.usuario.email}
-                </div>
-              ))}
+          {selectedCliente && (
+            <div className={styles.selectedClient}>
+              <strong>{selectedCliente.razon_social}</strong>
+              <span>{selectedCliente.usuario.email}</span>
             </div>
           )}
         </div>
+
+        {showDropdown && dropdownPosition && createPortal(
+          <div
+            id="clientes-autocomplete"
+            className={styles.dropdownPortal}
+            role="listbox"
+            style={dropdownPosition}
+            onMouseDown={(event) => event.preventDefault()}
+          >
+            {clientes.length > 0 ? clientes.map((cliente) => (
+              <button
+                key={cliente.cliente_id}
+                type="button"
+                role="option"
+                aria-selected="false"
+                className={styles.dropdownItem}
+                onClick={() => selectCliente(cliente)}
+              >
+                <strong>{cliente.razon_social}</strong>
+                <span>{cliente.usuario.email}</span>
+              </button>
+            )) : (
+              <p className={styles.dropdownEmpty}>No se encontraron clientes.</p>
+            )}
+          </div>,
+          document.body,
+        )}
 
         {error && <p className={styles.error}>{error}</p>}
 

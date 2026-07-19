@@ -1,17 +1,10 @@
-export interface Bebedero {
-  id: number;
-  nombre: string;
+import type { BebederoResponse } from "./ApiContracts";
+
+export interface Bebedero extends BebederoResponse {
   establecimiento?: {
     id: number;
     nombre: string;
   };
-  largoBebedero: number;
-  anchoBebedero: number;
-  profundidadBebedero: number;
   cobertura_objetivo: number;
-  tiempoDosis: number;
-  capacidadTolva: number;
   estado: boolean;
-  establecimiento_id: number; 
-  ubicacion: string;
 }

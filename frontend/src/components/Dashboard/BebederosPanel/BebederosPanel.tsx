@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import styles from "./../Style/PanelStyles.module.css";
 import stylesDelete from "./../Style/EditarFormStyles.module.css";
 import toast from "react-hot-toast";
 
 import { useApi } from "../../../utils/apiFetch";
-import { useAuth } from "../../../context/AuthContext";
+import { useAuth } from "../../../context/useAuth";
 
 
 import NuevoBebederoForm from "./NuevoBebederoForm";
@@ -26,9 +26,9 @@ function normalizeBebederos(payload: unknown): Bebedero[] {
   // Caso A: ya es un array, lo devolvemos tal cual
   if (Array.isArray(payload)) return payload as Bebedero[];
   // Caso B: es un objeto que contiene "bebederos"
-  if (payload && typeof payload === "object") {
-    const maybe = (payload as any).bebederos;
-  
+  if (payload && typeof payload === "object" && "bebederos" in payload) {
+    const maybe = (payload as { bebederos?: unknown }).bebederos;
+
     if (Array.isArray(maybe)) return maybe as Bebedero[];
   }
 
@@ -54,6 +54,7 @@ export default function BebederosPanel() {
   const { user } = useAuth();
 
   const [bebederos, setBebederos] = useState<BebederoRow[]>([]);
+  const [establecimientos, setEstablecimientos] = useState<Establecimiento[]>([]);
   const [search, setSearch] = useState("");
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editBebedero, setEditBebedero] = useState<Bebedero | null>(null);
@@ -67,12 +68,13 @@ export default function BebederosPanel() {
   /* ---------------------------------------------------------
    * Carga inicial de datos   * 
    * --------------------------------------------------------- */
-  async function loadBebederos() {
+  const loadBebederos = useCallback(async () => {
     const role = user?.role ?? user?.rol;
  
 
     if (role !== "admin") {
       setBebederos([]);
+      setEstablecimientos([]);
       return;
     }
 
@@ -85,12 +87,13 @@ export default function BebederosPanel() {
       
     if (!bebRes?.ok || !estRes?.ok) {
       setBebederos([]);
+      setEstablecimientos([]);
       return;
     }
 
     const bebederosAdmin = normalizeBebederos(await bebRes.json());
     const establecimientosAdmin = normalizeEstablecimientos(await estRes.json());
-    
+    setEstablecimientos(establecimientosAdmin);
 
     setBebederos(
       bebederosAdmin.map((b) => {
@@ -98,17 +101,18 @@ export default function BebederosPanel() {
         return {
           ...b, 
           establecimientoNombre: est?.nombre ?? "—",
-          coberturaObjetivo: b.cobertura_objetivo,
-          tiempoDosis: b.tiempoDosis,
-          ubicacion: b.ubicacion,
         };
       })
     );
-  }
+  }, [apiFetch, user]);
 
   useEffect(() => {
-    loadBebederos();
-  }, [user]);
+    const timeoutId = window.setTimeout(() => {
+      void loadBebederos();
+    }, 0);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [loadBebederos]);
 
   /* ---------------------------------------------------------
    * Filtros 
@@ -149,7 +153,7 @@ export default function BebederosPanel() {
     });
 
     if (!res?.ok) {
-      alert("No se pudo actualizar el estado del bebedero.");
+      toast.error("No se pudo actualizar el estado del bebedero.");
       setBebederos(bebederos); // revertir
     }
   }
@@ -252,7 +256,7 @@ export default function BebederosPanel() {
         </div>
 
         <button className={styles.newUserBtn} onClick={() => setShowCreateModal(true)}>
-          + Nuevo dispositivo
+          Nuevo dispositivo
         </button>
       </div>
 
@@ -297,7 +301,7 @@ export default function BebederosPanel() {
               </td>
 
               
-              <td style={{ paddingLeft: "40px" }}>{b.tiempoDosis ?? "-"}</td>
+              <td style={{ paddingLeft: "40px" }}>{b.tiempo_dosis ?? "-"}</td>
               <td style={{ paddingLeft: "40px" }}>
                 {b.cobertura_objetivo !== null && b.cobertura_objetivo !== undefined
                   ? `${b.cobertura_objetivo} %`
@@ -363,6 +367,7 @@ export default function BebederosPanel() {
             </button>
 
             <NuevoBebederoForm
+              establecimientos={establecimientos}
               onClose={() => {
                 setShowCreateModal(false);
                 loadBebederos();

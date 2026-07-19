@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+import { useCallback, useState, useEffect } from "react";
 import styles from "./../Style/PanelStyles.module.css";
 
 import { useApi } from "../../../utils/apiFetch";
-import { useAuth } from "../../../context/AuthContext";
+import { useAuth } from "../../../context/useAuth";
 
 import ReportsGraficos from "./ReportsGraficos";
 
@@ -13,7 +13,16 @@ type AdminSummary = {
   total_admins: number;
   total_veterinarios: number;
   total_clientes: number;
-  total_monitoreos: number;
+};
+
+type BebederoResumen = {
+  total: number;
+  activos: number;
+  inactivos: number;
+};
+
+type BebederoAdmin = {
+  estado: boolean;
 };
 
 export default function ReportsPanel() {
@@ -21,39 +30,52 @@ export default function ReportsPanel() {
   const { user } = useAuth();
 
   const [summary, setSummary] = useState<AdminSummary | null>(null);
+  const [bebederos, setBebederos] = useState<BebederoResumen | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  async function loadSummary() {
+  const loadSummary = useCallback(async () => {
     try {
-      const res = await apiFetch("/api/v1/admin/summary");
+      const [summaryRes, bebederosRes] = await Promise.all([
+        apiFetch("/api/v1/admin/summary"),
+        apiFetch("/api/v1/admin/bebederos"),
+      ]);
 
-      if (!res?.ok) {
+      if (!summaryRes?.ok || !bebederosRes?.ok) {
         setError("No se pudo cargar el reporte.");
         return;
       }
 
-      const data = await res.json();
-      setSummary(data);
+      const summaryData = (await summaryRes.json()) as AdminSummary;
+      const bebederosData = (await bebederosRes.json()) as BebederoAdmin[];
+      const activos = bebederosData.filter((bebedero) => bebedero.estado).length;
+
+      setSummary(summaryData);
+      setBebederos({
+        total: bebederosData.length,
+        activos,
+        inactivos: bebederosData.length - activos,
+      });
 
     } catch {
       setError("Error de conexión con el servidor.");
     } finally {
       setLoading(false);
     }
-  }
+  }, [apiFetch]);
 
   useEffect(() => {
-    if (user?.role === "admin") loadSummary();
-  }, [user]);
+    if (user?.role !== "admin") return;
+    const timeoutId = window.setTimeout(() => { void loadSummary(); }, 0);
+    return () => window.clearTimeout(timeoutId);
+  }, [loadSummary, user?.role]);
 
   if (loading) return <div className={styles.loading}>Cargando reportes…</div>;
   if (error) return <div className={styles.error}>{error}</div>;
-  if (!summary) return <div className={styles.error}>No hay datos disponibles.</div>;
+  if (!summary || !bebederos) return <div className={styles.error}>No hay datos disponibles.</div>;
 
   return (
     <div className={styles.container}>
-      <h2 className={styles.title}>Panel de Reportes</h2>
 
       <div className={styles.grid}>
 
@@ -114,17 +136,25 @@ export default function ReportsPanel() {
           </div>
         </div>
 
-        {/* Monitoreos */}
+        {/* Dispositivos */}
         <div className={styles.card}>
           <div className={styles.cardHeader}>
             <span className={styles.icon}>📊</span>
-            <h3>Monitoreos</h3>
+            <h3>Dispositivos</h3>
           </div>
 
           <div className={styles.metrics}>
             <div className={styles.metricRow}>
               <span>Total</span>
-              <strong>{summary.total_monitoreos}</strong>
+              <strong>{bebederos.total}</strong>
+            </div>
+            <div className={styles.metricRow}>
+              <span>Activos</span>
+              <strong className={styles.green}>{bebederos.activos}</strong>
+            </div>
+            <div className={styles.metricRow}>
+              <span>Inactivos</span>
+              <strong className={styles.red}>{bebederos.inactivos}</strong>
             </div>
           </div>
         </div>

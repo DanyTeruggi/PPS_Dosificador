@@ -1,30 +1,33 @@
 
-import { createContext, useContext, useState} from "react";
+import { useState } from "react";
 import { jwtDecode } from "jwt-decode";
+import { AuthContext, isAuthUser } from "./authContextDefinition";
+import type { AuthUser } from "./authContextDefinition";
 
-interface AuthContextType {
-  user: any;
-  token: string | null;
-  login: (email: string, password: string) => Promise<boolean>;
-  logout: () => void;
-  setToken: (token: string | null) => void;
+interface LoginResponse {
+  access_token: string;
 }
 
-const AuthContext = createContext<AuthContextType>({
-  user: null,
-  token: null,
-  login: async () => false,
-  logout: () => {},
-  setToken: () => {}
-});
+function readStoredUser(): AuthUser | null {
+  const storedUser = localStorage.getItem("user");
+  if (!storedUser) return null;
+
+  try {
+    const parsed: unknown = JSON.parse(storedUser);
+    if (isAuthUser(parsed)) return parsed;
+  } catch {
+    // El dato persistido no contiene JSON válido.
+  }
+
+  localStorage.removeItem("user");
+  return null;
+}
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [token, setTokenState] = useState<string | null>(
     localStorage.getItem("token")
   );
-  const [user, setUser] = useState<any>(
-    JSON.parse(localStorage.getItem("user") || "null")
-  );
+  const [user, setUser] = useState<AuthUser | null>(readStoredUser);
 
   // Guardar token en estado + localStorage
   const setToken = (newToken: string | null) => {
@@ -48,14 +51,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     
       if (!res.ok) return false;
 
-      const data = await res.json();
+      const data = (await res.json()) as LoginResponse;
       const token = data.access_token;
 
       // Guardar token
       setToken(token);
 
       // Decodificar usuario
-      const decoded: any = jwtDecode(token);
+      const decoded = jwtDecode<AuthUser>(token);
+      if (!isAuthUser(decoded)) {
+        throw new Error("El token no contiene un rol válido.");
+      }
       setUser(decoded);
       localStorage.setItem("user", JSON.stringify(decoded));
 
@@ -80,8 +86,4 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       {children}
     </AuthContext.Provider>
   );
-}
-
-export function useAuth() {
-  return useContext(AuthContext);
 }

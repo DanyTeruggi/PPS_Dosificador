@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
+import { useCallback, useState, useEffect } from "react";
 import styles from "./../Style/PanelStyles.module.css";
 import stylesDelete from "./../Style/EditarFormStyles.module.css";
 import toast from "react-hot-toast";
 
 
 import { useApi } from "../../../utils/apiFetch";
-import { useAuth } from "../../../context/AuthContext";
+import { useAuth } from "../../../context/useAuth";
 
 import NuevoEstablecimientoForm from "./NuevoEstablecimientoForm";
 import EditarEstablecimientoForm from "./EditarEstablecimientoForm";
@@ -78,7 +78,7 @@ export default function EstablecimientoPanel() {
 
 
 
-  async function loadEstablecimientos() {
+  const loadEstablecimientos = useCallback(async () => {
     const role = user?.role ?? user?.rol;
     setAdminEndpointUnavailable(false);
 
@@ -189,11 +189,15 @@ export default function EstablecimientoPanel() {
     }
 
     setEstablecimientos([]);
-  }
+  }, [apiFetch, user]);
 
   useEffect(() => {
-    loadEstablecimientos();
-  }, [user]);
+    const timeoutId = window.setTimeout(() => {
+      void loadEstablecimientos();
+    }, 0);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [loadEstablecimientos]);
 
   // FILTROS COMBINADOS
   const filtrados = establecimientos.filter((e) => {
@@ -217,7 +221,7 @@ export default function EstablecimientoPanel() {
   async function handleEditClick(id: number) {
     const res = await apiFetch(`/api/v1/establecimientos/${id}`);
     if (!res || !res.ok) {
-      alert("No se pudo cargar el establecimiento.");
+      toast.error("No se pudo cargar el establecimiento.");
       return;
     }
 
@@ -323,7 +327,7 @@ export default function EstablecimientoPanel() {
 
         <div className={styles.filters}>
           <button className={styles.newUserBtn} onClick={() => setShowCreateModal(true)}>
-            + Nuevo establecimiento
+            Nuevo establecimiento
           </button>
         </div>
       </div>

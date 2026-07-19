@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import BebederoCard from "../../components/BebederoCard/BebederoCard";
 import Button from "../../components/Button/Button";
 import EmptyState from "../../components/EmptyState/EmptyState";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../context/useAuth";
 import useEstablecimientoBebederos from "../../hooks/useEstablecimientoBebederos";
 import styles from "./LandingBebederos.module.css";
 import LandingHeader from "./LandingHeader";

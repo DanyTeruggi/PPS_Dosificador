@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import hidePasswordIcon from "../../assets/esconder.png";
 import showPasswordIcon from "../../assets/mostrar.png";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../context/useAuth";
 import { useIsDesktop } from "../../hooks/useIsDesktop";
 import styles from "./LoginPage.module.css";
 

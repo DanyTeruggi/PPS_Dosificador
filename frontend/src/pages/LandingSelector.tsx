@@ -1,7 +1,7 @@
 import { useIsDesktop } from "../hooks/useIsDesktop";
 import DesktopLoginPage from "./LandingDesktop/DesktopLoginPage";
 import WelcomePage from "./LandingMobile/WelcomePage";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/useAuth";
 import SmartHomeRedirect from "../components/SmartHomeRedirect";
 
 export default function LandingSelector() {

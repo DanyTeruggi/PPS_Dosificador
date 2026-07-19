@@ -1,88 +1,68 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import toast from "react-hot-toast";
 import styles from "./../Style/PanelStyles.module.css";
 
 import { useApi } from "../../../utils/apiFetch";
-import { useAuth } from "../../../context/AuthContext";
+import { useAuth } from "../../../context/useAuth";
 
 import UserForm from "../../UserForm/UserForm";
 import AsignarVeterinarioModal from "./AsignarVeterinario";
-
-
-
-type UsuarioApi = {
-  id: number;
-  email?: string | null;
-  nombre?: string | null;
-  telefono?: string | null;
-  rol?: string | null;
-  activo: boolean;
-};
-
-type UsuarioRow = {
-  id: number;
-  email: string;
-  nombre: string;
-  telefono: string;
-  rol: string;
-  activo: boolean;
-};
-
-type PerfilApi = {
-  usuario: UsuarioApi;
-};
+import ClientesAsociadosModal from "./ClientesAsociados";
+import EditUserForm from "./EditUserForm";
+import type { AdminUserResponse, AdminUserRow } from "../../../types/AdminUser";
 
 export default function UsersPanel() {
   const { apiFetch } = useApi();
   const { user } = useAuth();
 
-  const [usuarios, setUsuarios] = useState<UsuarioRow[]>([]);
+  const [usuarios, setUsuarios] = useState<AdminUserRow[]>([]);
   const [showModalNuevoUsuario, setShowModalNuevoUsuario] = useState(false);
+  const [editUsuario, setEditUsuario] = useState<AdminUserRow | null>(null);
 
   // Modal para asignar veterinario
   const [showAsignarVetModal, setShowAsignarVetModal] = useState(false);
+  const [showClientesModal, setShowClientesModal] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
   const [selectedUserRol, setSelectedUserRol] = useState<string>("");
 
   // FILTROS
   const [search, setSearch] = useState("");
-  const [rolFilter, setRolFilter] = useState<"todos" | "veterinario" | "cliente">("todos");
+  const [rolFilter, setRolFilter] = useState<
+    "todos" | "veterinario" | "cliente" | "admin"
+  >("todos");
   const [estadoFilter, setEstadoFilter] = useState<"todos" | "activo" | "inactivo">("todos");
-
-  // EDICIÓN
-  const [editingUserId, setEditingUserId] = useState<number | null>(null);
-  const [tempRol, setTempRol] = useState("");
 
   /**
    * 🔥 FUNCIÓN GLOBAL PARA RECARGAR USUARIOS
    */
-  async function loadUsuarios() {
+  const loadUsuarios = useCallback(async () => {
     const role = user?.role ?? user?.rol;
     if (role !== "admin") return;
 
-    const [veterinariosRes, clientesRes] = await Promise.all([
-      apiFetch("/api/v1/admin/veterinarios"),
-      apiFetch("/api/v1/admin/clientes"),
-    ]);
+    const usuariosRes = await apiFetch("/api/v1/admin/usuarios");
 
-    if (!veterinariosRes?.ok || !clientesRes?.ok) {
+    if (!usuariosRes?.ok) {
       setUsuarios([]);
       return;
     }
 
-    const veterinarios: PerfilApi[] = await veterinariosRes.json();
-    const clientes: PerfilApi[] = await clientesRes.json();
+    const usuariosApi = (await usuariosRes.json()) as AdminUserResponse[];
 
-    const perfiles = [...veterinarios, ...clientes];
-
-    // Normaliza los campos opcionales para que la tabla siempre reciba textos.
-    const todosLosUsuarios: UsuarioRow[] = perfiles.map(
-      ({ usuario }) => ({
+    const todosLosUsuarios: AdminUserRow[] = usuariosApi.map(
+      (usuario) => ({
         id: usuario.id,
         email: usuario.email ?? "",
         nombre: usuario.nombre ?? "",
-        telefono: usuario.telefono ?? "",
+        telefono:
+          usuario.telefono ??
+          usuario.veterinario?.telefono ??
+          usuario.cliente?.telefono ??
+          "",
         rol: usuario.rol ?? "",
         activo: usuario.activo,
+        clave_fiscal: usuario.clave_fiscal,
+        veterinario: usuario.veterinario,
+        cliente: usuario.cliente,
       })
     );
 
@@ -91,20 +71,32 @@ export default function UsersPanel() {
     );
 
     setUsuarios(usuariosSinDuplicados);
-  }
+  }, [apiFetch, user]);
 
   /**
    * Carga inicial
    */
   useEffect(() => {
-    loadUsuarios();
-  }, [user]);
+    const timeoutId = window.setTimeout(() => {
+      void loadUsuarios();
+    }, 0);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [loadUsuarios]);
 
   // CLEAR
   function clearFilters() {
     setSearch("");
     setRolFilter("todos");
     setEstadoFilter("todos");
+    setSelectedUserId(null);
+    setSelectedUserRol("");
+  }
+
+  function selectRoleFilter(role: "veterinario" | "cliente" | "admin") {
+    setRolFilter(role);
+    setSelectedUserId(null);
+    setSelectedUserRol("");
   }
 
   const hasActiveFilters =
@@ -136,32 +128,6 @@ export default function UsersPanel() {
     });
 
   /**
-   * Guardar cambios de rol
-   */
-  async function guardarCambios(usuarioId: number) {
-    const usuario = usuarios.find((item) => item.id === usuarioId);
-    if (!usuario) return;
-
-    const res = await apiFetch(`/api/v1/admin/usuarios/${usuario.id}/rol`, {
-      method: "PUT",
-      body: JSON.stringify({ rol: tempRol }),
-    });
-
-    if (!res || !res.ok) {
-      alert("No se pudo actualizar el rol");
-      return;
-    }
-
-    // Actualiza por ID para no depender de la posicion de la lista filtrada.
-    setUsuarios((actuales) =>
-      actuales.map((item) =>
-        item.id === usuarioId ? { ...item, rol: tempRol } : item
-      )
-    );
-    setEditingUserId(null);
-  }
-
-  /**
    * Activar / desactivar usuario
    */
   async function toggleEstadoUsuario(usuarioId: number) {
@@ -176,7 +142,7 @@ export default function UsersPanel() {
     });
 
     if (!res || !res.ok) {
-      alert("No se pudo cambiar el estado");
+      toast.error("No se pudo cambiar el estado.");
       return;
     }
 
@@ -218,21 +184,28 @@ export default function UsersPanel() {
         <div className={styles.filters}>
           <button
             className={`${styles.filterBtn} ${rolFilter === "veterinario" ? styles.activeFilter : ""}`}
-            onClick={() => setRolFilter("veterinario")}
+            onClick={() => selectRoleFilter("veterinario")}
           >
             Veterinarios
           </button>
 
           <button
             className={`${styles.filterBtn} ${rolFilter === "cliente" ? styles.activeFilter : ""}`}
-            onClick={() => setRolFilter("cliente")}
+            onClick={() => selectRoleFilter("cliente")}
           >
             Clientes
           </button>
 
+          <button
+            className={`${styles.filterBtn} ${rolFilter === "admin" ? styles.activeFilter : ""}`}
+            onClick={() => selectRoleFilter("admin")}
+          >
+            Admin
+          </button>
+
           {/* NUEVO USUARIO */}
           <button className={styles.newUserBtn} onClick={() => setShowModalNuevoUsuario(true)}>
-            + Nuevo usuario
+            Nuevo usuario
           </button>
 
           {/* ASIGNAR VETERINARIO */}
@@ -241,7 +214,12 @@ export default function UsersPanel() {
               className={styles.newUserBtn}
               onClick={() => setShowAsignarVetModal(true)}
             >
-              + Asignar Veterinario
+              Asignar Veterinario
+            </button>
+          )}
+          {selectedUserRol === "veterinario" && (
+            <button className={styles.newUserBtn} onClick={() => setShowClientesModal(true)}>
+              Clientes asociados
             </button>
           )}
         </div>
@@ -262,8 +240,6 @@ export default function UsersPanel() {
 
         <tbody>
           {usuariosFiltrados.map((u) => {
-            const isEditing = editingUserId === u.id;
-
             return (
               <tr
                 key={u.id}
@@ -277,21 +253,7 @@ export default function UsersPanel() {
                 <td>{u.email}</td>
                 <td>{u.telefono}</td>
                 
-                <td>
-                  {isEditing ? (
-                    <select
-                      value={tempRol}
-                      onChange={(e) => setTempRol(e.target.value)}
-                      className={styles.selectRol}
-                    >
-                      <option value="cliente">Cliente</option>
-                      <option value="veterinario">Veterinario</option>
-                      <option value="admin">Admin</option>
-                    </select>
-                  ) : (
-                    u.rol
-                  )}
-                </td>
+                <td>{u.rol}</td>
 
                 <td>
                   <label className={styles.switch}>
@@ -305,22 +267,15 @@ export default function UsersPanel() {
                 </td>
 
                 <td>
-                  {isEditing ? (
-                    <button className={styles.saveBtn} onClick={() => guardarCambios(u.id)}>
-                      Guardar
-                    </button>
-                  ) : (
-                    <button
-                      className={styles.editBtn}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setEditingUserId(u.id);
-                        setTempRol(u.rol);
-                      }}
-                    >
-                      Editar
-                    </button>
-                  )}
+                  <button
+                    className={styles.editBtn}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setEditUsuario(u);
+                    }}
+                  >
+                    Editar
+                  </button>
                 </td>
               </tr>
             );
@@ -337,8 +292,25 @@ export default function UsersPanel() {
             </button>
 
             <UserForm
+              mode="admin-create"
               onClose={() => setShowModalNuevoUsuario(false)}
               onCreated={() => loadUsuarios()}   
+            />
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: EDITAR USUARIO */}
+      {editUsuario && (
+        <div className={styles.modalOverlay} onClick={() => setEditUsuario(null)}>
+          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <button className={styles.closeModalBtn} onClick={() => setEditUsuario(null)}>
+              ✕
+            </button>
+            <EditUserForm
+              usuario={editUsuario}
+              onClose={() => setEditUsuario(null)}
+              onSaved={loadUsuarios}
             />
           </div>
         </div>
@@ -368,6 +340,15 @@ export default function UsersPanel() {
                 loadUsuarios();   {/* 🔥 refresca la tabla */}
               }}
             />
+          </div>
+        </div>
+      )}
+
+      {showClientesModal && selectedUserId && (
+        <div className={styles.modalOverlay} onClick={() => setShowClientesModal(false)}>
+          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <button className={styles.closeModalBtn} onClick={() => setShowClientesModal(false)}>✕</button>
+            <ClientesAsociadosModal usuarioId={selectedUserId} onClose={() => { setShowClientesModal(false); void loadUsuarios(); }} />
           </div>
         </div>
       )}

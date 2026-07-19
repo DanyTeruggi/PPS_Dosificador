@@ -4,6 +4,7 @@ import { useApi } from "../../../utils/apiFetch";
 import styles from "./../Style/EditarFormStyles.module.css";
 
 import type { Bebedero } from "../../../types/Bebedero";
+import type { BebederoUpdateRequest } from "../../../types/ApiContracts";
 
 interface Props {
   bebedero: Bebedero;
@@ -18,12 +19,12 @@ export default function EditarBebederoForm({ bebedero, onClose, onSave }: Props)
 
   const [form, setForm] = useState({
     nombre: bebedero.nombre || "",
-    largoBebedero: bebedero.largoBebedero || "",
-    anchoBebedero: bebedero.anchoBebedero || "",
-    profundidadBebedero: bebedero.profundidadBebedero || "",
+    largoBebedero: bebedero.largo || "",
+    anchoBebedero: bebedero.ancho || "",
+    profundidadBebedero: bebedero.profundidad ?? "",
     coberturaMinima: bebedero.cobertura_objetivo || "",
-    tiempoDosis: bebedero.tiempoDosis || "",
-    capacidadTolva: bebedero.capacidadTolva || "",
+    tiempoDosis: bebedero.tiempo_dosis || "",
+    capacidadTolva: bebedero.capacidad_tolva || "",
   });
 
   const updateField = (field: string, value: string | number) => {
@@ -36,17 +37,20 @@ export default function EditarBebederoForm({ bebedero, onClose, onSave }: Props)
     setLoading(true);
 
     try {
+      const payload: BebederoUpdateRequest = {
+        nombre: form.nombre,
+        largo: Number(form.largoBebedero),
+        ancho: Number(form.anchoBebedero),
+        profundidad: form.profundidadBebedero
+          ? Number(form.profundidadBebedero)
+          : null,
+        cobertura_objetivo: Number(form.coberturaMinima),
+        tiempo_dosis: Number(form.tiempoDosis),
+        capacidad_tolva: Number(form.capacidadTolva),
+      };
       const response = await apiFetch(`/api/v1/admin/bebederos/${bebedero.id}`, {
         method: "PATCH",
-        body: JSON.stringify({
-          nombre: form.nombre,
-          largoBebedero: Number(form.largoBebedero),
-          anchoBebedero: Number(form.anchoBebedero),
-          profundidadBebedero: Number(form.profundidadBebedero),
-          cobertura_objetivo: Number(form.coberturaMinima),
-          tiempoDosis: Number(form.tiempoDosis),
-          capacidadTolva: Number(form.capacidadTolva),
-        }),
+        body: JSON.stringify(payload),
       });
 
       if (!response || !response.ok) {
@@ -90,6 +94,8 @@ export default function EditarBebederoForm({ bebedero, onClose, onSave }: Props)
             <input
               className={styles.input}
               type="number"
+              min="0.000001"
+              step="any"
               required
               value={form.largoBebedero}
               onChange={(e) => updateField("largoBebedero", e.target.value)}
@@ -101,6 +107,8 @@ export default function EditarBebederoForm({ bebedero, onClose, onSave }: Props)
             <input
               className={styles.input}
               type="number"
+              min="0.000001"
+              step="any"
               required
               value={form.anchoBebedero}
               onChange={(e) => updateField("anchoBebedero", e.target.value)}
@@ -112,7 +120,8 @@ export default function EditarBebederoForm({ bebedero, onClose, onSave }: Props)
             <input
               className={styles.input}
               type="number"
-              required
+              min="0.000001"
+              step="any"
               value={form.profundidadBebedero}
               onChange={(e) => updateField("profundidadBebedero", e.target.value)}
             />
@@ -126,6 +135,7 @@ export default function EditarBebederoForm({ bebedero, onClose, onSave }: Props)
             <input
               className={styles.input}
               type="number"
+              step="any"
               min="0"
               max="100"
               required
@@ -139,6 +149,8 @@ export default function EditarBebederoForm({ bebedero, onClose, onSave }: Props)
             <input
               className={styles.input}
               type="number"
+              min="0.000001"
+              step="any"
               required
               value={form.tiempoDosis}
               onChange={(e) => updateField("tiempoDosis", e.target.value)}
@@ -150,6 +162,8 @@ export default function EditarBebederoForm({ bebedero, onClose, onSave }: Props)
             <input
               className={styles.input}
               type="number"
+              min="0.000001"
+              step="any"
               required
               value={form.capacidadTolva}
               onChange={(e) => updateField("capacidadTolva", e.target.value)}

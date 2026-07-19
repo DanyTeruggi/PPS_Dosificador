@@ -2,12 +2,15 @@ import { useState } from "react";
 import Button from "../../Button/Button";
 import { useApi } from "../../../utils/apiFetch";
 import styles from "./../Style/EditarFormStyles.module.css";
+import type { BebederoCreateRequest } from "../../../types/ApiContracts";
+import type { Establecimiento } from "../../../types/Establecimiento";
 
 interface Props {
   onClose: () => void;
+  establecimientos: Establecimiento[];
 }
 
-export default function NuevoBebederoForm({ onClose }: Props) {
+export default function NuevoBebederoForm({ onClose, establecimientos }: Props) {
   const { apiFetch } = useApi();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -34,25 +37,23 @@ export default function NuevoBebederoForm({ onClose }: Props) {
     setLoading(true);
 
     try {
-      const establecimientoId = Number(form.establecimiento);
-
-      const response = await apiFetch(
-        `/api/v1/establecimientos/${establecimientoId}/bebederos`,
-        {
-          method: "POST",
-          body: JSON.stringify({
-            nombre: form.nombre,
-            establecimiento: establecimientoId,
-            largoBebedero: Number(form.largoBebedero),
-            anchoBebedero: Number(form.anchoBebedero),
-            profundidadBebedero: Number(form.profundidadBebedero),
-            coberturaMinima: Number(form.coberturaMinima),
-            tiempoDosis: Number(form.tiempoDosis),
-            capacidadTolva: Number(form.capacidadTolva),
-            estado: form.estado,
-          }),
-        }
-      );
+      const payload: BebederoCreateRequest = {
+        establecimiento_id: Number(form.establecimiento),
+        nombre: form.nombre,
+        largo: Number(form.largoBebedero),
+        ancho: Number(form.anchoBebedero),
+        profundidad: form.profundidadBebedero
+          ? Number(form.profundidadBebedero)
+          : null,
+        cobertura_objetivo: Number(form.coberturaMinima),
+        tiempo_dosis: Number(form.tiempoDosis),
+        capacidad_tolva: Number(form.capacidadTolva),
+        estado: form.estado,
+      };
+      const response = await apiFetch("/api/v1/admin/bebederos", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
 
       if (!response || !response.ok) {
         throw new Error("No se pudo crear el dispositivo.");
@@ -75,21 +76,22 @@ export default function NuevoBebederoForm({ onClose }: Props) {
           Completá los datos para registrar un nuevo dispositivo.
         </p>
 
-        {/* ID Establecimiento */}
-        {/*
         <div className={styles.group}>
-          <label className={styles.label}>ID Establecimiento</label>
-          <input
+          <label className={styles.label}>Establecimiento</label>
+          <select
             className={styles.input}
-            type="number"
-            min="1"
             required
             value={form.establecimiento}
             onChange={(e) => updateField("establecimiento", e.target.value)}
-            placeholder="Ej: 1"
-          />
+          >
+            <option value="">Seleccioná un establecimiento</option>
+            {establecimientos.map((establecimiento) => (
+              <option key={establecimiento.id} value={establecimiento.id}>
+                {establecimiento.nombre}
+              </option>
+            ))}
+          </select>
         </div>
-        */}
         {/* Nombre */}
         <div className={styles.group}>
           <label className={styles.label}>Nombre</label>
@@ -109,6 +111,8 @@ export default function NuevoBebederoForm({ onClose }: Props) {
             <input
               className={styles.input}
               type="number"
+              min="0.000001"
+              step="any"
               required
               value={form.largoBebedero}
               onChange={(e) => updateField("largoBebedero", e.target.value)}
@@ -120,6 +124,8 @@ export default function NuevoBebederoForm({ onClose }: Props) {
             <input
               className={styles.input}
               type="number"
+              min="0.000001"
+              step="any"
               required
               value={form.anchoBebedero}
               onChange={(e) => updateField("anchoBebedero", e.target.value)}
@@ -131,7 +137,8 @@ export default function NuevoBebederoForm({ onClose }: Props) {
             <input
               className={styles.input}
               type="number"
-              required
+              min="0.000001"
+              step="any"
               value={form.profundidadBebedero}
               onChange={(e) => updateField("profundidadBebedero", e.target.value)}
             />
@@ -145,6 +152,7 @@ export default function NuevoBebederoForm({ onClose }: Props) {
             <input
               className={styles.input}
               type="number"
+              step="any"
               min="0"
               max="100"
               required
@@ -158,6 +166,8 @@ export default function NuevoBebederoForm({ onClose }: Props) {
             <input
               className={styles.input}
               type="number"
+              min="0.000001"
+              step="any"
               required
               value={form.tiempoDosis}
               onChange={(e) => updateField("tiempoDosis", e.target.value)}
@@ -169,6 +179,8 @@ export default function NuevoBebederoForm({ onClose }: Props) {
             <input
               className={styles.input}
               type="number"
+              min="0.000001"
+              step="any"
               required
               value={form.capacidadTolva}
               onChange={(e) => updateField("capacidadTolva", e.target.value)}
