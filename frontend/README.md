@@ -157,11 +157,12 @@ La respuesta debe contener:
 
 El frontend:
 
-1. Guarda el token en `localStorage`.
-2. Decodifica el JWT para obtener el usuario y su rol.
-3. Agrega `Authorization: Bearer <token>` a las solicitudes protegidas.
-4. Redirige al usuario según su rol.
-5. Cierra la sesión automáticamente si la API responde `401`.
+1. Guarda el token en `sessionStorage`, por lo que la sesión termina al cerrar el navegador.
+2. Decodifica el JWT para obtener inicialmente el usuario y su rol.
+3. Valida la sesión al iniciar mediante `GET /api/v1/auth/me`.
+4. Agrega `Authorization: Bearer <token>` a las solicitudes protegidas.
+5. Redirige al usuario según su rol.
+6. Cierra la sesión si `/auth/me` rechaza el token o cualquier solicitud responde `401`.
 
 > La decodificación del JWT en el navegador no reemplaza las validaciones de autorización del backend. La API debe validar el token y los permisos en cada endpoint.
 

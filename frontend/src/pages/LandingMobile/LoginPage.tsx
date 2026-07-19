@@ -32,7 +32,7 @@ export default function LoginPage() {
         return;
       }
 
-      const user = JSON.parse(localStorage.getItem("user") ?? "{}");
+      const user = JSON.parse(sessionStorage.getItem("user") ?? "{}");
       if (user.role === "admin") {
         if (isDesktop) {
           navigate("/dashboard", { replace: true });

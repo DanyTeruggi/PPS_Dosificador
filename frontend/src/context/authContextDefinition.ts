@@ -17,6 +17,7 @@ export interface AuthUser {
 export interface AuthContextType {
   user: AuthUser | null;
   token: string | null;
+  isInitializing: boolean;
   login: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
   setToken: (token: string | null) => void;

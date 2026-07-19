@@ -42,7 +42,7 @@ export default function DashboardHeader() {
   /**
    * Cierra la sesión:
    * - Limpia token y usuario del contexto
-   * - Limpia localStorage
+   * - Limpia la sesión almacenada
    * - Redirige al landing
    */
   const handleLogout = () => {

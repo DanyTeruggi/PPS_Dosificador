@@ -7,7 +7,11 @@ interface Props {
 }
 
 export default function ProtectedRoute({ children, roles }: Props) {
-  const { token, user } = useAuth();
+  const { token, user, isInitializing } = useAuth();
+
+  if (isInitializing) {
+    return <div>Validando sesión…</div>;
+  }
 
   // 1) Si NO hay token → home pública
   if (!token) {

@@ -3,11 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
 
 export default function SmartHomeRedirect() {
-  const { user, token } = useAuth();
+  const { user, token, isInitializing } = useAuth();
   const navigate = useNavigate();
   const role = user?.role ?? user?.rol;
 
   useEffect(() => {
+    if (isInitializing) return;
   
 
     // Si NO hay token → volver a la landing
@@ -36,7 +37,7 @@ export default function SmartHomeRedirect() {
 
     navigate("/cliente/establecimientos", { replace: true });
 
-  }, [token, user, role, navigate]);
+  }, [isInitializing, token, user, role, navigate]);
 
   return null;
 }

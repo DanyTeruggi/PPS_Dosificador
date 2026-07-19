@@ -6,7 +6,9 @@ import SmartHomeRedirect from "../components/SmartHomeRedirect";
 
 export default function LandingSelector() {
   const isDesktop = useIsDesktop();
-  const { token } = useAuth();
+  const { token, isInitializing } = useAuth();
+
+  if (isInitializing) return null;
 
 
   // Si NO hay token → mostrar la home pública, no el login directo

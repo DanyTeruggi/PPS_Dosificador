@@ -32,7 +32,7 @@ export default function DesktopLoginPage() {
         return;
       }
 
-      const user = JSON.parse(localStorage.getItem("user") ?? "{}");
+      const user = JSON.parse(sessionStorage.getItem("user") ?? "{}");
       if (user.role !== "admin") {
         // Evita dejar abierta una sesion sin acceso al panel administrativo.
         logout();
