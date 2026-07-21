@@ -13,6 +13,7 @@ import Button from "../../Button/Button";
 import type { Bebedero } from "../../../types/Bebedero";
 import type { Establecimiento } from "../../../types/Establecimiento";
 import EditarBebederoForm from "./EditaBebederoForm";
+import CargaImagen from "./CargaImagen";
 
 
 type BebederoRow = Bebedero & {
@@ -57,6 +58,7 @@ export default function BebederosPanel() {
   const [establecimientos, setEstablecimientos] = useState<Establecimiento[]>([]);
   const [search, setSearch] = useState("");
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showSimulatorModal, setShowSimulatorModal] = useState(false);
   const [editBebedero, setEditBebedero] = useState<Bebedero | null>(null);
   const [selectedRowId, setSelectedRowId] = useState<number | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<{
@@ -255,9 +257,16 @@ export default function BebederosPanel() {
           </button>
         </div>
 
-        <button className={styles.newUserBtn} onClick={() => setShowCreateModal(true)}>
-          Nuevo dispositivo
-        </button>
+        <div className={styles.headerActions}>
+          {import.meta.env.DEV && (
+            <button className={styles.secondaryActionBtn} type="button" onClick={() => setShowSimulatorModal(true)}>
+              Simular lectura
+            </button>
+          )}
+          <button className={styles.newUserBtn} type="button" onClick={() => setShowCreateModal(true)}>
+            Nuevo dispositivo
+          </button>
+        </div>
       </div>
 
       <table className={styles.table}>
@@ -372,6 +381,19 @@ export default function BebederosPanel() {
                 setShowCreateModal(false);
                 loadBebederos();
               }}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* SIMULADOR DE HARDWARE: disponible solo durante desarrollo. */}
+      {import.meta.env.DEV && showSimulatorModal && (
+        <div className={styles.modalOverlay} onClick={() => setShowSimulatorModal(false)}>
+          <div className={styles.modalContent} onClick={(event) => event.stopPropagation()}>
+            <button className={styles.closeModalBtn} onClick={() => setShowSimulatorModal(false)}>✕</button>
+            <CargaImagen
+              bebederos={bebederos}
+              onClose={() => setShowSimulatorModal(false)}
             />
           </div>
         </div>

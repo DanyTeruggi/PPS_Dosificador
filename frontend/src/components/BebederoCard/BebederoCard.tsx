@@ -1,119 +1,133 @@
+import {
+  HiOutlineCalendarDays,
+  HiOutlineMapPin,
+  HiOutlineShieldCheck,
+  HiOutlineViewfinderCircle,
+} from "react-icons/hi2";
+
+import type { BebederoDetalle, MonitoreoDetalle } from "../../types/landingTypes";
+import AuthenticatedImage from "../AuthenticatedImage/AuthenticatedImage";
 import styles from "./BebederoCard.module.css";
-
-interface ImagenDetalle {
-  image_url?: string | null;
-}
-
-interface MonitoreoDetalle {
-  fecha?: string;
-  timestamp?: string;
-  cobertura_capsulas_porciento?: number | null;
-  imagenes: ImagenDetalle[];
-}
-
-interface BebederoDetalle {
-  id: number;
-  nombre: string;
-  ubicacion?: string | null;
-  cobertura_objetivo: number;
-  ultima_medicion?: string | null;
-  monitoreos: MonitoreoDetalle[];
-}
 
 interface BebederoCardProps {
   bebedero: BebederoDetalle;
 }
 
-function formatMedicion(raw?: string | null): string {
-  if (!raw) {
-    return "s/n";
-  }
+interface MeasurementCardProps {
+  bebedero: BebederoDetalle;
+  monitoreo?: MonitoreoDetalle;
+}
+
+function formatMedicion(raw?: string | null): { date: string; time: string } {
+  if (!raw) return { date: "s/n", time: "" };
 
   const parsed = new Date(raw);
-  if (Number.isNaN(parsed.getTime())) {
-    return raw;
-  }
+  if (Number.isNaN(parsed.getTime())) return { date: raw, time: "" };
 
-  return `${parsed.toLocaleString("es-AR", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  })} Hs`;
+  return {
+    date: parsed.toLocaleDateString("es-AR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    }),
+    time: `${parsed.toLocaleTimeString("es-AR", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    })} Hs`,
+  };
+}
+
+function formatPercentage(value?: number | null): string {
+  return value == null ? "s/n" : `${value}%`;
+}
+
+function MeasurementCard({ bebedero, monitoreo }: MeasurementCardProps) {
+  const imageUrl = monitoreo?.imagenes?.[0]?.image_url;
+  const coverage = monitoreo?.cobertura_capsulas_porciento
+    ?? monitoreo?.coberturaCapsulasPorciento;
+  const measurementDate = monitoreo?.timestamp
+    ?? monitoreo?.fecha
+    ?? bebedero.ultima_medicion;
+  const formattedMeasurement = formatMedicion(measurementDate);
+
+  return (
+    <article className={styles.block}>
+      <header className={styles.cardHeader}>
+        <span className={styles.bebederoIcon} aria-hidden="true">
+          <HiOutlineViewfinderCircle />
+        </span>
+        <h3 className={styles.title}>{bebedero.nombre}</h3>
+      </header>
+
+      <div className={styles.cardBody}>
+        <div className={styles.imageWrapper}>
+          {imageUrl ? (
+            <AuthenticatedImage
+              imageUrl={imageUrl}
+              alt={`Medición de ${bebedero.nombre}`}
+            />
+          ) : (
+            <div className={styles.imagePlaceholder}>
+              {monitoreo ? "Sin imagen" : "Sin monitoreos"}
+            </div>
+          )}
+        </div>
+
+        <div className={styles.details}>
+          <dl className={styles.dataList}>
+          <div className={styles.dataRow}>
+            <HiOutlineMapPin className={styles.dataIcon} aria-hidden="true" />
+            <dt>Ubicación</dt>
+            <dd>{bebedero.ubicacion?.trim() || "s/n"}</dd>
+          </div>
+
+          <div className={styles.dataRow}>
+            <HiOutlineCalendarDays className={styles.dataIcon} aria-hidden="true" />
+            <dt>Medición</dt>
+            <dd className={styles.measurementValue}>
+              <span>{formattedMeasurement.date}</span>
+              {formattedMeasurement.time && <small>{formattedMeasurement.time}</small>}
+            </dd>
+          </div>
+
+          <div className={styles.dataRow}>
+            <HiOutlineViewfinderCircle className={styles.dataIcon} aria-hidden="true" />
+            <dt>Target</dt>
+            <dd>{formatPercentage(bebedero.cobertura_objetivo)}</dd>
+          </div>
+
+          <div className={styles.dataRow}>
+            <HiOutlineShieldCheck className={styles.dataIcon} aria-hidden="true" />
+            <dt>Cobertura</dt>
+            <dd>{formatPercentage(coverage)}</dd>
+          </div>
+          </dl>
+        </div>
+      </div>
+    </article>
+  );
 }
 
 export default function BebederoCard({ bebedero }: BebederoCardProps) {
-  const apiBase = import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, "") ?? ""; 
-
-  const buildImageSrc = (imageUrl?: string | null) => { 
-    if (!imageUrl) {
-      return null;
-    }
-
-    if (imageUrl.startsWith("http")) {
-      return imageUrl;
-    }
-    
-    return `${apiBase}${imageUrl}`;
-  };
+  const hasMultipleMeasurements = bebedero.monitoreos.length > 1;
 
   return (
-    <div className={styles.card}>
-      <div className={styles.horizontalScroll}>
+    <div className={`${styles.card} ${hasMultipleMeasurements ? styles.scrollable : ""}`}>
+      <div
+        className={styles.horizontalScroll}
+        aria-label={`Monitoreos de ${bebedero.nombre}`}
+      >
         {bebedero.monitoreos.length > 0 ? (
-          bebedero.monitoreos.map((monitoreo, index) => {
-            const latestImage = monitoreo.imagenes[0];
-            const imageSrc = buildImageSrc(latestImage?.image_url);
-            
-            return (
-              <div key={`${bebedero.id}-${index}`} className={styles.block}>
-                <div className={styles.imageWrapper}>
-                  {imageSrc ? (
-                    <img src={imageSrc} alt={bebedero.nombre} />
-                  ) : (
-                    <div className={styles.imagePlaceholder}>Sin imagen</div>
-                  )}
-                </div>
-
-                <div className={styles.header}>
-                  <h3 className={styles.title}>{bebedero.nombre}</h3>
-                </div>
-                <p>
-                  <strong>Ubicación:</strong> {bebedero.ubicacion}
-                </p>
-                <p>
-                  <strong>Medición:</strong> {formatMedicion(monitoreo.timestamp ?? monitoreo.fecha ?? bebedero.ultima_medicion ?? null)}
-                </p>
-                <p>
-                  <strong>Target:</strong> {bebedero.cobertura_objetivo}%
-                </p>
-                <p>
-                  <strong>Cobertura:</strong> {monitoreo.cobertura_capsulas_porciento ?? "s/n"}%
-                </p>
-              </div>
-            );
-          })
+          bebedero.monitoreos.map((monitoreo, index) => (
+            <MeasurementCard
+              key={`${bebedero.id}-${index}`}
+              bebedero={bebedero}
+              monitoreo={monitoreo}
+            />
+          ))
         ) : (
-          <div className={styles.block}>
-            <div className={styles.imageWrapper}>
-              <div className={styles.imagePlaceholder}>Sin monitoreos</div>
-            </div>
-
-            <div className={styles.header}>
-              <h3 className={styles.title}>{bebedero.nombre}</h3>
-            </div>
-            <p>
-              <strong>Ubicación:</strong> {bebedero.ubicacion}
-            </p>
-            <p>
-              <strong>Cobertura:</strong> {bebedero.cobertura_objetivo}%
-            </p>
-            <p>
-              <strong>Medición:</strong> {formatMedicion(bebedero.ultima_medicion ?? null)}
-            </p>
-          </div>
+          <MeasurementCard bebedero={bebedero} />
         )}
       </div>
     </div>

@@ -164,7 +164,7 @@ export default function UsersPanel() {
         <div className={styles.searchGroup}>
           <input
             type="text"
-            placeholder="Buscar por nombre o email…"
+            placeholder="Buscar por cliente o email…"
             className={styles.searchInput}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -229,7 +229,7 @@ export default function UsersPanel() {
       <table className={styles.table}>
         <thead>
           <tr>
-            <th>Nombre</th>
+            <th>Cliente</th>
             <th>Correo Electronico</th>
             <th>Telefono</th>
             <th>Rol</th>

@@ -3,7 +3,6 @@ import {
   CartesianGrid,
   Bar,
   ComposedChart,
-  Legend,
   Line,
   ReferenceLine,
   ResponsiveContainer,
@@ -335,9 +334,35 @@ export default function ReportsGraficos() {
         </fieldset>
       </div>
 
+      {selectedBebederoIds.length > 0 && (
+        <div className={styles.chartLegend} aria-label="Leyenda de dispositivos">
+          {selectedBebederoIds.map((id, index) => {
+            const name = bebederos.find((item) => item.id === id)?.nombre ?? `Bebedero ${id}`;
+            const color = COLORS[index % COLORS.length];
+            return (
+              <div className={styles.legendGroup} key={id}>
+                <strong>{name}</strong>
+                <span className={styles.legendRow}>
+                  <i className={styles.legendTarget} style={{ borderTopColor: color }} /> Cobertura mínima
+                </span>
+                {modes.map((mode) => (
+                  <span className={styles.legendRow} key={mode}>
+                    <i
+                      className={chartType === "barras" ? styles.legendBar : styles.legendLine}
+                      style={{ color, backgroundColor: chartType === "barras" ? color : undefined }}
+                    />
+                    {modeLabels[mode]}
+                  </span>
+                ))}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
       <div className={styles.dropZone}>
         {selectedBebederoIds.length === 0 ? <p className={styles.empty}>Seleccioná uno o más dispositivos para graficar.</p> : loadingMeasurements ? <p className={styles.empty}>Cargando mediciones…</p> : measurementError ? <p className={styles.error}>{measurementError}</p> : chartData.length === 0 ? <p className={styles.empty}>No hay mediciones para el período seleccionado.</p> : (
-          <ResponsiveContainer width="100%" height={430}>
+          <ResponsiveContainer width="100%" height={500}>
             <ComposedChart data={chartData} margin={{ top: 20, right: 30, left: 5, bottom: 58 }} barGap={4} barCategoryGap="18%">
               <CartesianGrid strokeDasharray="3 3" />
               {chartType === "lineas" ? (
@@ -347,34 +372,6 @@ export default function ReportsGraficos() {
               )}
               <YAxis domain={[0, 100]} unit="%" />
               <Tooltip labelFormatter={(value) => new Date(Number(value)).toLocaleString("es-AR")} formatter={(value) => [`${Number(value).toFixed(2)} %`]} />
-              <Legend
-                verticalAlign="top"
-                content={() => (
-                  <div className={styles.chartLegend}>
-                    {selectedBebederoIds.map((id, index) => {
-                      const name = bebederos.find((item) => item.id === id)?.nombre ?? `Bebedero ${id}`;
-                      const color = COLORS[index % COLORS.length];
-                      return (
-                        <div className={styles.legendGroup} key={id}>
-                          <strong>{name}</strong>
-                          <span className={styles.legendRow}>
-                            <i className={styles.legendTarget} style={{ borderTopColor: color }} /> Cobertura mínima
-                          </span>
-                          {modes.map((mode) => (
-                            <span className={styles.legendRow} key={mode}>
-                              <i
-                                className={chartType === "barras" ? styles.legendBar : styles.legendLine}
-                                style={{ color, backgroundColor: chartType === "barras" ? color : undefined }}
-                              />
-                              {modeLabels[mode]}
-                            </span>
-                          ))}
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              />
               {selectedBebederoIds.flatMap((id, index) => {
                 const name = bebederos.find((item) => item.id === id)?.nombre ?? `Bebedero ${id}`;
                 const color = COLORS[index % COLORS.length];

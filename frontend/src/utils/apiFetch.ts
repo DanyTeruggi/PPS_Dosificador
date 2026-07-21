@@ -1,6 +1,11 @@
 import { useCallback } from "react";
 import { useAuth } from "../context/useAuth";
 
+export type ApiFetchOptions = RequestInit & {
+  skipAuth?: boolean;
+  skipUnauthorizedLogout?: boolean;
+};
+
 export function useApi() {
   const { token, logout } = useAuth();
 
@@ -8,7 +13,7 @@ export function useApi() {
   const API_BASE = import.meta.env.VITE_API_BASE_URL;   // http://localhost:8000
   const API_PREFIX = import.meta.env.VITE_API_PREFIX;   // /api/v1
 
-  const apiFetch = useCallback(async (path: string, options: RequestInit = {}) => {
+  const apiFetch = useCallback(async (path: string, options: ApiFetchOptions = {}) => {
     // Construimos la URL final del backend
     const normalizedBase = API_BASE?.replace(/\/$/, "") ?? "";
     const normalizedPrefix = API_PREFIX?.replace(/^\//, "").replace(/\/$/, "") ?? "";
@@ -19,9 +24,10 @@ export function useApi() {
       ? `${normalizedBase}/${normalizedPath}`
       : `${normalizedBase}/${normalizedPrefix}/${normalizedPath}`;
 
-    const headers = new Headers(options.headers);
+    const { skipAuth = false, skipUnauthorizedLogout = false, ...requestOptions } = options;
+    const headers = new Headers(requestOptions.headers);
 
-    if (token) {
+    if (token && !skipAuth) {
       headers.set("Authorization", `Bearer ${token}`);
     }
 
@@ -30,11 +36,11 @@ export function useApi() {
     }
 
     const response = await fetch(url, {
-      ...options,
+      ...requestOptions,
       headers
     });
 
-    if (response.status === 401 && token) {
+    if (response.status === 401 && token && !skipUnauthorizedLogout) {
       console.warn("Token expirado o inválido. Cerrando sesión...");
       logout();
       window.location.href = "/";

@@ -335,6 +335,26 @@ input:checked + .slider:before {
   box-shadow: 0 8px 30px rgba(0,0,0,0.2);
 }
 
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.secondaryActionBtn {
+  padding: 10px 18px;
+  border: 1px solid #1f5fb8;
+  border-radius: 8px;
+  background: #eef5ff;
+  color: #174f9e;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.secondaryActionBtn:hover {
+  background: #dceafa;
+}
+
 @keyframes fadeInScale {
   from {
     opacity: 0;

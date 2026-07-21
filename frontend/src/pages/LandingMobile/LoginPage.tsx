@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { HiOutlineUserPlus } from "react-icons/hi2";
 import { useNavigate } from "react-router-dom";
 
 import hidePasswordIcon from "../../assets/esconder.png";
@@ -7,7 +9,7 @@ import { useAuth } from "../../context/useAuth";
 import { useIsDesktop } from "../../hooks/useIsDesktop";
 import styles from "./LoginPage.module.css";
 
-/** Nueva pagina de ingreso optimizada para celular. */
+/** Página de ingreso optimizada para celular. */
 export default function LoginPage() {
   const navigate = useNavigate();
   const { login, logout } = useAuth();
@@ -17,6 +19,30 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [showRecoveryModal, setShowRecoveryModal] = useState(false);
+  const [recoveryEmail, setRecoveryEmail] = useState("");
+
+  useEffect(() => {
+    if (!showRecoveryModal) return;
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") setShowRecoveryModal(false);
+    }
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [showRecoveryModal]);
+
+  function openRecoveryModal() {
+    setRecoveryEmail(email.trim());
+    setShowRecoveryModal(true);
+  }
+
+  function handleRecoverySubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setShowRecoveryModal(false);
+    toast("La recuperación de contraseña estará disponible próximamente.");
+  }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -28,7 +54,7 @@ export default function LoginPage() {
 
       const authenticated = await login(email.trim(), password);
       if (!authenticated) {
-        setErrorMessage("No se pudo iniciar sesion. Revisa tus datos y tu conexion.");
+        setErrorMessage("No se pudo iniciar sesión. Revisá tus datos y tu conexión.");
         return;
       }
 
@@ -39,11 +65,9 @@ export default function LoginPage() {
           return;
         }
 
-        // El dashboard no esta preparado para celulares. Cerramos la sesion
-        // para evitar que una recarga redirija al administrador al panel.
         logout();
         setErrorMessage(
-          "El panel de administración está disponible únicamente en la versión de escritorio. Ingresá a www.",
+          "El panel de administración está disponible únicamente en la versión de escritorio.",
         );
         return;
       }
@@ -56,7 +80,7 @@ export default function LoginPage() {
       navigate("/cliente/establecimientos", { replace: true });
     } catch (loginError) {
       console.error(loginError);
-      setErrorMessage("Ocurrio un problema de comunicacion. Intenta nuevamente.");
+      setErrorMessage("Ocurrió un problema de comunicación. Intentá nuevamente.");
     } finally {
       setIsSubmitting(false);
     }
@@ -64,78 +88,135 @@ export default function LoginPage() {
 
   return (
     <main className={styles.page}>
-      <section className={styles.card} aria-labelledby="login-title">
+      <div className={styles.shell}>
         <header className={styles.header}>
-          <h1 id="login-title" className={styles.title}>Ingresa a tu cuenta</h1>
-          <p className={styles.subtitle}>Completa tus datos para continuar.</p>
+          <h1 id="login-title" className={styles.title}>Iniciá sesión para continuar</h1>
+          <div className={styles.introDivider} aria-hidden="true">
+            <span />
+            <i />
+            <span />
+          </div>
         </header>
 
-        <form className={styles.form} onSubmit={handleSubmit}>
-          <div className={styles.field}>
-            <label className={styles.label} htmlFor="login-email">Correo electrónico</label>
-            <input
-              className={styles.input}
-              id="login-email"
-              name="email"
-              type="email"
-              autoComplete="email"
-              placeholder="nombre@ejemplo.com"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              disabled={isSubmitting}
-              required
-            />
-          </div>
-
-          <div className={styles.field}>
-            <label className={styles.label} htmlFor="login-password">Contraseña</label>
-            <div className={styles.passwordWrapper}>
+        <section className={styles.card} aria-labelledby="login-title">
+          <form className={styles.form} onSubmit={handleSubmit}>
+            <div className={styles.field}>
+              <label className={styles.label} htmlFor="login-email">Correo electrónico</label>
               <input
-                className={styles.passwordInput}
-                id="login-password"
-                name="password"
-                type={showPassword ? "text" : "password"}
-                autoComplete="current-password"
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
+                className={styles.input}
+                id="login-email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                placeholder="nombre@ejemplo.com"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
                 disabled={isSubmitting}
                 required
               />
-              <button
-                className={styles.showPassword}
-                type="button"
-                aria-pressed={showPassword}
-                aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
-                onClick={() => setShowPassword((current) => !current)}
-              >
-                <img
-                  className={styles.passwordIcon}
-                  src={showPassword ? hidePasswordIcon : showPasswordIcon}
-                  alt=""
-                  aria-hidden="true"
-                />
-              </button>
             </div>
+
+            <div className={styles.field}>
+              <label className={styles.label} htmlFor="login-password">Contraseña</label>
+              <div className={styles.passwordWrapper}>
+                <input
+                  className={styles.passwordInput}
+                  id="login-password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  autoComplete="current-password"
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
+                  disabled={isSubmitting}
+                  required
+                />
+                <button
+                  className={styles.showPassword}
+                  type="button"
+                  aria-pressed={showPassword}
+                  aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                  onClick={() => setShowPassword((current) => !current)}
+                >
+                  <img
+                    className={styles.passwordIcon}
+                    src={showPassword ? hidePasswordIcon : showPasswordIcon}
+                    alt=""
+                    aria-hidden="true"
+                  />
+                </button>
+              </div>
+            </div>
+
+            {errorMessage && (
+              <p className={styles.error} role="alert">{errorMessage}</p>
+            )}
+
+            <button className={styles.submitButton} type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Ingresando..." : "Ingresar"}
+            </button>
+          </form>
+
+          <div className={styles.optionDivider} aria-hidden="true">
+            <span />
+            <b>o</b>
+            <span />
           </div>
 
-          {errorMessage && (
-            <p className={styles.error} role="alert">{errorMessage}</p>
-          )}
-
-          <button className={styles.submitButton} type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Ingresando..." : "Ingresar"}
+          <button className={styles.forgotButton} type="button" onClick={openRecoveryModal}>
+            ¿Olvidaste tu contraseña?
           </button>
-        </form>
+        </section>
 
         <div className={styles.register}>
           <p className={styles.registerText}>¿No tenés una cuenta?</p>
           <button className={styles.registerButton} type="button" onClick={() => navigate("/nuevo-usuario")}>
+            <HiOutlineUserPlus className={styles.registerIcon} aria-hidden="true" />
             Crear cuenta
           </button>
         </div>
+      </div>
 
-        {/* Pendiente: centralizar la redireccion por rol al conectar esta pagina. */}
-      </section>
+      {showRecoveryModal && (
+        <div className={styles.modalOverlay} role="presentation" onClick={() => setShowRecoveryModal(false)}>
+          <section
+            aria-labelledby="recovery-title"
+            aria-modal="true"
+            className={styles.modal}
+            role="dialog"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <h2 id="recovery-title">Recuperar contraseña</h2>
+            <p>Ingresá el correo asociado a tu cuenta.</p>
+
+            <form className={styles.recoveryForm} onSubmit={handleRecoverySubmit}>
+              <label className={styles.label} htmlFor="recovery-email">Correo electrónico</label>
+              <input
+                className={styles.input}
+                id="recovery-email"
+                name="recovery-email"
+                type="email"
+                autoComplete="email"
+                placeholder="nombre@ejemplo.com"
+                value={recoveryEmail}
+                onChange={(event) => setRecoveryEmail(event.target.value)}
+                required
+                autoFocus
+              />
+
+              <div className={styles.modalActions}>
+                <button
+                  className={styles.registerButtonCancel}
+                  type="button"
+                  onClick={() => setShowRecoveryModal(false)}
+                >
+                  Cancelar
+                </button>
+                <button className={styles.submitButton} type="submit">Continuar</button>
+              </div>
+            </form>
+          </section>
+        </div>
+      )}
     </main>
   );
 }

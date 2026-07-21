@@ -33,12 +33,12 @@
 .selectedItems { display: flex; flex-wrap: wrap; gap: 8px; min-height: 32px; }
 .selectedItems span { display: inline-flex; gap: 8px; align-items: center; padding: 5px 9px; border-radius: 999px; background: #dceafa; color: #174f9e; }
 .selectedItems button { border: 0; background: transparent; color: inherit; font-size: 18px; cursor: pointer; }
-.dropZone { min-height: 450px; margin-top: 10px; border: 2px dashed #8ba2ba; border-radius: 14px; background: white; display: flex; align-items: center; justify-content: center; transition: background .15s, border-color .15s; }
+.dropZone { min-height: 520px; margin-top: 10px; border: 2px dashed #8ba2ba; border-radius: 14px; background: white; display: flex; align-items: center; justify-content: center; transition: background .15s, border-color .15s; }
 .dragOver { border-color: #1f5fb8; background: #eaf2fd; }
 .empty { color: #667085; font-size: 17px; text-align: center; }
 .error { margin: 12px; color: #b00020; text-align: center; }
-.chartLegend { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px 18px; width: 100%; padding: 0 12px 16px; box-sizing: border-box; }
-.legendGroup { display: flex; flex-direction: column; gap: 5px; padding: 9px 11px; border: 1px solid #d8e0e8; border-radius: 8px; background: #f8fafc; }
+.chartLegend { display: flex; gap: 12px; width: 100%; margin: 4px 0 14px; padding: 4px 2px 10px; box-sizing: border-box; overflow-x: auto; overflow-y: hidden; scrollbar-width: thin; }
+.legendGroup { display: flex; flex: 0 0 220px; flex-direction: column; gap: 5px; padding: 9px 11px; border: 1px solid #d8e0e8; border-radius: 8px; background: #f8fafc; box-shadow: 0 3px 10px rgba(31, 71, 118, .07); }
 .legendGroup > strong { margin-bottom: 2px; color: #27364a; }
 .legendRow { display: flex; align-items: center; gap: 7px; color: #4b5563; font-size: 14px; }
 .legendRow i { display: inline-block; flex: 0 0 auto; }

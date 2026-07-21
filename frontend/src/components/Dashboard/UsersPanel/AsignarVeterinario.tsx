@@ -8,9 +8,8 @@ import {
   getClienteVeterinarioId,
   getVeterinarioId,
   reasignarCliente,
-  type ClienteAdmin,
-  type VeterinarioOption,
 } from "./assignmentUtils";
+import type { ClienteAdmin, VeterinarioOption } from "../../../types/ClientAssignment";
 
 interface Props {
   usuarioId: number;

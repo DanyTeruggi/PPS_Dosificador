@@ -58,7 +58,7 @@ export interface BebederoCreateRequest {
   nombre: string;
   ubicacion?: string | null;
   ip_address?: string | null;
-  puerto?: number;
+  puerto?: number | null;
   largo: number;
   ancho: number;
   profundidad?: number | null;
@@ -96,7 +96,7 @@ export interface BebederoResponse {
   estado: boolean;
   ubicacion?: string | null;
   ip_address?: string | null;
-  puerto: number;
+  puerto: number | null;
   ultima_medicion?: string | null;
   fecha_creacion: string;
 }

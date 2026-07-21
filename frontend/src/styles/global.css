@@ -1,13 +1,7 @@
 :root {
-  --color-input-bg: #A7B5B3;
+  /* --color-input-bg: #A7B5B3; */
 
-  /* Degradado principal */
-  --background-gradient: linear-gradient(
-    135deg,
-    #d4aad9 0%,
-    #b57ac7 40%,
-    #8a4fa3 100%
-  );
+
 
   /* Fondo para formularios */
   --background-form: #e8e3e3;
@@ -17,7 +11,6 @@
 
 /* Fondo global */
 html, body {
-  background: var(--background-gradient);
   margin: 0;
   padding: 0;
   overflow-x: hidden;

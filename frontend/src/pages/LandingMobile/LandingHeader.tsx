@@ -5,6 +5,8 @@ import styles from "./LandingMobile.module.css";
 
 type LandingHeaderProps = {
   title: string;
+  subtitle?: string;
+  icon?: ReactNode;
   onBack?: () => void;
   rightAction?: ReactNode;
 };
@@ -15,28 +17,40 @@ type LandingHeaderProps = {
  */
 export default function LandingHeader({
   title,
+  subtitle,
+  icon,
   onBack,
   rightAction,
 }: LandingHeaderProps) {
+  const hasSideActions = Boolean(onBack || rightAction);
+
   return (
     <section className={styles.header}>
-      <div className={styles.action}>
-        {onBack && (
+      {hasSideActions && (
+        <div className={styles.action}>
+          {onBack && (
           <Button
             label="Volver"
             variant="back"
             fullWidth={false}
             onClick={onBack}
           />
-        )}
+          )}
+        </div>
+      )}
+
+      <div className={`${styles.titleGroup} ${!hasSideActions ? styles.titleGroupFull : ""}`}>
+        {icon && <span className={styles.headerIcon} aria-hidden="true">{icon}</span>}
+        <div className={styles.titleContent}>
+          <h1 className={styles.title} title={title}>
+            {title}
+          </h1>
+          {subtitle && <p className={styles.subtitle}>{subtitle}</p>}
+        </div>
       </div>
 
-      <h1 className={styles.title} title={title}>
-        {title}
-      </h1>
-
       {/* Mantiene el titulo centrado aunque no haya una accion a la derecha. */}
-      <div className={styles.action}>{rightAction ?? null}</div>
+      {hasSideActions && <div className={styles.action}>{rightAction ?? null}</div>}
     </section>
   );
 }

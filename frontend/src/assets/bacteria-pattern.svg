@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 180" fill="none">
+  <defs>
+    <g id="bacillus" stroke="#fff" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="2" y="2" width="48" height="22" rx="11" stroke-width="2.4"/>
+      <path d="M11 9c8 4 19 5 29 1M11 17c9-3 20-2 29 1" stroke-width="1.2" opacity=".75"/>
+      <circle cx="18" cy="13" r="1.7" fill="#fff" stroke="none"/>
+      <circle cx="34" cy="13" r="1.4" fill="#fff" stroke="none"/>
+    </g>
+    <g id="coccus" stroke="#fff">
+      <circle cx="9" cy="9" r="7.5" stroke-width="2"/>
+      <circle cx="7" cy="7" r="1.4" fill="#fff" stroke="none"/>
+    </g>
+  </defs>
+
+  <g opacity=".2">
+    <use href="#bacillus" transform="translate(18 20) rotate(-24) scale(.9)"/>
+    <use href="#bacillus" transform="translate(82 78) rotate(18) scale(.72)" opacity=".82"/>
+    <use href="#bacillus" transform="translate(28 143) rotate(-8) scale(.64)" opacity=".75"/>
+    <use href="#bacillus" transform="translate(145 22) rotate(35) scale(.68)" opacity=".78"/>
+    <use href="#bacillus" transform="translate(184 122) rotate(-31) scale(.82)" opacity=".9"/>
+    <use href="#bacillus" transform="translate(238 57) rotate(12) scale(.58)" opacity=".72"/>
+    <use href="#bacillus" transform="translate(276 151) rotate(-18) scale(.56)" opacity=".62"/>
+
+    <use href="#bacillus" transform="translate(470 26) rotate(20) scale(.55)" opacity=".62"/>
+    <use href="#bacillus" transform="translate(505 133) rotate(-28) scale(.62)" opacity=".7"/>
+    <use href="#bacillus" transform="translate(548 67) rotate(38) scale(.76)" opacity=".82"/>
+    <use href="#bacillus" transform="translate(614 18) rotate(-16) scale(.66)" opacity=".76"/>
+    <use href="#bacillus" transform="translate(646 118) rotate(13) scale(.88)" opacity=".95"/>
+    <use href="#bacillus" transform="translate(716 57) rotate(-38) scale(.7)" opacity=".82"/>
+    <use href="#bacillus" transform="translate(759 145) rotate(24) scale(.58)" opacity=".7"/>
+  </g>
+
+  <g opacity=".15">
+    <use href="#coccus" transform="translate(66 44) scale(.8)"/>
+    <use href="#coccus" transform="translate(126 143) scale(.65)"/>
+    <use href="#coccus" transform="translate(221 20) scale(.72)"/>
+    <use href="#coccus" transform="translate(258 104) scale(.55)"/>
+    <use href="#coccus" transform="translate(490 88) scale(.62)"/>
+    <use href="#coccus" transform="translate(590 153) scale(.75)"/>
+    <use href="#coccus" transform="translate(694 32) scale(.58)"/>
+    <use href="#coccus" transform="translate(772 92) scale(.7)"/>
+  </g>
+</svg>

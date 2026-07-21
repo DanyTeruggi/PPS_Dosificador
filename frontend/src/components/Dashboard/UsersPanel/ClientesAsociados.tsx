@@ -7,14 +7,15 @@ import {
   getClienteVeterinarioId,
   getVeterinarioId,
   reasignarCliente,
-  type ClienteAdmin,
-  type VeterinarioOption,
 } from "./assignmentUtils";
+import type { ClienteAdmin, VeterinarioOption } from "../../../types/ClientAssignment";
 
 interface Props {
   usuarioId: number;
   onClose: () => void;
 }
+
+const DEFAULT_VETERINARIO_ID = 1;
 
 export default function ClientesAsociados({ usuarioId, onClose }: Props) {
   const { apiFetch } = useApi();
@@ -22,8 +23,6 @@ export default function ClientesAsociados({ usuarioId, onClose }: Props) {
   const [veterinarios, setVeterinarios] = useState<VeterinarioOption[]>([]);
   const [clientes, setClientes] = useState<ClienteAdmin[]>([]);
   const [search, setSearch] = useState("");
-  const [reasignandoId, setReasignandoId] = useState<number | null>(null);
-  const [destinoId, setDestinoId] = useState<number | null>(null);
   const [savingId, setSavingId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -43,7 +42,10 @@ export default function ClientesAsociados({ usuarioId, onClose }: Props) {
       const veterinariosData = (await veterinariosRes.json()) as VeterinarioOption[];
       const veterinarioActual = veterinariosData.find((item) => item.usuario.id === usuarioId) ?? null;
 
-      setClientes(clientesData);
+      setClientes(clientesData.filter((cliente) => {
+        const role = cliente.usuario.role ?? cliente.usuario.rol;
+        return role == null || role === "cliente";
+      }));
       setVeterinarios(veterinariosData);
       setVeterinario(veterinarioActual);
     } catch (err) {
@@ -102,10 +104,36 @@ export default function ClientesAsociados({ usuarioId, onClose }: Props) {
       );
       toast.success("Cliente reasignado correctamente.");
       setSearch("");
-      setReasignandoId(null);
-      setDestinoId(null);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "No se pudo reasignar el cliente.");
+    } finally {
+      setSavingId(null);
+    }
+  }
+
+  async function removeCliente(cliente: ClienteAdmin) {
+    if (!window.confirm(`¿Quitar a ${cliente.usuario.nombre} de este veterinario y asignarlo al veterinario predeterminado?`)) return;
+
+    setSavingId(cliente.cliente_id);
+    try {
+      await reasignarCliente(apiFetch, cliente.cliente_id, DEFAULT_VETERINARIO_ID);
+      const veterinarioPredeterminado = veterinarios.find(
+        (item) => getVeterinarioId(item) === DEFAULT_VETERINARIO_ID,
+      ) ?? null;
+      setClientes((actuales) =>
+        actuales.map((item) =>
+          item.cliente_id === cliente.cliente_id
+            ? {
+                ...item,
+                veterinario_id: DEFAULT_VETERINARIO_ID,
+                veterinario: veterinarioPredeterminado,
+              }
+            : item,
+        ),
+      );
+      toast.success("Cliente asignado al veterinario predeterminado.");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "No se pudo desasociar el cliente.");
     } finally {
       setSavingId(null);
     }
@@ -132,19 +160,15 @@ export default function ClientesAsociados({ usuarioId, onClose }: Props) {
                   <span>{cliente.razon_social}</span>
                   <span>{cliente.usuario.email}</span>
                 </div>
-                {reasignandoId === cliente.cliente_id ? (
-                  <div className={styles.reassignControls}>
-                    <select className={styles.input} value={destinoId ?? ""} onChange={(e) => setDestinoId(Number(e.target.value) || null)}>
-                      <option value="">Elegir otro veterinario</option>
-                      {veterinarios.filter((item) => getVeterinarioId(item) !== (veterinario ? getVeterinarioId(veterinario) : null)).map((item) => (
-                        <option key={getVeterinarioId(item)} value={getVeterinarioId(item)}>{item.usuario.nombre}</option>
-                      ))}
-                    </select>
-                    <button type="button" disabled={!destinoId || savingId === cliente.cliente_id} onClick={() => destinoId && void moveCliente(cliente, destinoId)}>Confirmar</button>
-                    <button type="button" onClick={() => { setReasignandoId(null); setDestinoId(null); }}>Cancelar</button>
-                  </div>
-                ) : (
-                  <button className={styles.inlineAction} type="button" onClick={() => setReasignandoId(cliente.cliente_id)}>Reasignar</button>
+                {veterinario && getVeterinarioId(veterinario) !== DEFAULT_VETERINARIO_ID && (
+                  <button
+                    className={styles.inlineAction}
+                    type="button"
+                    disabled={savingId === cliente.cliente_id}
+                    onClick={() => void removeCliente(cliente)}
+                  >
+                    {savingId === cliente.cliente_id ? "Quitando…" : "Quitar"}
+                  </button>
                 )}
               </div>
             ))}

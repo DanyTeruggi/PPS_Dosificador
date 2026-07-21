@@ -6,6 +6,12 @@
   margin: 0 auto;
   padding: 20px 16px;
   text-align: center;
+  background-color: #573969;
+  background-image:
+    url("../../assets/landing-science-texture.svg"),
+    var(--background-gradient);
+  background-position: center top;
+  background-size: cover;
 }
 
 .title {

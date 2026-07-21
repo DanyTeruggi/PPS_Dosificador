@@ -1,28 +1,27 @@
 .card {
   width: 100%;
-  background: rgba(255, 255, 255, 0.18);
-  backdrop-filter: blur(6px);
-  border-radius: 16px;
-  padding: 16px;
-  overflow: visible; 
-}
-
-.card p {
-  margin: 0;
-  font-size: 16px;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .horizontalScroll {
-  display: flex;
-  overflow-x: auto;
-  gap: 16px;
-  padding-bottom: 8px;
   width: 100%;
-  scroll-snap-type: x proximity;
+  max-width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 2px 2px 12px;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: 2px 28px;
   overscroll-behavior-x: contain;
   overscroll-behavior-y: auto;
   touch-action: auto;
+  scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
+  background-color: #8a4fa3;
+  border-radius: 16px 0 0 16px;
 }
 
 .horizontalScroll::-webkit-scrollbar {
@@ -30,46 +29,179 @@
 }
 
 .block {
-  min-width: 220px;  
-  flex-shrink: 0;     
-  padding: 12px;
-  border-radius: 14px;
-  border: 2px solid rgb(0, 0, 0); 
-  background: rgba(233, 231, 231, 0.38);
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  flex: 0 0 100%;
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.78);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 12px 24px rgba(55, 28, 68, 0.14);
   scroll-snap-align: start;
 }
 
+.cardBody {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+  align-items: start;
+  gap: 10px;
+}
+
+.scrollable .block {
+  flex-basis: 95%;
+  max-width: 95%;
+}
+
+.scrollable .horizontalScroll {
+  padding-right: 24px;
+}
+
+.imageWrapper,
 .imagePlaceholder {
-  width: 95%;
-  max-width: 200px;
+  width: 100%;
+  min-height: 0;
   height: 160px;
+  box-sizing: border-box;
+  border-radius: 14px;
+}
+
+.imageWrapper {
+  overflow: hidden;
+  border: 4px solid rgba(202, 140, 219, 0.26);
+  background: rgba(138, 66, 170, 0.08);
+  box-shadow: 0 8px 18px rgba(55, 28, 68, 0.18);
+}
+
+.imagePlaceholder {
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 8px;
-  background: rgba(0, 0, 0, 0.08);
-  color: #333;
-  font-size: 14px;
+  padding: 12px;
+  color: #684272;
+  font-size: 13px;
+  text-align: center;
 }
 
-.imageWrapper img {
-  width: 95%;
-  max-width: 200px;
-  height: 160px;
-  object-fit: cover;
-  border-radius: 8px;
+.details {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-self: start;
+  height: 180px;
+  max-height: 210px;
+  box-sizing: border-box;
+  padding: 8px;
+  border-radius: 12px;
+  background: rgba(138, 66, 170, 0.05);
+}
+
+.cardHeader {
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  font-size: clamp(16px, 4.5vw, 20px);
+}
+
+.bebederoIcon {
+  width: 1.1em;
+  height: 1.1em;
+  display: grid;
+  flex: 0 0 1.1em;
+  place-items: center;
+  border-radius: 0.32em;
+  background: linear-gradient(145deg, #ca8cdb, #8a42aa);
+  box-shadow: 0 7px 14px rgba(91, 41, 112, 0.22);
+  color: #fff;
+}
+
+.bebederoIcon svg {
+  width: 0.82em;
+  height: 0.82em;
 }
 
 .title {
-  margin-top: 12px;
-  font-size: 20px;
-  font-weight: 600;
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  color: #452052;
+  font-size: 1em;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.header {
-  display: flex;
-  justify-content: space-between;
+.dataList {
+  margin: 0;
+  align-self: stretch;
+}
+
+.dataRow {
+  min-height: 37px;
+  display: grid;
+  grid-template-columns: 20px auto minmax(0, 1fr);
   align-items: center;
-  width: 100%;
+  gap: 6px;
+  padding: 2px 0;
+  border-bottom: 1px dashed rgba(138, 66, 170, 0.24);
+  color: #57305f;
 }
 
+.dataRow:last-child {
+  border-bottom: 0;
+}
+
+.dataIcon {
+  width: 18px;
+  height: 18px;
+  color: #a15bbc;
+  stroke-width: 2;
+}
+
+.dataRow dt,
+.dataRow dd {
+  margin: 0;
+}
+
+.dataRow dt {
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.dataRow dd {
+  min-width: 0;
+  overflow: hidden;
+  color: #452052;
+  font-size: 12px;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.measurementValue {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.measurementValue small {
+  font-size: 11px;
+}
+
+@media (max-width: 360px) {
+  .details {
+    height: 180px;
+    max-height: 180px;
+  }
+
+  .imageWrapper,
+  .imagePlaceholder {
+    height: 180px;
+    min-height: 0;
+    aspect-ratio: auto;
+  }
+}

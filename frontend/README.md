@@ -220,6 +220,92 @@ El hook `useApi` centraliza las solicitudes HTTP:
 | `PATCH/DELETE` | `/api/v1/admin/bebederos/{id}` | Edición y eliminación |
 | `GET` | `/api/v1/admin/monitoreos` | Mediciones para reportes |
 
+## Simulador de hardware
+
+Durante el desarrollo, el panel administrativo **Dispositivos** muestra la acciÃ³n **Simular lectura**. Esta herramienta reproduce temporalmente el comportamiento del dispositivo fÃ­sico y solo se renderiza cuando `import.meta.env.DEV` es verdadero.
+
+Cada ejecuciÃ³n realiza el flujo real de ingesta de forma secuencial:
+
+```text
+POST /api/v1/bebederos/{bebedero_id}/monitoreo
+    â†“ respuesta exitosa
+POST /api/v1/bebederos/{bebedero_id}/imagenes
+```
+
+La imagen nunca se envÃ­a si falla la creaciÃ³n del monitoreo. El backend la asocia al monitoreo mÃ¡s reciente del bebedero, por lo que no deben ejecutarse ambas solicitudes en paralelo.
+
+### Generar la API key del dispositivo
+
+Los endpoints de ingesta no usan el JWT del administrador. Requieren la cabecera:
+
+```http
+X-API-Key: <clave-del-dispositivo>
+```
+
+La clave se genera desde la raÃ­z del backend mediante su CLI. Para el bebedero `25`:
+
+```powershell
+.\venv\Scripts\python.exe -m app.cli.device_api_key 25
+```
+
+Ejecutar esa instrucciÃ³n en una terminal PowerShell ubicada en la carpeta raÃ­z del backend. El comando imprime Ãºnicamente la `X-API-Key`; copiar su salida y pegarla en el campo **API key del dispositivo** del simulador. El nÃºmero final es el `bebedero_id` y debe reemplazarse por el ID seleccionado en el formulario.
+
+El ID utilizado en el comando debe coincidir exactamente con el dispositivo seleccionado en el simulador. Para otro bebedero se debe generar su propia clave:
+
+```powershell
+.\venv\Scripts\python.exe -m app.cli.device_api_key 26
+```
+
+La API key:
+
+- Es determinÃ­stica para la combinaciÃ³n `bebedero_id + HARDWARE_API_KEY_SECRET`.
+- Se reutiliza para todas las mediciones e imÃ¡genes del mismo bebedero.
+- No cambia entre lecturas ni por utilizar otra fecha u horario.
+- No sirve para un bebedero con otro ID.
+- Debe regenerarse si cambia `HARDWARE_API_KEY_SECRET` en el backend.
+- No debe almacenarse en el frontend, `localStorage` ni variables `VITE_*`.
+
+El simulador mantiene la clave solamente en memoria y la limpia después de completar el flujo. Un `401` de estos endpoints se interpreta como una API key invÃ¡lida y no cierra la sesiÃ³n administrativa.
+
+### Datos simulados
+
+El formulario permite enviar el contrato completo de monitoreo:
+
+```json
+{
+  "fecha": "2026-07-20",
+  "timestamp": "2026-07-20T14:30:00.000Z",
+  "nivel_agua_cm": 12.5,
+  "distancia_sensor_cm": 7.2,
+  "cobertura_capsulas_porciento": 72.5,
+  "sensor_ultrasound": true,
+  "camera_activa": true,
+  "analyzer_activo": true,
+  "config_ok": true,
+  "error_message": null
+}
+```
+
+La cobertura se valida en la interfaz entre `0` y `100`. Los valores numÃ©ricos opcionales vacÃ­os y el mensaje de error vacÃ­o se envÃ­an como `null`.
+
+La imagen se convierte a Base64 y se envÃ­a con un nombre Ãºnico. Para las pruebas se aceptan JPEG, PNG y WebP de hasta 5 MB. La operaciÃ³n crea registros reales en el backend configurado.
+
+### Probar otra lectura del mismo bebedero
+
+Para subir otra imagen con un horario diferente:
+
+1. Seleccionar nuevamente el mismo bebedero.
+2. Usar la misma API key.
+3. Indicar la nueva fecha y hora y los valores de la mediciÃ³n.
+4. Seleccionar la nueva imagen.
+5. Ejecutar **Enviar lectura e imagen**.
+
+El simulador crea primero un monitoreo nuevo y luego carga su imagen. No se debe subir solamente la imagen si se pretende representar una lectura nueva, porque quedarÃ­a asociada al monitoreo mÃ¡s reciente existente.
+
+### VerificaciÃ³n en la interfaz mobile
+
+DespuÃ©s de completar la simulaciÃ³n, iniciar sesiÃ³n como el cliente propietario o su veterinario, ingresar al establecimiento y abrir el bebedero. `BebederoCard` descarga la imagen protegida con JWT, la muestra completa y permite ampliarla al tocarla.
+
 ## Reportes de cobertura
 
 El panel de reportes permite buscar un cliente, establecimiento o dispositivo. Después de elegir un resultado muestra las relaciones en cascada y permite seleccionar múltiples dispositivos.

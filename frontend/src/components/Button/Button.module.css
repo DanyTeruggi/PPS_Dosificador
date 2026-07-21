@@ -100,23 +100,37 @@
 
 /* VARIANTE CON ÍCONO (back + dashboard) */
 .iconButton {
-  width: 40px;
-  height: 40px;
-  background: transparent;
-  border-radius: 10px;
-  border: none;
+  width: 100%;
+  height: 60px;
+  min-height: 60px;
+  padding: 0;
+  /* border: 1px solid rgba(255, 255, 255, 0.28); */
+  border-radius: 16px;
+  background: #8a42aa;
+  color: rgba(255, 255, 255, 0.94);
   cursor: pointer;
 
   display: flex;
   justify-content: center;
   align-items: center;
 
-  transition: transform .15s ease, background .2s ease;
+  box-shadow: 0 4px 10px rgba(55, 28, 68, 0.16);
+  transition: transform 150ms ease, background-color 150ms ease, box-shadow 150ms ease;
 }
 
 .iconButton:hover {
-  background-color: #7a4591;
-  transform: scale(1.05);
+  background: rgba(255, 255, 255, 0.26);
+  box-shadow: 0 6px 14px rgba(55, 28, 68, 0.24);
+  transform: translateY(-1px);
+}
+
+.iconButton:active {
+  transform: translateY(0);
+}
+
+.iconButton:focus-visible {
+  outline: 3px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 2px;
 }
 
 /* IMAGEN DE LOS ICONOS */
@@ -158,4 +172,10 @@
 
 .selectedActive:hover {
   background: #145DA0;
+}
+
+.vectorIcon {
+  width: 34px;
+  height: 32px;
+  stroke-width: 2;
 }

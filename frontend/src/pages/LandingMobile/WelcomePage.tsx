@@ -3,7 +3,9 @@ import { useNavigate } from "react-router-dom";
 
 import logoCivetan from "../../assets/CIVETAN.png";
 import logoExactas from "../../assets/facExactas.png";
-import logoVeterinaria from "../../assets/facVeterinaria.jpeg";
+import logoPetri from "../../assets/fondoApp.png";
+import logoVeterinaria from "../../assets/logo-facu-veterinaria.png";
+import logoUnicen from "../../assets/UNICEN2.png";
 import styles from "./WelcomePage.module.css";
 
 /** Nueva pantalla de bienvenida para dispositivos moviles. */
@@ -33,7 +35,11 @@ export default function WelcomePage() {
 
         <div className={styles.projectIdentity}>
           <p className={styles.subtitle}>Monitoreo Bacteriológico</p>
-          <img className={styles.mainLogo} src={logoVeterinaria} alt="Facultad de Veterinaria" />
+          <img
+            className={styles.mainLogo}
+            src={logoPetri}
+            alt="Ganado en el campo junto a una cadena de ADN y bacterias"
+          />
         </div>
 
         <div className={styles.actions}>
@@ -43,8 +49,21 @@ export default function WelcomePage() {
 
           <div className={styles.logosBar} aria-label="Instituciones participantes">
             <img className={styles.institutionLogo} src={logoCivetan} alt="CIVETAN" />
-            <img className={styles.institutionLogo} src={logoExactas} alt="Facultad de Ciencias Exactas" />
+            <img
+              className={`${styles.institutionLogo} ${styles.institutionLogoExpanded}`}
+              src={logoExactas}
+              alt="Facultad de Ciencias Exactas"
+            />
+            <img
+              className={`${styles.institutionLogo} ${styles.institutionLogoExpanded}`}
+              src={logoVeterinaria}
+              alt="Facultad de Veterinaria"
+            />
           </div>
+          
+          <div className={styles.institutionNames} aria-label="Nombres de las instituciones participantes">
+            <img className={styles.institutionUnicen} src={logoUnicen} alt="UNICEN" />
+          </div>  
         </div>
       </div>
     </main>

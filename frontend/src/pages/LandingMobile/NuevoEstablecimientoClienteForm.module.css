@@ -1,0 +1,152 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  padding: 20px;
+  background: rgba(48, 26, 58, 0.68);
+  backdrop-filter: blur(6px);
+}
+
+.dialog {
+  width: min(100%, 360px);
+  max-height: calc(100dvh - 40px);
+  box-sizing: border-box;
+  overflow-y: auto;
+  padding: clamp(24px, 7vw, 34px);
+  border: 0;
+  border-top: 4px solid #8a4fa3;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 18px 36px rgba(53, 34, 62, 0.16);
+}
+
+.header {
+  display: block;
+}
+
+.header h2 {
+  margin: 0 0 8px;
+  color: #452052;
+  font-size: clamp(20px, 5.8vw, 24px);
+  text-align: center;
+}
+
+.closeButton {
+  display: none;
+}
+
+.subtitle {
+  margin: 0 0 20px;
+  color: #594e60;
+  font-size: 14px;
+  text-align: center;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+  color: #302737;
+  font-size: 15px;
+  font-weight: 700;
+  text-align: left;
+}
+
+.group input {
+  width: 100%;
+  min-height: 44px;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid #817588;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.86);
+  color: #222;
+  font: inherit;
+  font-weight: 400;
+}
+
+.group input:focus {
+  border-color: #6a3dad;
+  outline: 3px solid rgba(106, 61, 173, 0.2);
+}
+
+.error {
+  margin: 0;
+  padding: 12px;
+  border-radius: 8px;
+  background: rgba(143, 17, 34, 0.1);
+  color: #8f1122;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.actions button {
+  min-height: 44px;
+  padding: 11px 18px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.cancelButton {
+  border: 1px solid #8a4fa3;
+  background: transparent;
+  color: #6a3dad;
+}
+
+.submitButton {
+  border: 0;
+  background: #8a4fa3;
+  box-shadow: 0 7px 16px rgba(91, 47, 111, 0.2);
+  color: #fff;
+}
+
+.cancelButton:hover {
+  background: rgba(138, 79, 163, 0.08);
+}
+
+.submitButton:hover:not(:disabled) {
+  background: #7a4591;
+}
+
+.actions button:focus-visible {
+  outline: 3px solid rgba(106, 61, 173, 0.3);
+  outline-offset: 2px;
+}
+
+.actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+@media (max-height: 650px) {
+  .overlay {
+    padding-block: 12px;
+  }
+
+  .dialog {
+    max-height: calc(100dvh - 24px);
+    padding: 18px;
+  }
+
+  .subtitle {
+    margin-bottom: 16px;
+  }
+
+  .group {
+    margin-bottom: 12px;
+  }
+}

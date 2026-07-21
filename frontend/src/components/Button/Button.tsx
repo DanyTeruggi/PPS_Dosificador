@@ -1,8 +1,7 @@
 import styles from "./Button.module.css";
+import { HiOutlineArrowLeft, HiOutlineChartBarSquare } from "react-icons/hi2";
 
 // Importá tus imágenes
-import backIcon from "../../assets/back.png";
-import dashboardIcon from "../../assets/dashboard.png";
 import addIcon from "../../assets/add.png";
 interface ButtonProps {
   label: string;
@@ -17,9 +16,12 @@ interface ButtonProps {
 }
 
 // Mapa de variantes → íconos
-const iconMap: Record<string, string> = {
-  back: backIcon,
-  dashboard: dashboardIcon,
+const vectorIconMap = {
+  back: HiOutlineArrowLeft,
+  dashboard: HiOutlineChartBarSquare,
+} as const;
+
+const imageIconMap: Record<string, string> = {
   add: addIcon, 
 };
 
@@ -31,21 +33,27 @@ export default function Button({
   variant = "primary",
   fullWidth = true,
 }: ButtonProps) {
-  const iconSrc = iconMap[variant];
+  const VectorIcon = variant === "back" || variant === "dashboard"
+    ? vectorIconMap[variant]
+    : null;
+  const iconSrc = imageIconMap[variant];
+  const hasIcon = Boolean(VectorIcon || iconSrc);
 
   return (
     <button
       type={type}
       onClick={onClick}
-      aria-label={ariaLabel}
+      aria-label={ariaLabel ?? (hasIcon ? label : undefined)}
       className={`
     ${styles.button}
     ${styles[variant]}
-    ${iconSrc ? styles.iconButton : ""}
+    ${hasIcon ? styles.iconButton : ""}
     ${fullWidth ? styles.full : ""}
   `}
     >
-      {iconSrc ? (
+      {VectorIcon ? (
+        <VectorIcon aria-hidden="true" className={styles.vectorIcon} />
+      ) : iconSrc ? (
         <img src={iconSrc} alt={variant} className={styles.icon} />
       ) : (
         label

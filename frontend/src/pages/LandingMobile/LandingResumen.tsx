@@ -1,8 +1,7 @@
 import { useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { HiOutlineCalendarDays, HiOutlineMapPin } from "react-icons/hi2";
 
-import errorIcon from "../../assets/CRUZ.png";
-import okIcon from "../../assets/OK.png";
 import EmptyState from "../../components/EmptyState/EmptyState";
 import useEstablecimientoBebederos from "../../hooks/useEstablecimientoBebederos";
 import type { BebederoDetalle, MonitoreoDetalle } from "../../types/landingTypes";
@@ -16,6 +15,7 @@ type EstadoMedicion = "ok" | "desvio" | "sin-dato";
 type FilaHistorial = {
   key: string;
   fecha: string;
+  hora: string;
   cobertura: string;
   estado: EstadoMedicion;
 };
@@ -37,19 +37,23 @@ function getCobertura(monitoreo: MonitoreoDetalle) {
 }
 
 function formatFecha(raw?: string) {
-  if (!raw) return "s/n";
+  if (!raw) return { fecha: "s/n", hora: "" };
 
   const fecha = new Date(raw);
-  if (Number.isNaN(fecha.getTime())) return raw;
+  if (Number.isNaN(fecha.getTime())) return { fecha: raw, hora: "" };
 
-  return `${fecha.toLocaleString("es-AR", {
+  return {
+    fecha: fecha.toLocaleDateString("es-AR", {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
+    }),
+    hora: `${fecha.toLocaleTimeString("es-AR", {
     hour: "2-digit",
     minute: "2-digit",
     hour12: false,
-  })} Hs`;
+    })} Hs`,
+  };
 }
 
 /** Convierte los datos de un bebedero en filas listas para mostrar. */
@@ -68,7 +72,7 @@ function createHistorial(bebedero: BebederoDetalle): HistorialBebedero {
     return {
       id: bebedero.id,
       titulo,
-      filas: [{ key: `${bebedero.id}-sin-dato`, fecha: "s/n", cobertura: "s/n", estado: "sin-dato" }],
+      filas: [{ key: `${bebedero.id}-sin-dato`, fecha: "s/n", hora: "", cobertura: "s/n", estado: "sin-dato" }],
     };
   }
 
@@ -83,9 +87,14 @@ function createHistorial(bebedero: BebederoDetalle): HistorialBebedero {
           ? "ok"
           : "desvio";
 
+      const fechaFormateada = formatFecha(
+        getFecha(monitoreo) ?? bebedero.ultima_medicion ?? undefined,
+      );
+
       return {
         key: `${bebedero.id}-${index}`,
-        fecha: formatFecha(getFecha(monitoreo) ?? bebedero.ultima_medicion ?? undefined),
+        fecha: fechaFormateada.fecha,
+        hora: fechaFormateada.hora,
         cobertura: cobertura == null ? "s/n" : `${cobertura}%`,
         estado,
       };
@@ -121,6 +130,7 @@ export default function LandingResumen() {
         <>
           <LandingHeader
             title={establecimientoNombre}
+            subtitle="Panel de Resumen"
             onBack={handleBack}
             rightAction={null}
           />
@@ -137,26 +147,45 @@ export default function LandingResumen() {
 
             {historiales.map((historial) => (
               <article key={historial.id} className={styles.bebederoBlock}>
-                <h2 className={styles.bebederoTitle}>{historial.titulo}</h2>
+                <h2 className={styles.bebederoTitle}>
+                  <HiOutlineMapPin className={styles.titlePin} aria-hidden="true" />
+                  <span>{historial.titulo}</span>
+                </h2>
 
                 <div className={styles.tableCard}>
                   <div className={styles.columnsHeader}>
-                    <span>Mediciones</span>
-                    <span>Cobertura</span>
+                    <span className={styles.measurementsHeader}>Mediciones</span>
+                    <span className={styles.coverageHeader}>Cobertura</span>
                     <span aria-hidden="true" />
                   </div>
 
                   <div className={styles.rowsWrapper}>
                     {historial.filas.map((fila) => (
                       <div key={fila.key} className={styles.rowCard}>
-                        <span className={styles.cell}>{fila.fecha}</span>
-                        <span className={styles.cell}>{fila.cobertura}</span>
+                        <span className={styles.calendarBox} aria-hidden="true">
+                          <HiOutlineCalendarDays />
+                        </span>
+                        <span className={styles.dateCell}>
+                          <span>{fila.fecha}</span>
+                          {fila.hora && <small>{fila.hora}</small>}
+                        </span>
+                        <span className={`${styles.cell} ${styles.coverageCell}`}>
+                          {fila.cobertura}
+                        </span>
                         <span className={styles.statusCell}>
                           {fila.estado === "ok" && (
-                            <img className={styles.statusIcon} src={okIcon} alt="Dentro de rango" />
+                            <span
+                              aria-label="Dentro de rango"
+                              className={`${styles.statusIndicator} ${styles.statusOk}`}
+                              role="img"
+                            />
                           )}
                           {fila.estado === "desvio" && (
-                            <img className={styles.statusIcon} src={errorIcon} alt="Debajo del objetivo" />
+                            <span
+                              aria-label="Fuera de rango"
+                              className={`${styles.statusIndicator} ${styles.statusError}`}
+                              role="img"
+                            />
                           )}
                           {fila.estado === "sin-dato" && (
                             <span className={styles.noData} aria-label="Sin dato">s/n</span>

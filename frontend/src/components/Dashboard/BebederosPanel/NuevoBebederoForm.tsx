@@ -18,6 +18,9 @@ export default function NuevoBebederoForm({ onClose, establecimientos }: Props) 
   const [form, setForm] = useState({
     establecimiento: "",
     nombre: "",
+    ubicacion: "",
+    ipAddress: "",
+    puerto: "",
     largoBebedero: "",
     anchoBebedero: "",
     profundidadBebedero: "",
@@ -40,6 +43,9 @@ export default function NuevoBebederoForm({ onClose, establecimientos }: Props) 
       const payload: BebederoCreateRequest = {
         establecimiento_id: Number(form.establecimiento),
         nombre: form.nombre,
+        ubicacion: form.ubicacion.trim() || null,
+        ip_address: form.ipAddress.trim() || null,
+        puerto: form.puerto ? Number(form.puerto) : null,
         largo: Number(form.largoBebedero),
         ancho: Number(form.anchoBebedero),
         profundidad: form.profundidadBebedero
@@ -102,6 +108,46 @@ export default function NuevoBebederoForm({ onClose, establecimientos }: Props) 
             value={form.nombre}
             onChange={(e) => updateField("nombre", e.target.value)}
           />
+        </div>
+
+        {/* Ubicación */}
+        <div className={styles.group}>
+          <label className={styles.label}>Ubicación</label>
+          <input
+            className={styles.input}
+            type="text"
+            value={form.ubicacion}
+            onChange={(e) => updateField("ubicacion", e.target.value)}
+            placeholder="Ej: Sector norte"
+          />
+        </div>
+
+        {/* Dirección IP / Puerto */}
+        <div className={styles.row}>
+          <div className={styles.group}>
+            <label className={styles.label}>Dirección IP</label>
+            <input
+              className={styles.input}
+              type="text"
+              maxLength={45}
+              value={form.ipAddress}
+              onChange={(e) => updateField("ipAddress", e.target.value)}
+              placeholder="Ej: 192.168.1.10"
+            />
+          </div>
+          <div className={styles.group}>
+            <label className={styles.label}>Puerto</label>
+            <input
+              className={styles.input}
+              type="number"
+              min="1"
+              max="65535"
+              step="1"
+              value={form.puerto}
+              onChange={(e) => updateField("puerto", e.target.value)}
+              placeholder="Ej: 8000"
+            />
+          </div>
         </div>
 
         {/* Largo / Ancho / Profundidad */}

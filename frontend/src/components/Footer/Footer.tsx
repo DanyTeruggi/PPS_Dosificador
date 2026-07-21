@@ -1,4 +1,6 @@
-import { BsHouse, BsPeopleFill, BsXCircle } from "react-icons/bs";
+import { BsHouseDoorFill,
+  BsHeadset,
+  BsBoxArrowRight } from "react-icons/bs";
 import styles from "./Footer.module.css";
 
 import { useAuth } from "../../context/useAuth";
@@ -24,20 +26,20 @@ export default function Footer() {
 
       {/* HOME */}
       <div className={styles.item} onClick={handleHome}>
-        <BsHouse size={22} />
-        <span className={styles.label}>Home</span>
+        <BsHouseDoorFill size={22} />
+        <span className={styles.label}>Inicio</span>
       </div>
 
       {/* SOPORTE TÉCNICO */}
       <div className={styles.item}>
-        <BsPeopleFill size={22} />
+        <BsHeadset size={22} />
         <span className={styles.label}>Soporte Técnico</span>
       </div>
 
       {/* LOGOUT */}
       <div className={styles.item} onClick={handleLogout}>
-        <BsXCircle size={22} />
-        <span className={styles.label}>Cerrar</span>
+        <BsBoxArrowRight size={22} />
+        <span className={styles.label}>Salir</span>
       </div>
 
     </footer>

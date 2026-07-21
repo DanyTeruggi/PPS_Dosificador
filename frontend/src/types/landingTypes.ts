@@ -11,14 +11,19 @@ export type EstablecimientoDetalle = {
 };
 
 /** Una medicion guardada dentro del historial de un bebedero. */
+export type ImagenDetalle = {
+  id?: number;
+  image_url?: string | null;
+  nombre_archivo?: string;
+  fecha_captura?: string;
+};
+
 export type MonitoreoDetalle = {
   fecha?: string;
   timestamp?: string;
   cobertura_capsulas_porciento?: number | null;
   coberturaCapsulasPorciento?: number | null;
-  imagenes: Array<{
-    image_url?: string | null;
-  }>;
+  imagenes: ImagenDetalle[];
 };
 
 /** Datos completos utilizados por las Landing de bebederos y resumen. */
@@ -30,4 +35,3 @@ export type BebederoDetalle = {
   ultima_medicion?: string | null;
   monitoreos: MonitoreoDetalle[];
 };
-

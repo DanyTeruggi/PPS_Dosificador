@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1400" fill="none">
+  <defs>
+    <g id="bacterium" stroke="#fff" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="2" y="2" width="62" height="28" rx="14" stroke-width="2.5"/>
+      <path d="M13 11c11 5 25 6 38 1M13 21c12-4 27-3 38 2" stroke-width="1.3" opacity=".7"/>
+      <circle cx="23" cy="16" r="2" fill="#fff" stroke="none"/>
+      <circle cx="43" cy="16" r="1.7" fill="#fff" stroke="none"/>
+    </g>
+    <g id="dna" stroke="#fff" stroke-linecap="round">
+      <path d="M0 0c38 42 82 42 120 0s82-42 120 0" stroke-width="3"/>
+      <path d="M0 54c38-42 82-42 120 0s82 42 120 0" stroke-width="3"/>
+      <path d="M18 17l18 20M46 5l18 45M77 4l17 46M108 17l15 20M137 37l17-20M168 50l17-46M199 49l17-44M226 37l14-20" stroke-width="1.7" opacity=".8"/>
+    </g>
+    <g id="coccus" stroke="#fff">
+      <circle cx="10" cy="10" r="8.5" stroke-width="2"/>
+      <circle cx="7" cy="7" r="1.5" fill="#fff" stroke="none"/>
+    </g>
+  </defs>
+
+  <!-- Zona superior: apenas perceptible -->
+  <g opacity=".025">
+    <use href="#bacterium" transform="translate(55 105) rotate(-24) scale(.8)"/>
+    <use href="#coccus" transform="translate(705 190) scale(.9)"/>
+    <use href="#dna" transform="translate(470 310) rotate(-12) scale(.72)"/>
+  </g>
+
+  <!-- Zona media: presencia moderada en los bordes -->
+  <g opacity=".055">
+    <use href="#bacterium" transform="translate(20 455) rotate(28) scale(.72)"/>
+    <use href="#bacterium" transform="translate(710 520) rotate(-38) scale(.86)"/>
+    <use href="#coccus" transform="translate(88 575) scale(.75)"/>
+    <use href="#coccus" transform="translate(668 650) scale(1.05)"/>
+    <use href="#dna" transform="translate(-55 680) rotate(15) scale(.76)"/>
+  </g>
+
+  <!-- Zona inferior: mayor densidad y contraste -->
+  <g opacity=".105">
+    <use href="#dna" transform="translate(430 815) rotate(-18) scale(1.05)"/>
+    <use href="#dna" transform="translate(-40 1110) rotate(12) scale(.9)"/>
+    <use href="#dna" transform="translate(575 1250) rotate(-12) scale(.68)" opacity=".9"/>
+    <use href="#bacterium" transform="translate(45 850) rotate(-32) scale(.82)"/>
+    <use href="#bacterium" transform="translate(170 970) rotate(22) scale(.58)" opacity=".8"/>
+    <use href="#bacterium" transform="translate(675 1010) rotate(42) scale(.9)"/>
+    <use href="#bacterium" transform="translate(535 1185) rotate(-16) scale(.7)" opacity=".85"/>
+    <use href="#bacterium" transform="translate(90 1280) rotate(34) scale(.95)"/>
+    <use href="#bacterium" transform="translate(710 1320) rotate(-28) scale(.62)"/>
+    <use href="#bacterium" transform="translate(655 1215) rotate(26) scale(.56)" opacity=".82"/>
+    <use href="#bacterium" transform="translate(748 1270) rotate(-52) scale(.48)" opacity=".72"/>
+    <use href="#coccus" transform="translate(35 1040) scale(1.1)"/>
+    <use href="#coccus" transform="translate(300 895) scale(.72)"/>
+    <use href="#coccus" transform="translate(625 925) scale(.82)"/>
+    <use href="#coccus" transform="translate(390 1240) scale(1.15)"/>
+    <use href="#coccus" transform="translate(750 1160) scale(.7)"/>
+    <use href="#coccus" transform="translate(690 1360) scale(.62)" opacity=".8"/>
+    <use href="#coccus" transform="translate(235 1360) scale(.85)"/>
+  </g>
+</svg>

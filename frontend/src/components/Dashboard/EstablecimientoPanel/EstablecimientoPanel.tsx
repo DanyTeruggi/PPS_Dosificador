@@ -15,6 +15,7 @@ import Button from "../../Button/Button";
 
 type EstablecimientoRow = Establecimiento & {
   clienteNombre: string;
+  usuarioNombre: string;
 };
 
 type ClienteProfileResponse = {
@@ -103,10 +104,12 @@ export default function EstablecimientoPanel() {
       }
 
       const clienteNombre = profile.razon_social || profile.usuario?.nombre || user?.nombre || "Cliente";
+      const usuarioNombre = profile.usuario?.nombre || user?.nombre || "-";
       setEstablecimientos(
         establecimientosCliente.map((establecimiento) => ({
           ...establecimiento,
           clienteNombre,
+          usuarioNombre,
         }))
       );
       
@@ -142,6 +145,7 @@ export default function EstablecimientoPanel() {
           return establecimientosCliente.map((establecimiento) => ({
             ...establecimiento,
             clienteNombre,
+            usuarioNombre: cliente.usuario?.nombre || "-",
           }));
         })
       );
@@ -181,6 +185,7 @@ export default function EstablecimientoPanel() {
             clienteNombre:
               cliente?.razon_social ||
               `Cliente ${establecimiento.cliente_id}`,
+            usuarioNombre: cliente?.usuario?.nombre || "-",
           };
         })
       );
@@ -207,7 +212,7 @@ export default function EstablecimientoPanel() {
     return (
       e.nombre.toLowerCase().includes(searchValue) ||
       e.id.toString().includes(search) ||
-      e.clienteNombre.toLowerCase().includes(searchValue)
+      e.usuarioNombre.toLowerCase().includes(searchValue)
     );
   });
 
@@ -309,7 +314,7 @@ export default function EstablecimientoPanel() {
         <div className={styles.searchGroup}>
           <input
             type="text"
-            placeholder="Buscar por nombre, ID o cliente…"
+            placeholder="Buscar por establecimiento, ID o cliente…"
             className={styles.searchInput}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -336,9 +341,10 @@ export default function EstablecimientoPanel() {
         <thead>
           <tr>
             <th>ID</th>
-            <th>Nombre</th>
+            <th>Establecimiento</th>
             <th>Ubicación</th>
             <th>Razon Social</th>
+            <th>Cliente</th>
             <th></th>
           </tr>
         </thead>
@@ -354,6 +360,7 @@ export default function EstablecimientoPanel() {
               <td>{e.nombre}</td>
               <td>{e.ubicacion || "-"}</td>
               <td>{e.clienteNombre}</td>
+              <td>{e.usuarioNombre}</td>
               <td className={styles.actionsCell}>
                 <button className={styles.editBtn} onClick={() => handleEditClick(e.id)}>
                   Editar
@@ -370,7 +377,7 @@ export default function EstablecimientoPanel() {
 
           {filtrados.length === 0 && (
             <tr>
-              <td colSpan={5} className={styles.emptyCell}>
+              <td colSpan={6} className={styles.emptyCell}>
                 No hay establecimientos para mostrar.
               </td>
             </tr>

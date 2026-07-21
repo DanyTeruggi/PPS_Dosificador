@@ -1,3 +1,16 @@
+:global(:root) {
+  --background-gradient:
+    radial-gradient(circle at top,
+      rgba(255, 255, 255, 0.18) 0%,
+      rgba(255, 255, 255, 0) 42%),
+
+    linear-gradient(155deg,
+      #d8bce2 0%,
+      #b78acb 28%,
+      #8454a0 62%,
+      #573969 100%);
+}
+
 .page {
   min-height: 100dvh;
   display: flex;
@@ -6,6 +19,13 @@
   box-sizing: border-box;
   padding: clamp(18px, 4vh, 32px) 16px;
   text-align: center;
+  background-color: #573969;
+  background-image:
+    url("../../assets/landing-science-texture.svg"),
+    var(--background-gradient);
+  background-position: center top;
+  background-size: cover;
+  overflow: hidden;
 }
 
 .content {
@@ -46,19 +66,25 @@
 }
 
 .mainLogo {
-  width: clamp(130px, 42vw, 180px);
-  aspect-ratio: 1;
-  border-radius: 50%;
+  width: min(82vw, 310px);
+  max-width: 100%;
+  aspect-ratio: 16 / 9;
   object-fit: cover;
+  filter: blur(0.5px) saturate(0.6) contrast(0.9) brightness(1.1);
+  object-position: center;
+  border: 6px solid rgba(255, 255, 255, 0.32);
+  border-radius: 25px;
+  box-shadow: 0 12px 28px rgba(55, 28, 68, 0.24);
+  
 }
 
 .enterButton {
   width: min(100%, 332px);
   padding: 13px 20px;
-  border: 0;
   border-radius: 10px;
   background: #8a4fa3;
   color: white;
+  border: #d4a7e4  3px solid;
   font-size: 18px;
   font-weight: 700;
   cursor: pointer;
@@ -94,20 +120,40 @@
   align-items: center;
   justify-content: center;
   flex-wrap: nowrap;
-  gap: 10px;
+  gap: 8px;
   padding-top: 0;
   margin-top: 5px;
 }
 
 .institutionLogo {
   width: calc((100% - 10px) / 2);
-  max-width: 150px;
+  max-width: 120px;
   height: 58px;
   box-sizing: border-box;
-  padding: 7px 9px;
+  padding: 3px 5px;
   border-radius: 8px;
   background: rgba(236, 232, 232, 0.3);
   object-fit: contain;
+}
+
+.institutionLogoExpanded {
+  padding: 3px;
+}
+
+.institutionNames {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.institutionUnicen {
+  width: min(72%, 230px);
+  height: 90px;
+  box-sizing: border-box;
+  padding: 4px 6px;
+  object-fit: contain;
+  border-radius: 8px;
 }
 
 .fadeOut {
@@ -143,7 +189,8 @@
   }
 
   .mainLogo {
-    width: 110px;
+    width: min(58vw, 190px);
+    border-radius: 12px;
   }
 
   .logosBar {

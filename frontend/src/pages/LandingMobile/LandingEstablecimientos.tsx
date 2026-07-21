@@ -1,12 +1,16 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { HiOutlineChevronRight, HiOutlineMapPin } from "react-icons/hi2";
 
 import EmptyState from "../../components/EmptyState/EmptyState";
 import { useAuth } from "../../context/useAuth";
 import { useApi } from "../../utils/apiFetch";
+import { formatBusinessName } from "../../utils/formatBusinessName";
+import { getInitials } from "../../utils/getInitials";
 import LandingHeader from "./LandingHeader";
 import LandingMobileLayout from "./LandingMobileLayout";
 import LandingPageStatus from "./LandingPageStatus";
+import NuevoEstablecimientoClienteForm from "./NuevoEstablecimientoClienteForm";
 import styles from "./LandingSelection.module.css";
 
 type Establecimiento = { id: number; nombre: string };
@@ -27,6 +31,8 @@ export default function LandingEstablecimientos() {
   const [establecimientos, setEstablecimientos] = useState<Establecimiento[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     async function fetchEstablecimientos() {
@@ -50,7 +56,7 @@ export default function LandingEstablecimientos() {
           const response = await apiFetch(`/api/v1/veterinarios/clientes/${cliente.id}/establecimientos`);
           if (!response?.ok) throw new Error("No se pudieron obtener los establecimientos");
 
-          setTitle(cliente.razon_social);
+          setTitle(formatBusinessName(cliente.razon_social).replace(/^Cliente\s+/i, ""));
           setEstablecimientos(await response.json());
           return;
         }
@@ -73,14 +79,29 @@ export default function LandingEstablecimientos() {
     }
 
     fetchEstablecimientos();
-  }, [apiFetch, clienteId, role]);
+  }, [apiFetch, clienteId, refreshKey, role]);
 
   return (
     <LandingMobileLayout>
       <LandingHeader
-        title={title}
+        title={loading && role === "veterinario" ? "Cargando cliente…" : title}
+        icon={<HiOutlineMapPin />}
         onBack={role === "veterinario" ? () => navigate("/veterinarios/clientes") : undefined}
       />
+
+      {!loading && !error && role === "cliente" && (
+        <div className={styles.addAction}>
+          <button
+            aria-label="Agregar nuevo establecimiento"
+            className={styles.addButton}
+            type="button"
+            onClick={() => setShowCreateForm(true)}
+          >
+            + Nuevo
+          </button>
+        </div>
+      )}
+
       <LandingPageStatus loading={loading} error={error} loadingMessage="Cargando establecimientos..." />
 
       {!loading && !error && establecimientos.length === 0 && (
@@ -100,11 +121,25 @@ export default function LandingEstablecimientos() {
                 type="button"
                 onClick={() => navigate(`/establecimiento/${establecimiento.id}/bebederos`)}
               >
-                {establecimiento.nombre}
+                <span className={styles.initials} aria-hidden="true">
+                  {getInitials(establecimiento.nombre)}
+                </span>
+                <span className={styles.clientName}>{establecimiento.nombre}</span>
+                <HiOutlineChevronRight className={styles.itemArrow} aria-hidden="true" />
               </button>
             </li>
           ))}
         </ul>
+      )}
+
+      {showCreateForm && (
+        <NuevoEstablecimientoClienteForm
+          onClose={() => setShowCreateForm(false)}
+          onCreated={() => {
+            setShowCreateForm(false);
+            setRefreshKey((current) => current + 1);
+          }}
+        />
       )}
     </LandingMobileLayout>
   );

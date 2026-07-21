@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import { HiOutlineChevronRight, HiOutlineUserGroup } from "react-icons/hi2";
 import EmptyState from "../../components/EmptyState/EmptyState";
 import { useApi } from "../../utils/apiFetch";
+import { formatBusinessName } from "../../utils/formatBusinessName";
+import { getInitials } from "../../utils/getInitials";
 import LandingHeader from "./LandingHeader";
 import LandingMobileLayout from "./LandingMobileLayout";
 import LandingPageStatus from "./LandingPageStatus";
@@ -58,7 +60,7 @@ export default function LandingClientes() {
 
   return (
     <LandingMobileLayout>
-      <LandingHeader title="Seleccione un cliente" />
+      <LandingHeader title="Seleccione un Cliente" icon={<HiOutlineUserGroup />} />
       <LandingPageStatus loading={loading} error={error} loadingMessage="Cargando clientes..." />
 
       {!loading && !error && clientes.length === 0 && (
@@ -67,16 +69,23 @@ export default function LandingClientes() {
 
       {!loading && !error && clientes.length > 0 && (
         <ul className={styles.list}>
-          {clientes.map((cliente) => (
-            <li key={cliente.id}>
-              <button className={styles.item} type="button" onClick={() => handleSelect(cliente.id)}>
-                {cliente.razon_social}
-              </button>
-            </li>
-          ))}
+          {clientes.map((cliente) => {
+            const displayName = formatBusinessName(cliente.razon_social);
+
+            return (
+              <li key={cliente.id}>
+                <button className={styles.item} type="button" onClick={() => handleSelect(cliente.id)}>
+                  <span className={styles.initials} aria-hidden="true">
+                    {getInitials(displayName)}
+                  </span>
+                  <span className={styles.clientName}>{displayName}</span>
+                  <HiOutlineChevronRight className={styles.itemArrow} aria-hidden="true" />
+                </button>
+              </li>
+            );
+          })}
         </ul>
       )}
     </LandingMobileLayout>
   );
 }
-

@@ -19,6 +19,9 @@ export default function EditarBebederoForm({ bebedero, onClose, onSave }: Props)
 
   const [form, setForm] = useState({
     nombre: bebedero.nombre || "",
+    ubicacion: bebedero.ubicacion || "",
+    ipAddress: bebedero.ip_address || "",
+    puerto: bebedero.puerto ?? "",
     largoBebedero: bebedero.largo || "",
     anchoBebedero: bebedero.ancho || "",
     profundidadBebedero: bebedero.profundidad ?? "",
@@ -39,6 +42,9 @@ export default function EditarBebederoForm({ bebedero, onClose, onSave }: Props)
     try {
       const payload: BebederoUpdateRequest = {
         nombre: form.nombre,
+        ubicacion: form.ubicacion.trim() || null,
+        ip_address: form.ipAddress.trim() || null,
+        puerto: form.puerto === "" ? null : Number(form.puerto),
         largo: Number(form.largoBebedero),
         ancho: Number(form.anchoBebedero),
         profundidad: form.profundidadBebedero
@@ -85,6 +91,46 @@ export default function EditarBebederoForm({ bebedero, onClose, onSave }: Props)
             value={form.nombre}
             onChange={(e) => updateField("nombre", e.target.value)}
           />
+        </div>
+
+        {/* Ubicación */}
+        <div className={styles.group}>
+          <label className={styles.label}>Ubicación</label>
+          <input
+            className={styles.input}
+            type="text"
+            value={form.ubicacion}
+            onChange={(e) => updateField("ubicacion", e.target.value)}
+            placeholder="Ej: Sector norte"
+          />
+        </div>
+
+        {/* Dirección IP / Puerto */}
+        <div className={styles.row}>
+          <div className={styles.group}>
+            <label className={styles.label}>Dirección IP</label>
+            <input
+              className={styles.input}
+              type="text"
+              maxLength={45}
+              value={form.ipAddress}
+              onChange={(e) => updateField("ipAddress", e.target.value)}
+              placeholder="Ej: 192.168.1.10"
+            />
+          </div>
+          <div className={styles.group}>
+            <label className={styles.label}>Puerto</label>
+            <input
+              className={styles.input}
+              type="number"
+              min="1"
+              max="65535"
+              step="1"
+              value={form.puerto}
+              onChange={(e) => updateField("puerto", e.target.value)}
+              placeholder="Ej: 8000"
+            />
+          </div>
         </div>
 
         {/* Largo / Ancho / Profundidad */}
