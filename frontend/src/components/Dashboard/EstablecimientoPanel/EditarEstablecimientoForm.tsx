@@ -1,5 +1,5 @@
 import { useState } from "react";
-import styles from "./../Style/EditarFormStyles.module.css";
+import styles from "./../Styles/EditarFormStyles.module.css";
 import Button from "../../Button/Button";
 import { useApi } from "../../../utils/apiFetch";
 import toast from "react-hot-toast";

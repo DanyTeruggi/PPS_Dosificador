@@ -19,7 +19,7 @@
 .primary {
   color: #E8EEF5;
   background: #1F5FB8;
-  border: 1px solid #042452;
+  border: 2px solid #e8eef59d;
 }
 
 .primary:hover {
@@ -73,30 +73,6 @@
   background-color: #e74c3c;
   color: white;
 }
-
-/* Boton circular para cerrar modales y overlays. */
-.close {
-  width: 36px;
-  height: 36px;
-  padding: 0;
-  border: none;
-  border-radius: 50%;
-  background: transparent;
-  color: #526267;
-  font-size: 28px;
-  line-height: 1;
-}
-
-.close:hover {
-  background: rgba(15, 118, 110, 0.1);
-}
-
-.close:focus-visible {
-  outline: 3px solid rgba(15, 118, 110, 0.28);
-  outline-offset: 3px;
-}
-
-
 
 /* VARIANTE CON ÍCONO (back + dashboard) */
 .iconButton {

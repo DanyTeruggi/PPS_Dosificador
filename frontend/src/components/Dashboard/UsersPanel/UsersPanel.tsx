@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import toast from "react-hot-toast";
-import styles from "./../Style/PanelStyles.module.css";
+import styles from "./../Styles/PanelStyles.module.css";
 
 import { useApi } from "../../../utils/apiFetch";
 import { useAuth } from "../../../context/useAuth";
@@ -11,6 +11,8 @@ import ClientesAsociadosModal from "./ClientesAsociados";
 import EditUserForm from "./EditUserForm";
 import type { AdminUserResponse, AdminUserRow } from "../../../types/AdminUser";
 import ButtonX from "../../ButtonX/ButtonX";
+import ButtonSearch from "../../ButtonSearch/ButtonSearch";
+import ButtonTable from "../../ButtonTable/ButtonTable";
 
 export default function UsersPanel() {
   const { apiFetch } = useApi();
@@ -171,57 +173,59 @@ export default function UsersPanel() {
             onChange={(e) => setSearch(e.target.value)}
           />
 
-          <button
-            type="button"
-            className={styles.clearBtn}
+          <ButtonSearch
+            variant="clear"
             onClick={clearFilters}
             disabled={!hasActiveFilters}
           >
             Limpiar filtros
-          </button>
+          </ButtonSearch>
         </div>
 
         {/* FILTROS POR ROL */}
         <div className={styles.filters}>
-          <button
-            className={`${styles.filterBtn} ${rolFilter === "veterinario" ? styles.activeFilter : ""}`}
+          <ButtonSearch
+            variant="filter"
+            active={rolFilter === "veterinario"}
             onClick={() => selectRoleFilter("veterinario")}
           >
             Veterinarios
-          </button>
+          </ButtonSearch>
 
-          <button
-            className={`${styles.filterBtn} ${rolFilter === "cliente" ? styles.activeFilter : ""}`}
+          <ButtonSearch
+            variant="filter"
+            active={rolFilter === "cliente"}
             onClick={() => selectRoleFilter("cliente")}
           >
             Clientes
-          </button>
+          </ButtonSearch>
 
-          <button
-            className={`${styles.filterBtn} ${rolFilter === "admin" ? styles.activeFilter : ""}`}
+          <ButtonSearch
+            variant="filter"
+            active={rolFilter === "admin"}
             onClick={() => selectRoleFilter("admin")}
           >
             Admin
-          </button>
+          </ButtonSearch>
 
           {/* NUEVO USUARIO */}
-          <button className={styles.newUserBtn} onClick={() => setShowModalNuevoUsuario(true)}>
+          <ButtonSearch variant="primary" onClick={() => setShowModalNuevoUsuario(true)}>
             Nuevo usuario
-          </button>
+          </ButtonSearch>
 
           {/* ASIGNAR VETERINARIO */}
           {selectedUserRol === "cliente" && (
-            <button
-              className={styles.newUserBtn}
+            <ButtonSearch
+              variant="primary"
               onClick={() => setShowAsignarVetModal(true)}
             >
-              Asignar Veterinario
-            </button>
+              Asignar veterinario
+            </ButtonSearch>
           )}
           {selectedUserRol === "veterinario" && (
-            <button className={styles.newUserBtn} onClick={() => setShowClientesModal(true)}>
+            <ButtonSearch variant="primary" onClick={() => setShowClientesModal(true)}>
               Clientes asociados
-            </button>
+            </ButtonSearch>
           )}
         </div>
       </div>
@@ -270,15 +274,15 @@ export default function UsersPanel() {
                 </td>
 
                 <td>
-                  <button
-                    className={styles.editBtn}
+                  <ButtonTable
+                    variant="edit"
                     onClick={(e) => {
                       e.stopPropagation();
                       setEditUsuario(u);
                     }}
                   >
                     Editar
-                  </button>
+                  </ButtonTable>
                 </td>
               </tr>
             );

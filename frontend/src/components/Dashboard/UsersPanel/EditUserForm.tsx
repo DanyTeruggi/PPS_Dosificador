@@ -5,7 +5,7 @@ import { useApi } from "../../../utils/apiFetch";
 import { getApiErrorMessage } from "../../../utils/apiError";
 import type { AdminUserRow } from "../../../types/AdminUser";
 import type { UsuarioUpdateRequest } from "../../../types/ApiContracts";
-import styles from "./../Style/EditarFormStyles.module.css";
+import styles from "./../Styles/EditarFormStyles.module.css";
 
 interface Props {
   usuario: AdminUserRow;

@@ -1,6 +1,6 @@
 import { useCallback, useState, useEffect } from "react";
-import styles from "./../Style/PanelStyles.module.css";
-import stylesDelete from "./../Style/EditarFormStyles.module.css";
+import styles from "./../Styles/PanelStyles.module.css";
+import stylesDelete from "./../Styles/EditarFormStyles.module.css";
 import toast from "react-hot-toast";
 
 
@@ -13,6 +13,8 @@ import EditarEstablecimientoForm from "./EditarEstablecimientoForm";
 import type { Establecimiento } from "../../../types/Establecimiento";
 import Button from "../../Button/Button";
 import ButtonX from "../../ButtonX/ButtonX";
+import ButtonSearch from "../../ButtonSearch/ButtonSearch";
+import ButtonTable from "../../ButtonTable/ButtonTable";
 
 type EstablecimientoRow = Establecimiento & {
   clienteNombre: string;
@@ -320,20 +322,19 @@ export default function EstablecimientoPanel() {
             onChange={(e) => setSearch(e.target.value)}
           />
 
-          <button
-            type="button"
-            className={styles.clearBtn}
+          <ButtonSearch
+            variant="clear"
             onClick={clearFilters}
             disabled={search === ""}
           >
             Limpiar filtros
-          </button>
+          </ButtonSearch>
         </div>
 
         <div className={styles.filters}>
-          <button className={styles.newUserBtn} onClick={() => setShowCreateModal(true)}>
+          <ButtonSearch variant="primary" onClick={() => setShowCreateModal(true)}>
             Nuevo establecimiento
-          </button>
+          </ButtonSearch>
         </div>
       </div>
 
@@ -360,15 +361,15 @@ export default function EstablecimientoPanel() {
               <td>{e.usuarioNombre}</td>
               <td>{e.clienteNombre}</td>
               <td className={styles.actionsCell}>
-                <button className={styles.editBtn} onClick={() => handleEditClick(e.id)}>
+                <ButtonTable variant="edit" onClick={() => handleEditClick(e.id)}>
                   Editar
-                </button>
-                <button
-                  className={styles.deleteBtn}
+                </ButtonTable>
+                <ButtonTable
+                  variant="delete"
                   onClick={() => handleDeleteClick(e.id, e.nombre)}
                 >
                   Borrar
-                </button>
+                </ButtonTable>
               </td>
             </tr>
           ))}

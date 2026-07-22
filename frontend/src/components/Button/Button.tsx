@@ -11,7 +11,7 @@ interface ButtonProps {
   type?: "button" | "submit";
   variant?: "primary" | "secondary" | "tertiary" |
             "hero" | "back" | "dashboard" | "selected"  | "selectedActive" | 
-            "danger" | "add" | "close";
+            "danger" | "add";
   fullWidth?: boolean;
 }
 

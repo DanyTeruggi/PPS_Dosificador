@@ -77,7 +77,7 @@ export default function SupportWhatsAppModal({ user, onClose }: Props) {
 
           <div className={styles.actions}>
             <button className={styles.cancelButton} type="button" onClick={onClose}>Cancelar</button>
-            <button className={styles.whatsAppButton} disabled={!description.trim() || !supportNumber} type="submit">Continuar en WhatsApp</button>
+            <button className={styles.whatsAppButton} disabled={!description.trim() || !supportNumber} type="submit">Enviar WhatsApp</button>
           </div>
         </form>
       </section>

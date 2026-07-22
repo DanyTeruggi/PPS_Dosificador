@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 import { getApiErrorMessage } from "../../../utils/apiError";
 import { useApi } from "../../../utils/apiFetch";
 import type { Bebedero } from "../../../types/Bebedero";
-import styles from "./../Style/EditarFormStyles.module.css";
+import styles from "./../Styles/EditarFormStyles.module.css";
 import simulatorStyles from "./CargaImagen.module.css";
 
 type Props = {

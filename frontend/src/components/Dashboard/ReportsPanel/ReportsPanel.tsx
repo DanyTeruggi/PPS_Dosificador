@@ -1,5 +1,5 @@
 import { useCallback, useState, useEffect } from "react";
-import styles from "./../Style/PanelStyles.module.css";
+import styles from "./../Styles/PanelStyles.module.css";
 
 import { useApi } from "../../../utils/apiFetch";
 import { useAuth } from "../../../context/useAuth";

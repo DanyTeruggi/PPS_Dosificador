@@ -1,9 +1,23 @@
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import Button from "../../Button/Button";
 import { useApi } from "../../../utils/apiFetch";
-import styles from "./../Style/EditarFormStyles.module.css";
+import styles from "./../Styles/EditarFormStyles.module.css";
 import type { BebederoCreateRequest } from "../../../types/ApiContracts";
 import type { Establecimiento } from "../../../types/Establecimiento";
+import type { AdminUserResponse } from "../../../types/AdminUser";
+
+interface ClienteOption {
+  cliente_id: number;
+  razon_social: string;
+  usuario: { email: string };
+}
+
+interface DropdownPosition {
+  top: number;
+  left: number;
+  width: number;
+}
 
 interface Props {
   onClose: () => void;
@@ -14,8 +28,15 @@ export default function NuevoBebederoForm({ onClose, establecimientos }: Props) 
   const { apiFetch } = useApi();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [clienteSearch, setClienteSearch] = useState("");
+  const [clientes, setClientes] = useState<ClienteOption[]>([]);
+  const [selectedCliente, setSelectedCliente] = useState<ClienteOption | null>(null);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [dropdownPosition, setDropdownPosition] = useState<DropdownPosition | null>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   const [form, setForm] = useState({
+    clienteId: "",
     establecimiento: "",
     nombre: "",
     ubicacion: "",
@@ -34,9 +55,89 @@ export default function NuevoBebederoForm({ onClose, establecimientos }: Props) 
     setForm((current) => ({ ...current, [field]: value }));
   };
 
+  const updateDropdownPosition = useCallback(() => {
+    const input = searchInputRef.current;
+    if (!input) return;
+    const rect = input.getBoundingClientRect();
+    setDropdownPosition({ top: rect.bottom + 6, left: rect.left, width: rect.width });
+  }, []);
+
+  useEffect(() => {
+    if (clienteSearch.trim().length < 2 || selectedCliente) return;
+
+    let active = true;
+    const fetchClientes = async () => {
+      try {
+        const response = await apiFetch("/api/v1/admin/usuarios");
+        if (!response?.ok) return;
+
+        const usuarios = (await response.json()) as AdminUserResponse[];
+        const normalizedSearch = clienteSearch.trim().toLowerCase();
+        const filteredClientes = usuarios
+          .filter((usuario) => usuario.rol === "cliente" && usuario.cliente != null)
+          .map<ClienteOption>((usuario) => ({
+            cliente_id: usuario.cliente!.cliente_id,
+            razon_social: usuario.cliente!.razon_social,
+            usuario: { email: usuario.email },
+          }))
+          .filter(
+            (cliente) =>
+              cliente.razon_social.toLowerCase().includes(normalizedSearch) ||
+              cliente.usuario.email.toLowerCase().includes(normalizedSearch),
+          )
+          .slice(0, 10);
+
+        if (active) {
+          setClientes(filteredClientes);
+          updateDropdownPosition();
+          setShowDropdown(true);
+        }
+      } catch (fetchError) {
+        console.error("Error buscando clientes", fetchError);
+      }
+    };
+
+    const timeoutId = window.setTimeout(() => void fetchClientes(), 250);
+    return () => {
+      active = false;
+      window.clearTimeout(timeoutId);
+    };
+  }, [apiFetch, clienteSearch, selectedCliente, updateDropdownPosition]);
+
+  useEffect(() => {
+    if (!showDropdown) return;
+    window.addEventListener("resize", updateDropdownPosition);
+    window.addEventListener("scroll", updateDropdownPosition, true);
+    return () => {
+      window.removeEventListener("resize", updateDropdownPosition);
+      window.removeEventListener("scroll", updateDropdownPosition, true);
+    };
+  }, [showDropdown, updateDropdownPosition]);
+
+  const establecimientosCliente = establecimientos.filter(
+    (establecimiento) => establecimiento.cliente_id === Number(form.clienteId),
+  );
+
+  function selectCliente(cliente: ClienteOption) {
+    setSelectedCliente(cliente);
+    setClienteSearch(cliente.razon_social);
+    setForm((current) => ({
+      ...current,
+      clienteId: String(cliente.cliente_id),
+      establecimiento: "",
+    }));
+    setShowDropdown(false);
+  }
+
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setError(null);
+
+    if (!selectedCliente || !form.clienteId) {
+      setError("Seleccioná un cliente de la lista.");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -83,15 +184,82 @@ export default function NuevoBebederoForm({ onClose, establecimientos }: Props) 
         </p>
 
         <div className={styles.group}>
+          <label className={styles.label}>Cliente</label>
+          <input
+            ref={searchInputRef}
+            type="text"
+            className={styles.input}
+            value={clienteSearch}
+            required
+            autoComplete="off"
+            role="combobox"
+            aria-expanded={showDropdown}
+            aria-controls="clientes-bebedero-autocomplete"
+            onChange={(event) => {
+              setClienteSearch(event.target.value);
+              setSelectedCliente(null);
+              setForm((current) => ({ ...current, clienteId: "", establecimiento: "" }));
+              if (event.target.value.trim().length < 2) {
+                setShowDropdown(false);
+                setClientes([]);
+              }
+            }}
+            onFocus={() => {
+              if (!selectedCliente && clientes.length > 0) {
+                updateDropdownPosition();
+                setShowDropdown(true);
+              }
+            }}
+            onBlur={() => window.setTimeout(() => setShowDropdown(false), 100)}
+            placeholder="Buscar por razón social o email"
+          />
+
+          {selectedCliente && (
+            <div className={styles.selectedClient}>
+              <strong>{selectedCliente.razon_social}</strong>
+              <span>{selectedCliente.usuario.email}</span>
+            </div>
+          )}
+        </div>
+
+        {showDropdown && dropdownPosition && createPortal(
+          <div
+            id="clientes-bebedero-autocomplete"
+            className={styles.dropdownPortal}
+            role="listbox"
+            style={dropdownPosition}
+            onMouseDown={(event) => event.preventDefault()}
+          >
+            {clientes.length > 0 ? clientes.map((cliente) => (
+              <button
+                key={cliente.cliente_id}
+                type="button"
+                role="option"
+                aria-selected="false"
+                className={styles.dropdownItem}
+                onClick={() => selectCliente(cliente)}
+              >
+                <strong>{cliente.razon_social}</strong>
+                <span>{cliente.usuario.email}</span>
+              </button>
+            )) : (
+              <p className={styles.dropdownEmpty}>No se encontraron clientes.</p>
+            )}
+          </div>,
+          document.body,
+        )}
+
+        <div className={styles.group}>
           <label className={styles.label}>Establecimiento</label>
           <select
             className={styles.input}
             required
+            disabled={!selectedCliente}
             value={form.establecimiento}
             onChange={(e) => updateField("establecimiento", e.target.value)}
           >
             <option value="">Seleccioná un establecimiento</option>
-            {establecimientos.map((establecimiento) => (
+            {establecimientosCliente.map((establecimiento) => (
               <option key={establecimiento.id} value={establecimiento.id}>
                 {establecimiento.nombre}
               </option>
@@ -153,7 +321,7 @@ export default function NuevoBebederoForm({ onClose, establecimientos }: Props) 
         {/* Largo / Ancho / Profundidad */}
         <div className={styles.row}>
           <div className={styles.group}>
-            <label className={styles.label}>Largo (m)</label>
+            <label className={styles.label}>Largo (cm)</label>
             <input
               className={styles.input}
               type="number"
@@ -166,7 +334,7 @@ export default function NuevoBebederoForm({ onClose, establecimientos }: Props) 
           </div>
 
           <div className={styles.group}>
-            <label className={styles.label}>Ancho (m)</label>
+            <label className={styles.label}>Ancho (cm)</label>
             <input
               className={styles.input}
               type="number"
@@ -179,7 +347,7 @@ export default function NuevoBebederoForm({ onClose, establecimientos }: Props) 
           </div>
 
           <div className={styles.group}>
-            <label className={styles.label}>Profundidad (m)</label>
+            <label className={styles.label}>Profundidad (cm)</label>
             <input
               className={styles.input}
               type="number"
@@ -208,7 +376,7 @@ export default function NuevoBebederoForm({ onClose, establecimientos }: Props) 
           </div>
 
           <div className={styles.group}>
-            <label className={styles.label}>Tiempo dosis (seg)</label>
+            <label className={styles.label}>Tiempo dosis (hs)</label>
             <input
               className={styles.input}
               type="number"

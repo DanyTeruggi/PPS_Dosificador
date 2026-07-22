@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
-import styles from "./../Style/PanelStyles.module.css";
-import stylesDelete from "./../Style/EditarFormStyles.module.css";
+import styles from "./../Styles/PanelStyles.module.css";
+import stylesDelete from "./../Styles/EditarFormStyles.module.css";
 import toast from "react-hot-toast";
 
 import { useApi } from "../../../utils/apiFetch";
@@ -10,6 +10,8 @@ import { useAuth } from "../../../context/useAuth";
 import NuevoBebederoForm from "./NuevoBebederoForm";
 import Button from "../../Button/Button";
 import ButtonX from "../../ButtonX/ButtonX";
+import ButtonSearch from "../../ButtonSearch/ButtonSearch";
+import ButtonTable from "../../ButtonTable/ButtonTable";
 
 import type { Bebedero } from "../../../types/Bebedero";
 import type { Establecimiento } from "../../../types/Establecimiento";
@@ -19,6 +21,12 @@ import CargaImagen from "./CargaImagen";
 
 type BebederoRow = Bebedero & {
   establecimientoNombre: string;
+  razonSocial: string;
+};
+
+type ClienteAdmin = {
+  cliente_id: number;
+  razon_social?: string;
 };
 
 /* ---------------------------------------------------------
@@ -81,14 +89,15 @@ export default function BebederosPanel() {
       return;
     }
 
-    const [bebRes, estRes] = await Promise.all([
+    const [bebRes, estRes, clientesRes] = await Promise.all([
       apiFetch("/api/v1/admin/bebederos"),
       apiFetch("/api/v1/admin/establecimientos"),
+      apiFetch("/api/v1/admin/clientes"),
     ]);
     
      
       
-    if (!bebRes?.ok || !estRes?.ok) {
+    if (!bebRes?.ok || !estRes?.ok || !clientesRes?.ok) {
       setBebederos([]);
       setEstablecimientos([]);
       return;
@@ -96,14 +105,17 @@ export default function BebederosPanel() {
 
     const bebederosAdmin = normalizeBebederos(await bebRes.json());
     const establecimientosAdmin = normalizeEstablecimientos(await estRes.json());
+    const clientes: ClienteAdmin[] = await clientesRes.json();
     setEstablecimientos(establecimientosAdmin);
 
     setBebederos(
       bebederosAdmin.map((b) => {
         const est = establecimientosAdmin.find((e) => e.id === b.establecimiento_id);
+        const cliente = clientes.find((c) => c.cliente_id === est?.cliente_id);
         return {
           ...b, 
           establecimientoNombre: est?.nombre ?? "—",
+          razonSocial: cliente?.razon_social ?? "—",
         };
       })
     );
@@ -126,7 +138,8 @@ export default function BebederosPanel() {
     return (
       b.nombre.toLowerCase().includes(s) ||
       b.id.toString().includes(search) ||
-      b.establecimientoNombre.toLowerCase().includes(s)
+      b.establecimientoNombre.toLowerCase().includes(s) ||
+      b.razonSocial.toLowerCase().includes(s)
     );
   });
 
@@ -242,41 +255,40 @@ export default function BebederosPanel() {
         <div className={styles.searchGroup}>
           <input
             type="text"
-            placeholder="Buscar por nombre, ID o establecimiento…"
+            placeholder="Razón soc., establecimiento o dispositivo…"
             className={styles.searchInput}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
 
-          <button
-            type="button"
-            className={styles.clearBtn}
+          <ButtonSearch
+            variant="clear"
             onClick={clearFilters}
             disabled={search === ""}
           >
             Limpiar filtros
-          </button>
+          </ButtonSearch>
         </div>
 
         <div className={styles.headerActions}>
           {import.meta.env.DEV && (
-            <button className={styles.secondaryActionBtn} type="button" onClick={() => setShowSimulatorModal(true)}>
+            <ButtonSearch variant="secondary" onClick={() => setShowSimulatorModal(true)}>
               Simular lectura
-            </button>
+            </ButtonSearch>
           )}
-          <button className={styles.newUserBtn} type="button" onClick={() => setShowCreateModal(true)}>
+          <ButtonSearch variant="primary" onClick={() => setShowCreateModal(true)}>
             Nuevo dispositivo
-          </button>
+          </ButtonSearch>
         </div>
       </div>
 
       <table className={styles.table}>
         <thead>
           <tr>
-            <th>ID</th>
-            <th>Nombre</th>
+            <th>Razón social</th>
             <th>Establecimiento</th>
             <th>Ubicación</th>
+            <th>Dispositivo</th>
             <th>  
               <div className={styles.estadoHeader}>
               <span>Estado</span>
@@ -293,10 +305,10 @@ export default function BebederosPanel() {
             <tr key={b.id}
               onClick={() => handleRowClick(b.id)}
               className={`${styles.rowClickable} ${selectedRowId === b.id ? styles.rowSelected : ""}`}>
-              <td>{b.id}</td>
-              <td>{b.nombre}</td>
+              <td>{b.razonSocial}</td>
               <td>{b.establecimientoNombre}</td>
               <td>{b.ubicacion ?? "-"}</td>
+              <td>{b.nombre}</td>
 
               {/* ESTADO  */}
               <td>
@@ -321,29 +333,29 @@ export default function BebederosPanel() {
 
 
               <td className={styles.actionsCell}>
-                <button 
-                  className={styles.editBtn}
+                <ButtonTable
+                  variant="edit"
                   onClick={(e) => {
                     e.stopPropagation();   // evita seleccionar fila
                     setEditBebedero(b);    // abre el modal con el bebedero correcto
                   }}
                 >
                   Editar
-                </button>
+                </ButtonTable>
 
-                <button
-                  className={styles.deleteBtn}
+                <ButtonTable
+                  variant="delete"
                   onClick={() => handleDeleteClick(b.id, b.nombre)}
                 >
                   Borrar
-                </button>
+                </ButtonTable>
               </td>
             </tr>
           ))}
 
           {filtrados.length === 0 && (
             <tr>
-              <td colSpan={6} className={styles.emptyCell}>
+              <td colSpan={8} className={styles.emptyCell}>
                 No hay bebederos para mostrar.
               </td>
             </tr>

@@ -66,16 +66,48 @@ interface DateTimeTickProps {
   payload?: { value: number };
 }
 
+const shortDateFormatter = new Intl.DateTimeFormat("es-AR", {
+  day: "2-digit",
+  month: "2-digit",
+});
+
+const percentageFormatter = new Intl.NumberFormat("es-AR", {
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 2,
+});
+
 function DateTimeTick({ x = 0, y = 0, payload }: DateTimeTickProps) {
   if (!payload) return null;
   const date = new Date(Number(payload.value));
   return (
     <g transform={`translate(${x},${y})`}>
       <text textAnchor="middle" fill="#4b5563" fontSize={12}>
-        <tspan x="0" dy="16">{date.toLocaleDateString("es-AR")}</tspan>
+        <tspan x="0" dy="16">{shortDateFormatter.format(date)}</tspan>
         <tspan x="0" dy="17" fontWeight="600">{date.toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit", hour12: false })}</tspan>
       </text>
     </g>
+  );
+}
+
+interface ChartTooltipProps {
+  active?: boolean;
+  payload?: Array<{
+    color?: string;
+    value?: number | string;
+  }>;
+}
+
+function ChartTooltip({ active, payload }: ChartTooltipProps) {
+  if (!active || !payload?.length) return null;
+
+  return (
+    <div className={styles.chartTooltip}>
+      {payload.map((item, index) => (
+        <strong className={styles.tooltipValue} style={{ color: item.color }} key={index}>
+          {percentageFormatter.format(Number(item.value))}%
+        </strong>
+      ))}
+    </div>
   );
 }
 
@@ -366,12 +398,12 @@ export default function ReportsGraficos() {
             <ComposedChart data={chartData} margin={{ top: 20, right: 30, left: 5, bottom: 58 }} barGap={4} barCategoryGap="18%">
               <CartesianGrid strokeDasharray="3 3" />
               {chartType === "lineas" ? (
-                <XAxis dataKey="timestamp" type="number" domain={["dataMin", "dataMax"]} scale="time" tick={<DateTimeTick />} height={52} label={{ value: "Fecha y hora", position: "insideBottom", offset: -12 }} />
+                <XAxis dataKey="timestamp" type="number" domain={["dataMin", "dataMax"]} scale="time" tick={<DateTimeTick />} minTickGap={28} height={52} label={{ value: "Fecha y hora", position: "insideBottom", offset: -12 }} />
               ) : (
-                <XAxis dataKey="timestamp" type="category" allowDuplicatedCategory={false} tick={<DateTimeTick />} height={52} label={{ value: "Fecha y hora", position: "insideBottom", offset: -12 }} />
+                <XAxis dataKey="timestamp" type="category" allowDuplicatedCategory={false} tick={<DateTimeTick />} minTickGap={28} height={52} label={{ value: "Fecha y hora", position: "insideBottom", offset: -12 }} />
               )}
               <YAxis domain={[0, 100]} unit="%" />
-              <Tooltip labelFormatter={(value) => new Date(Number(value)).toLocaleString("es-AR")} formatter={(value) => [`${Number(value).toFixed(2)} %`]} />
+              <Tooltip content={<ChartTooltip />} />
               {selectedBebederoIds.flatMap((id, index) => {
                 const name = bebederos.find((item) => item.id === id)?.nombre ?? `Bebedero ${id}`;
                 const color = COLORS[index % COLORS.length];

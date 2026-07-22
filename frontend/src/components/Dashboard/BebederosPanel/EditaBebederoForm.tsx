@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Button from "../../Button/Button";
 import { useApi } from "../../../utils/apiFetch";
-import styles from "./../Style/EditarFormStyles.module.css";
+import styles from "./../Styles/EditarFormStyles.module.css";
 
 import type { Bebedero } from "../../../types/Bebedero";
 import type { BebederoUpdateRequest } from "../../../types/ApiContracts";
@@ -136,7 +136,7 @@ export default function EditarBebederoForm({ bebedero, onClose, onSave }: Props)
         {/* Largo / Ancho / Profundidad */}
         <div className={styles.row}>
           <div className={styles.group}>
-            <label className={styles.label}>Largo (m)</label>
+            <label className={styles.label}>Largo (cm)</label>
             <input
               className={styles.input}
               type="number"
@@ -149,7 +149,7 @@ export default function EditarBebederoForm({ bebedero, onClose, onSave }: Props)
           </div>
 
           <div className={styles.group}>
-            <label className={styles.label}>Ancho (m)</label>
+            <label className={styles.label}>Ancho (cm)</label>
             <input
               className={styles.input}
               type="number"
@@ -162,7 +162,7 @@ export default function EditarBebederoForm({ bebedero, onClose, onSave }: Props)
           </div>
 
           <div className={styles.group}>
-            <label className={styles.label}>Profundidad (m)</label>
+            <label className={styles.label}>Profundidad (cm)</label>
             <input
               className={styles.input}
               type="number"
@@ -191,7 +191,7 @@ export default function EditarBebederoForm({ bebedero, onClose, onSave }: Props)
           </div>
 
           <div className={styles.group}>
-            <label className={styles.label}>Tiempo dosis (seg)</label>
+            <label className={styles.label}>Tiempo dosis (hs)</label>
             <input
               className={styles.input}
               type="number"

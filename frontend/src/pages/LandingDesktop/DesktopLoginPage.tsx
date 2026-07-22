@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import hidePasswordIcon from "../../assets/esconder.png";
 import showPasswordIcon from "../../assets/mostrar.png";
 import Button from "../../components/Button/Button";
+import ButtonX from "../../components/ButtonX/ButtonX";
 import { useAuth } from "../../context/useAuth";
 import styles from "./DesktopLoginPage.module.css";
 
@@ -72,11 +73,8 @@ export default function DesktopLoginPage() {
             onClick={(event) => event.stopPropagation()}
           >
             <div className={styles.closeAction}>
-              <Button
-                label="×"
+              <ButtonX
                 ariaLabel="Cerrar formulario"
-                variant="close"
-                fullWidth={false}
                 onClick={() => setShowLogin(false)}
               />
             </div>

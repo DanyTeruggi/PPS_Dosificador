@@ -1,0 +1,14 @@
+.button { padding: 6px 12px; border-radius: 6px; cursor: pointer; }
+.button:focus-visible { outline: 3px solid rgba(31, 95, 184, 0.28); outline-offset: 2px; }
+.button:disabled { cursor: not-allowed; opacity: 0.45; }
+
+.edit { border: 0.3px solid #afaeae; background: #eee; }
+.edit:hover:not(:disabled) { background: #e0dede; }
+
+.delete {
+  border: none;
+  background: radial-gradient(rgba(211, 105, 105, 0.25) 1px, transparent 1px);
+  background-size: 4px 4px;
+  color: rgb(60, 59, 59);
+}
+.delete:hover:not(:disabled) { background: #e65754cb; color: #fff; }

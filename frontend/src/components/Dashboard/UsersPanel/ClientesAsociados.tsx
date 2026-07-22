@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import Button from "../../Button/Button";
 import { useApi } from "../../../utils/apiFetch";
-import styles from "./../Style/EditarFormStyles.module.css";
+import styles from "./../Styles/EditarFormStyles.module.css";
 import {
   getClienteVeterinarioId,
   getVeterinarioId,
