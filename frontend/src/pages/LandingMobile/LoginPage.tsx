@@ -9,7 +9,7 @@ import { useAuth } from "../../context/useAuth";
 import { useIsDesktop } from "../../hooks/useIsDesktop";
 import styles from "./LoginPage.module.css";
 
-/** Página de ingreso optimizada para celular. */
+
 export default function LoginPage() {
   const navigate = useNavigate();
   const { login, logout } = useAuth();

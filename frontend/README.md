@@ -7,6 +7,10 @@ Aplicación web para administrar usuarios, establecimientos, bebederos y reporte
 **Bundler**: Vite 8  
 **API requerida**: Bebederos API (`/api/v1`)
 
+## Documentación
+
+- [Flujo real de navegación](./FLUJO_NAVEGACION.md): rutas, redirecciones, permisos, recorridos por rol y diagramas Mermaid.
+
 ## Stack
 
 - **Framework**: React 19.
@@ -50,6 +54,7 @@ Aplicación web para administrar usuarios, establecimientos, bebederos y reporte
 - Consulta de sus establecimientos.
 - Consulta de los bebederos de cada establecimiento.
 - Vista de resumen y detalle de sus dispositivos.
+- Contacto con soporte técnico mediante un mensaje prearmado de WhatsApp.
 - Acceso protegido a sus propios recursos.
 
 ## Estructura
@@ -65,6 +70,7 @@ src/
 │   │   └── UsersPanel/
 │   ├── Header/             Encabezados de escritorio y móvil
 │   ├── LoginForm/          Formulario de autenticación
+│   ├── SupportWhatsAppModal/ Formulario de contacto con soporte
 │   └── UserForm/           Alta de usuarios
 ├── context/                Estado global de autenticación
 ├── hooks/                  Hooks de interfaz y consulta de recursos
@@ -99,6 +105,7 @@ Crear o actualizar `.env.development`:
 ```env
 VITE_API_BASE_URL=http://localhost:8000
 VITE_API_PREFIX=/api/v1
+VITE_SUPPORT_WHATSAPP_NUMBER=549CODIGOAREANUMERO
 ```
 
 La URL final se construye combinando ambas variables. Por ejemplo:
@@ -108,6 +115,8 @@ http://localhost:8000/api/v1/auth/login
 ```
 
 Después de modificar variables de entorno es necesario reiniciar Vite.
+
+`VITE_SUPPORT_WHATSAPP_NUMBER` debe contener el código de país, código de área y número de soporte, únicamente con dígitos. No debe incluir `+`, espacios ni guiones. En Argentina se utiliza el prefijo `549`, sin el `0` del código de área ni el `15` del número móvil.
 
 ### 4. Iniciar el entorno de desarrollo
 
@@ -336,6 +345,25 @@ interface MonitoreoAdmin {
 
 El frontend excluye valores `null` de los cálculos y genera las series de promedio, mínimo y máximo. La cobertura objetivo se obtiene desde `/api/v1/admin/bebederos`.
 
+## Soporte técnico por WhatsApp
+
+En la navegación inferior de la versión móvil, la opción **Soporte Técnico** abre un formulario dentro de la aplicación. El usuario debe:
+
+1. Seleccionar el tipo de problema.
+2. Escribir una descripción de hasta 600 caracteres.
+3. Pulsar **Continuar en WhatsApp**.
+
+El frontend genera un enlace `https://wa.me/` y abre WhatsApp con un mensaje que incluye:
+
+- Tipo de problema y descripción.
+- Nombre y correo del usuario autenticado.
+- Rol del usuario.
+- Fecha y hora de la consulta.
+
+Este flujo no requiere cambios en el backend ni almacena tickets o conversaciones. El envío del mensaje queda bajo confirmación del usuario dentro de WhatsApp.
+
+El botón para continuar permanece deshabilitado cuando la descripción está vacía o cuando `VITE_SUPPORT_WHATSAPP_NUMBER` no está configurado. Si se modifica el número, se debe detener y volver a iniciar Vite para que cargue nuevamente el archivo de entorno.
+
 ## Build de producción
 
 Generar los archivos optimizados:
@@ -376,6 +404,13 @@ La API respondió `401`. Iniciar sesión nuevamente y verificar la vigencia y fi
 ### Una ruta funciona navegando, pero falla al recargar
 
 Configurar el fallback SPA del servidor hacia `index.html`.
+
+### El botón de WhatsApp está deshabilitado
+
+- Escribir una descripción en el formulario de soporte.
+- Confirmar que `VITE_SUPPORT_WHATSAPP_NUMBER` tenga únicamente dígitos.
+- Reiniciar Vite después de modificar `.env.development`.
+- Hacer una recarga forzada del navegador si todavía se muestra la configuración anterior.
 
 ### El gráfico no muestra datos
 

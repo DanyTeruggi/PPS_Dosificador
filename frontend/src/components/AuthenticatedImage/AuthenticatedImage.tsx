@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 
 import { useApi } from "../../utils/apiFetch";
 import styles from "./AuthenticatedImage.module.css";
+import ButtonX from "../ButtonX/ButtonX";
 
 type AuthenticatedImageProps = {
   imageUrl: string;
@@ -93,14 +94,11 @@ export default function AuthenticatedImage({ imageUrl, alt }: AuthenticatedImage
             role="dialog"
             onClick={(event) => event.stopPropagation()}
           >
-            <button
-              aria-label="Cerrar imagen ampliada"
+            <ButtonX
+              ariaLabel="Cerrar imagen ampliada"
               className={styles.closeButton}
-              type="button"
               onClick={() => setExpanded(false)}
-            >
-              ×
-            </button>
+            />
             <img className={styles.expandedImage} src={objectUrl} alt={alt} />
           </div>
         </div>,

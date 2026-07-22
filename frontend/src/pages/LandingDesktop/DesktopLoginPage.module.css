@@ -18,7 +18,7 @@
   flex-direction: column;
   align-items: center;
   gap: clamp(70px, 12vh, 130px);
-  margin-top: -8vh;
+  margin-top: -20vh;
   text-align: center;
 }
 

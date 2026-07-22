@@ -12,6 +12,7 @@ import EditarEstablecimientoForm from "./EditarEstablecimientoForm";
 
 import type { Establecimiento } from "../../../types/Establecimiento";
 import Button from "../../Button/Button";
+import ButtonX from "../../ButtonX/ButtonX";
 
 type EstablecimientoRow = Establecimiento & {
   clienteNombre: string;
@@ -67,7 +68,7 @@ export default function EstablecimientoPanel() {
   const { user } = useAuth();
 
   const [establecimientos, setEstablecimientos] = useState<EstablecimientoRow[]>([]);
-  const [adminEndpointUnavailable, setAdminEndpointUnavailable] = useState(false);
+ 
   const [search, setSearch] = useState("");
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editEstablecimiento, setEditEstablecimiento] = useState<Establecimiento | null>(null);
@@ -81,7 +82,6 @@ export default function EstablecimientoPanel() {
 
   const loadEstablecimientos = useCallback(async () => {
     const role = user?.role ?? user?.rol;
-    setAdminEndpointUnavailable(false);
 
     if (!role) {
       setEstablecimientos([]);
@@ -268,7 +268,7 @@ export default function EstablecimientoPanel() {
         return;
       }
 
-      // ⭐ Caso de éxito
+      //  Caso de éxito
       toast.success(`El establecimiento "${nombre}" fue eliminado correctamente.`);
 
       // Refrescar lista
@@ -314,7 +314,7 @@ export default function EstablecimientoPanel() {
         <div className={styles.searchGroup}>
           <input
             type="text"
-            placeholder="Buscar por establecimiento, ID o cliente…"
+            placeholder="Buscar por establecimiento o cliente…"
             className={styles.searchInput}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -340,11 +340,10 @@ export default function EstablecimientoPanel() {
       <table className={styles.table}>
         <thead>
           <tr>
-            <th>ID</th>
             <th>Establecimiento</th>
             <th>Ubicación</th>
-            <th>Razon Social</th>
             <th>Cliente</th>
+            <th>Razon Social</th>
             <th></th>
           </tr>
         </thead>
@@ -356,11 +355,10 @@ export default function EstablecimientoPanel() {
               onClick={() => handleRowClick(e.id)}
               className={`${styles.rowClickable} ${selectedRowId === e.id ? styles.rowSelected : ""}`}
             >
-                <td>{e.id}</td>
               <td>{e.nombre}</td>
               <td>{e.ubicacion || "-"}</td>
-              <td>{e.clienteNombre}</td>
               <td>{e.usuarioNombre}</td>
+              <td>{e.clienteNombre}</td>
               <td className={styles.actionsCell}>
                 <button className={styles.editBtn} onClick={() => handleEditClick(e.id)}>
                   Editar
@@ -385,19 +383,12 @@ export default function EstablecimientoPanel() {
         </tbody>
       </table>
 
-      {adminEndpointUnavailable && (user?.role ?? user?.rol) === "admin" && (
-        <p className={styles.infoMessage}>
-          El endpoint de admin para listar establecimientos todavia no esta disponible.
-          Cuando backend implemente GET /api/v1/admin/establecimientos, este panel mostrara el listado completo.
-        </p>
-      )}
+
 
       {editEstablecimiento && (
         <div className={styles.modalOverlay} onClick={() => setEditEstablecimiento(null)}>
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-            <button className={styles.closeModalBtn} onClick={() => setEditEstablecimiento(null)}>
-              ✕
-            </button>
+            <ButtonX className={styles.closeModalBtn} onClick={() => setEditEstablecimiento(null)} />
 
             <EditarEstablecimientoForm
               establecimiento={editEstablecimiento}
@@ -414,9 +405,7 @@ export default function EstablecimientoPanel() {
       {showCreateModal && (
         <div className={styles.modalOverlay} onClick={() => setShowCreateModal(false)}>
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-            <button className={styles.closeModalBtn} onClick={() => setShowCreateModal(false)}>
-              ✕
-            </button>
+            <ButtonX className={styles.closeModalBtn} onClick={() => setShowCreateModal(false)} />
 
             <NuevoEstablecimientoForm
               onClose={() => {
@@ -432,12 +421,7 @@ export default function EstablecimientoPanel() {
   <div className={styles.modalOverlay} onClick={() => setDeleteConfirm(null)}>
     <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
       
-      <button
-        className={styles.closeModalBtn}
-        onClick={() => setDeleteConfirm(null)}
-      >
-        ✕
-      </button>
+      <ButtonX className={styles.closeModalBtn} onClick={() => setDeleteConfirm(null)} />
 
       <h2 className={stylesDelete.title}>
         Eliminar "{deleteConfirm.nombre}"

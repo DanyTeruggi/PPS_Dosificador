@@ -56,7 +56,7 @@ export default function DashboardHeader() {
       </div>
 
       {/* Título del panel */}
-      <p className={styles.title}>Panel de Control</p>
+      <p className={styles.title}>Centro de Monitoreo</p>
 
       {/* Botón de logout reutilizando el componente Button */}
       <Button

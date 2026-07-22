@@ -1,0 +1,59 @@
+.button.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid rgba(21, 63, 111, 0.42);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 28%, rgba(255, 255, 255, 0.95) 0 12%, transparent 38%),
+    linear-gradient(145deg, #f8fbff 0%, #dce9f7 52%, #b9cee4 100%);
+  color: #173f6d;
+  cursor: pointer;
+  opacity: 1;
+  transition:
+    transform 150ms ease,
+    box-shadow 150ms ease,
+    color 150ms ease,
+    background 150ms ease;
+}
+
+.button.button:hover {
+  color: #ffffff;
+  background:
+    radial-gradient(circle at 35% 25%, rgba(255, 255, 255, 0.28) 0 10%, transparent 36%),
+    linear-gradient(145deg, #397fca 0%, #1f5fb8 58%, #12447e 100%);
+  opacity: 1;
+  transform: translateY(-2px);
+}
+
+.button.button:active {
+  transform: translateY(1px) scale(0.96);
+  box-shadow:
+    0 2px 5px rgba(10, 39, 75, 0.24),
+    inset 0 2px 4px rgba(4, 36, 82, 0.25);
+}
+
+.button.button:focus-visible {
+  outline: 3px solid rgba(31, 95, 184, 0.34);
+  outline-offset: 3px;
+}
+
+.button.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+  transform: none;
+}
+
+.icon {
+  width: 24px;
+  height: 24px;
+  stroke-width: 2.5;
+  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.7));
+}
+
+.button:hover .icon {
+  filter: drop-shadow(0 1px 1px rgba(4, 36, 82, 0.5));
+}

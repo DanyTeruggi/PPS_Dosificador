@@ -53,7 +53,7 @@ export default function DesktopLoginPage() {
     <main className={styles.page}>
       <section className={styles.hero} aria-labelledby="desktop-login-title">
         <div className={styles.titleWrapper}>
-          <h1 id="desktop-login-title" className={styles.title}>Centro de Control Bacteriológico</h1>
+          <h1 id="desktop-login-title" className={styles.title}>Monitoreo Bacteriológico</h1>
         </div>
 
         <Button

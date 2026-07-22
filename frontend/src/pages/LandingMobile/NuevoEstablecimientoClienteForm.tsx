@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import { getApiErrorMessage } from "../../utils/apiError";
 import { useApi } from "../../utils/apiFetch";
 import styles from "./NuevoEstablecimientoClienteForm.module.css";
+import ButtonX from "../../components/ButtonX/ButtonX";
 
 type Props = {
   onClose: () => void;
@@ -77,15 +78,11 @@ export default function NuevoEstablecimientoClienteForm({ onClose, onCreated }: 
         <form onSubmit={handleSubmit}>
           <div className={styles.header}>
             <h2 id="nuevo-establecimiento-title">Nuevo establecimiento</h2>
-            <button
-              aria-label="Cerrar"
+            <ButtonX
               className={styles.closeButton}
               disabled={loading}
-              type="button"
               onClick={onClose}
-            >
-              ×
-            </button>
+            />
           </div>
 
           <p className={styles.subtitle}>Completá los datos de tu establecimiento.</p>

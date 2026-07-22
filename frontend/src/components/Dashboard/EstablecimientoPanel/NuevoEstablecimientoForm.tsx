@@ -4,6 +4,7 @@ import styles from "./../Style/EditarFormStyles.module.css";
 import Button from "../../Button/Button";
 import { useApi } from "../../../utils/apiFetch";
 import toast from "react-hot-toast";
+import type { AdminUserResponse } from "../../../types/AdminUser";
 
 interface Props {
   onClose: () => void;
@@ -70,14 +71,26 @@ export default function NuevoEstablecimientoForm({ onClose }: Props) {
     let active = true;
     const fetchClientes = async () => {
       try {
-        const res = await apiFetch("/api/v1/admin/clientes");
+        const res = await apiFetch("/api/v1/admin/usuarios");
 
         if (!res?.ok) return;
 
-        const data = (await res.json()) as ClienteOption[];
+        const usuarios = (await res.json()) as AdminUserResponse[];
         const normalizedSearch = search.trim().toLowerCase();
 
-        const filtrados = data
+        const filtrados = usuarios
+          .filter(
+            (usuario) =>
+              usuario.rol === "cliente" &&
+              usuario.cliente != null
+          )
+          .map<ClienteOption>((usuario) => ({
+            cliente_id: usuario.cliente!.cliente_id,
+            razon_social: usuario.cliente!.razon_social,
+            usuario: {
+              email: usuario.email,
+            },
+          }))
           .filter((cliente) =>
             cliente.razon_social.toLowerCase().includes(normalizedSearch) ||
             cliente.usuario.email.toLowerCase().includes(normalizedSearch)

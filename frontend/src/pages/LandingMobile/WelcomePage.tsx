@@ -8,7 +8,7 @@ import logoVeterinaria from "../../assets/logo-facu-veterinaria.png";
 import logoUnicen from "../../assets/UNICEN2.png";
 import styles from "./WelcomePage.module.css";
 
-/** Nueva pantalla de bienvenida para dispositivos moviles. */
+
 export default function WelcomePage() {
   const navigate = useNavigate();
   const [leaving, setLeaving] = useState(false);
@@ -38,7 +38,7 @@ export default function WelcomePage() {
           <img
             className={styles.mainLogo}
             src={logoPetri}
-            alt="Ganado en el campo junto a una cadena de ADN y bacterias"
+            alt="Logo App"
           />
         </div>
 
@@ -60,10 +60,10 @@ export default function WelcomePage() {
               alt="Facultad de Veterinaria"
             />
           </div>
-          
+
           <div className={styles.institutionNames} aria-label="Nombres de las instituciones participantes">
             <img className={styles.institutionUnicen} src={logoUnicen} alt="UNICEN" />
-          </div>  
+          </div>
         </div>
       </div>
     </main>

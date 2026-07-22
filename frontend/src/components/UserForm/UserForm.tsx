@@ -182,6 +182,16 @@ export default function UserForm({
             : "Completá los datos para registrar un nuevo usuario."}
         </p>
 
+        {/* Rol dinámico */}
+        <div className={styles.group}>
+          <label className={styles.label}>Rol</label>
+          <select className={styles.input} {...register("role")}>
+            <option value="cliente">Productor</option>
+            <option value="veterinario">Veterinario</option>
+            {mode === "admin-create" && <option value="admin">Administrador</option>}
+          </select>
+        </div>
+
         {/* Email */}
         <div className={styles.group}>
           <label className={styles.label}>Email</label>
@@ -247,15 +257,7 @@ export default function UserForm({
           )}
         </div>}
 
-        {/* Rol dinámico */}
-        <div className={styles.group}>
-          <label className={styles.label}>Rol</label>
-          <select className={styles.input} {...register("role")}>
-            <option value="cliente">Productor</option>
-            <option value="veterinario">Veterinario</option>
-            {mode === "admin-create" && <option value="admin">Administrador</option>}
-          </select>
-        </div>
+
 
         {/* Campos de CLIENTE */}
         {selectedRole === "cliente" && (
@@ -289,14 +291,6 @@ export default function UserForm({
               <input className={styles.input} {...register("ubicacionVet")} placeholder="Ciudad, Provincia"/>
             </div>
 
-            {/* Pero tu backend no está preparado para recibir archivos, así que por ahora no lo subimos 
-                falta implementar POST /api/v1/veterinarios/{id}/foto-perfil
-C               ontent-Type: multipart/form-data
-
-             <div className={styles.group}>
-              <label className={styles.label}>Subir Foto Perfil</label>
-              <input className={styles.input} type="file" {...register("fotoPerfil")} />
-            </div> */}
           </>
         )}
 

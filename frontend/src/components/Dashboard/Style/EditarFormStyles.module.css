@@ -8,6 +8,7 @@
 .form {
   width: 100%;
   max-width: 480px;
+  margin-inline: auto;
   padding: 24px 32px;
   border-radius: 12px;
   background: #B7CBE0;

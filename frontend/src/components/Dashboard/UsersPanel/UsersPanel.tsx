@@ -10,6 +10,7 @@ import AsignarVeterinarioModal from "./AsignarVeterinario";
 import ClientesAsociadosModal from "./ClientesAsociados";
 import EditUserForm from "./EditUserForm";
 import type { AdminUserResponse, AdminUserRow } from "../../../types/AdminUser";
+import ButtonX from "../../ButtonX/ButtonX";
 
 export default function UsersPanel() {
   const { apiFetch } = useApi();
@@ -230,6 +231,7 @@ export default function UsersPanel() {
         <thead>
           <tr>
             <th>Cliente</th>
+            <th>Razón social</th>
             <th>Correo Electronico</th>
             <th>Telefono</th>
             <th>Rol</th>
@@ -250,6 +252,7 @@ export default function UsersPanel() {
                 className={`${styles.rowClickable} ${selectedUserId === u.id ? styles.rowSelected : ""}`}
               >
                 <td><strong>{u.nombre}</strong></td>
+                <td>{u.cliente?.razon_social || "-"}</td>
                 <td>{u.email}</td>
                 <td>{u.telefono}</td>
                 
@@ -287,9 +290,7 @@ export default function UsersPanel() {
       {showModalNuevoUsuario && (
         <div className={styles.modalOverlay} onClick={() => setShowModalNuevoUsuario(false)}>
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-            <button className={styles.closeModalBtn} onClick={() => setShowModalNuevoUsuario(false)}>
-              ✕
-            </button>
+            <ButtonX className={styles.closeModalBtn} onClick={() => setShowModalNuevoUsuario(false)} />
 
             <UserForm
               mode="admin-create"
@@ -304,9 +305,7 @@ export default function UsersPanel() {
       {editUsuario && (
         <div className={styles.modalOverlay} onClick={() => setEditUsuario(null)}>
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-            <button className={styles.closeModalBtn} onClick={() => setEditUsuario(null)}>
-              ✕
-            </button>
+            <ButtonX className={styles.closeModalBtn} onClick={() => setEditUsuario(null)} />
             <EditUserForm
               usuario={editUsuario}
               onClose={() => setEditUsuario(null)}
@@ -326,12 +325,7 @@ export default function UsersPanel() {
             className={styles.modalContent}
             onClick={(e) => e.stopPropagation()}
           >
-            <button
-              className={styles.closeModalBtn}
-              onClick={() => setShowAsignarVetModal(false)}
-            >
-              ✕
-            </button>
+            <ButtonX className={styles.closeModalBtn} onClick={() => setShowAsignarVetModal(false)} />
 
             <AsignarVeterinarioModal
               usuarioId={selectedUserId}
@@ -347,7 +341,7 @@ export default function UsersPanel() {
       {showClientesModal && selectedUserId && (
         <div className={styles.modalOverlay} onClick={() => setShowClientesModal(false)}>
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-            <button className={styles.closeModalBtn} onClick={() => setShowClientesModal(false)}>✕</button>
+            <ButtonX className={styles.closeModalBtn} onClick={() => setShowClientesModal(false)} />
             <ClientesAsociadosModal usuarioId={selectedUserId} onClose={() => { setShowClientesModal(false); void loadUsuarios(); }} />
           </div>
         </div>

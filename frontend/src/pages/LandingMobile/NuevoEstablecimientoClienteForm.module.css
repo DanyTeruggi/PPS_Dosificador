@@ -11,6 +11,7 @@
 }
 
 .dialog {
+  position: relative;
   width: min(100%, 360px);
   max-height: calc(100dvh - 40px);
   box-sizing: border-box;
@@ -29,13 +30,18 @@
 
 .header h2 {
   margin: 0 0 8px;
+  padding: 0 34px;
   color: #452052;
   font-size: clamp(20px, 5.8vw, 24px);
   text-align: center;
 }
 
-.closeButton {
-  display: none;
+.closeButton.closeButton {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 34px;
+  height: 34px;
 }
 
 .subtitle {

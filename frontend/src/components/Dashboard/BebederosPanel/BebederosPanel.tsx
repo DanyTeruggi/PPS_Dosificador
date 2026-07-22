@@ -9,6 +9,7 @@ import { useAuth } from "../../../context/useAuth";
 
 import NuevoBebederoForm from "./NuevoBebederoForm";
 import Button from "../../Button/Button";
+import ButtonX from "../../ButtonX/ButtonX";
 
 import type { Bebedero } from "../../../types/Bebedero";
 import type { Establecimiento } from "../../../types/Establecimiento";
@@ -354,9 +355,7 @@ export default function BebederosPanel() {
       {editBebedero && (
         <div className={styles.modalOverlay} onClick={() => setEditBebedero(null)}>
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-            <button className={styles.closeModalBtn} onClick={() => setEditBebedero(null)}>
-              ✕
-            </button>
+            <ButtonX className={styles.closeModalBtn} onClick={() => setEditBebedero(null)} />
 
             <EditarBebederoForm
               bebedero={editBebedero}
@@ -371,9 +370,7 @@ export default function BebederosPanel() {
       {showCreateModal && (
         <div className={styles.modalOverlay} onClick={() => setShowCreateModal(false)}>
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-            <button className={styles.closeModalBtn} onClick={() => setShowCreateModal(false)}>
-              ✕
-            </button>
+            <ButtonX className={styles.closeModalBtn} onClick={() => setShowCreateModal(false)} />
 
             <NuevoBebederoForm
               establecimientos={establecimientos}
@@ -390,7 +387,7 @@ export default function BebederosPanel() {
       {import.meta.env.DEV && showSimulatorModal && (
         <div className={styles.modalOverlay} onClick={() => setShowSimulatorModal(false)}>
           <div className={styles.modalContent} onClick={(event) => event.stopPropagation()}>
-            <button className={styles.closeModalBtn} onClick={() => setShowSimulatorModal(false)}>✕</button>
+            <ButtonX className={styles.closeModalBtn} onClick={() => setShowSimulatorModal(false)} />
             <CargaImagen
               bebederos={bebederos}
               onClose={() => setShowSimulatorModal(false)}
@@ -404,12 +401,7 @@ export default function BebederosPanel() {
         <div className={styles.modalOverlay} onClick={() => setDeleteConfirm(null)}>
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
 
-            <button
-              className={styles.closeModalBtn}
-              onClick={() => setDeleteConfirm(null)}
-            >
-              ✕
-            </button>
+            <ButtonX className={styles.closeModalBtn} onClick={() => setDeleteConfirm(null)} />
 
             <h2 className={stylesDelete.title}>
               Eliminar "{deleteConfirm.nombre}"

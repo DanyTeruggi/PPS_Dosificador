@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { BsHouseDoorFill,
   BsHeadset,
   BsBoxArrowRight } from "react-icons/bs";
@@ -5,10 +6,12 @@ import styles from "./Footer.module.css";
 
 import { useAuth } from "../../context/useAuth";
 import { useNavigate } from "react-router-dom";
+import SupportWhatsAppModal from "../SupportWhatsAppModal/SupportWhatsAppModal";
 
 export default function Footer() {
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const navigate = useNavigate();
+  const [showSupport, setShowSupport] = useState(false);
 
   // Redirige al home (SmartHomeRedirect decide desktop o mobile)
   const handleHome = () => {
@@ -31,16 +34,20 @@ export default function Footer() {
       </div>
 
       {/* SOPORTE TÉCNICO */}
-      <div className={styles.item}>
+      <button className={styles.item} type="button" onClick={() => setShowSupport(true)}>
         <BsHeadset size={22} />
         <span className={styles.label}>Soporte Técnico</span>
-      </div>
+      </button>
 
       {/* LOGOUT */}
       <div className={styles.item} onClick={handleLogout}>
         <BsBoxArrowRight size={22} />
         <span className={styles.label}>Salir</span>
       </div>
+
+      {showSupport && (
+        <SupportWhatsAppModal user={user} onClose={() => setShowSupport(false)} />
+      )}
 
     </footer>
   );
