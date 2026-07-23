@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { HiOutlineChevronRight, HiOutlineMapPin } from "react-icons/hi2";
-
 import EmptyState from "../../components/EmptyState/EmptyState";
 import { useAuth } from "../../context/useAuth";
 import { useApi } from "../../utils/apiFetch";
@@ -18,7 +17,7 @@ type Cliente = { id: number; razon_social: string };
 type ClienteResponse = { establecimientos: Establecimiento[] };
 type VeterinarioResponse = { clientes: Cliente[] };
 
-/** Nueva pagina para seleccionar un establecimiento. */
+
 export default function LandingEstablecimientos() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();

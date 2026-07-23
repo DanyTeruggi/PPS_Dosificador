@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
 import { AuthContext, isAuthUser } from "./authContextDefinition";
 import type { AuthUser } from "./authContextDefinition";
+import { getApiErrorDetails } from "../utils/apiError";
 
 interface LoginResponse {
   access_token: string;
@@ -25,7 +26,7 @@ function readStoredUser(): AuthUser | null {
     const normalized = normalizeAuthUser(parsed);
     if (normalized && isAuthUser(normalized)) return normalized;
   } catch {
-    // El dato persistido no contiene JSON válido.
+    // El dato persistido no contiene JSON valido.
   }
 
   sessionStorage.removeItem("user");
@@ -101,17 +102,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [API, PREFIX, logout, token]);
 
   // LOGIN REAL
-   const login = async (email: string, password: string): Promise<boolean> => {
+  const login = async (email: string, password: string) => {
     try {
-      
+
       const res = await fetch(`${API}${PREFIX}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password })
       });
 
-    
-      if (!res.ok) return false;
+
+      if (!res.ok) {
+        const details = await getApiErrorDetails(res, "No se pudo iniciar sesión.");
+        return { ok: false, ...details };
+      }
 
       const data = (await res.json()) as LoginResponse;
       const token = data.access_token;
@@ -127,11 +131,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(decoded);
       sessionStorage.setItem("user", JSON.stringify(decoded));
 
-      return true;
+      return { ok: true };
 
     } catch (err) {
       console.error("Error en login:", err);
-      return false;
+      return { ok: false, message: "Ocurrió un problema de comunicación." };
     }
   };
 

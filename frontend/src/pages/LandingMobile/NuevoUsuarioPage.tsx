@@ -1,12 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import UserForm from "../../components/UserForm/UserForm";
-
-
 import styles from "./NuevoUsuarioPage.module.css";
 
 export default function NuevoUsuarioPage() {
   const navigate = useNavigate();
-
 
 
   return (

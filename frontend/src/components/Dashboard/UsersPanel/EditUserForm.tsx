@@ -2,7 +2,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import Button from "../../Button/Button";
 import { useApi } from "../../../utils/apiFetch";
-import { getApiErrorMessage } from "../../../utils/apiError";
+import { getApiErrorDetails } from "../../../utils/apiError";
 import type { AdminUserRow } from "../../../types/AdminUser";
 import type { UsuarioUpdateRequest } from "../../../types/ApiContracts";
 import styles from "./../Styles/EditarFormStyles.module.css";
@@ -16,6 +16,7 @@ interface Props {
 export default function EditUserForm({ usuario, onClose, onSaved }: Props) {
   const { apiFetch } = useApi();
   const [loading, setLoading] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [editClaveFiscal, setEditClaveFiscal] = useState(false);
   const [form, setForm] = useState({
     nombre: usuario.nombre,
@@ -40,6 +41,8 @@ export default function EditUserForm({ usuario, onClose, onSaved }: Props) {
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
+    if (loading) return;
+    setFieldErrors({});
 
     if (editClaveFiscal && !form.clave_fiscal.trim()) {
       toast.error("Ingresá la nueva clave fiscal.");
@@ -94,10 +97,11 @@ export default function EditUserForm({ usuario, onClose, onSaved }: Props) {
       });
 
       if (!response?.ok) {
-        const message = response
-          ? await getApiErrorMessage(response, "No se pudo actualizar el usuario.")
-          : "No se recibió respuesta del servidor.";
-        toast.error(message);
+        const details = response
+          ? await getApiErrorDetails(response, "No se pudo actualizar el usuario.")
+          : { message: "No se recibió respuesta del servidor.", fieldErrors: {} };
+        setFieldErrors(details.fieldErrors);
+        toast.error(details.message);
         return;
       }
 
@@ -124,11 +128,13 @@ export default function EditUserForm({ usuario, onClose, onSaved }: Props) {
       <div className={styles.group}>
         <label className={styles.label}>Apellido y Nombre</label>
         <input className={styles.input} required value={form.nombre} onChange={(e) => updateField("nombre", e.target.value)} />
+        {fieldErrors.nombre && <p className={styles.error}>{fieldErrors.nombre}</p>}
       </div>
 
       <div className={styles.group}>
         <label className={styles.label}>Email</label>
         <input className={styles.input} type="email" required value={form.email} onChange={(e) => updateField("email", e.target.value)} />
+        {fieldErrors.email && <p className={styles.error}>{fieldErrors.email}</p>}
       </div>
 
       {usuario.rol !== "admin" && (
@@ -136,6 +142,7 @@ export default function EditUserForm({ usuario, onClose, onSaved }: Props) {
           <div className={styles.group}>
             <label className={styles.label}>Teléfono</label>
             <input className={styles.input} type="tel" required value={form.telefono} onChange={(e) => updateField("telefono", e.target.value)} />
+            {fieldErrors.telefono && <p className={styles.error}>{fieldErrors.telefono}</p>}
           </div>
 
           <div className={styles.group}>
@@ -165,6 +172,7 @@ export default function EditUserForm({ usuario, onClose, onSaved }: Props) {
                 editClaveFiscal ? "Ingresá la nueva clave fiscal" : "*****"
               }
             />
+            {fieldErrors.clave_fiscal && <p className={styles.error}>{fieldErrors.clave_fiscal}</p>}
           </div>
         </>
       )}
@@ -174,10 +182,12 @@ export default function EditUserForm({ usuario, onClose, onSaved }: Props) {
           <div className={styles.group}>
             <label className={styles.label}>Razón social</label>
             <input className={styles.input} required value={form.razon_social} onChange={(e) => updateField("razon_social", e.target.value)} />
+            {fieldErrors.razon_social && <p className={styles.error}>{fieldErrors.razon_social}</p>}
           </div>
           <div className={styles.group}>
             <label className={styles.label}>Contacto principal</label>
             <input className={styles.input} value={form.contacto_principal} onChange={(e) => updateField("contacto_principal", e.target.value)} />
+            {fieldErrors.contacto_principal && <p className={styles.error}>{fieldErrors.contacto_principal}</p>}
           </div>
         </>
       )}
@@ -187,17 +197,19 @@ export default function EditUserForm({ usuario, onClose, onSaved }: Props) {
           <div className={styles.group}>
             <label className={styles.label}>Especialidad</label>
             <input className={styles.input} value={form.especialidad} onChange={(e) => updateField("especialidad", e.target.value)} />
+            {fieldErrors.especialidad && <p className={styles.error}>{fieldErrors.especialidad}</p>}
           </div>
           <div className={styles.group}>
             <label className={styles.label}>Ubicación</label>
             <input className={styles.input} value={form.ubicacion} onChange={(e) => updateField("ubicacion", e.target.value)} />
+            {fieldErrors.ubicacion && <p className={styles.error}>{fieldErrors.ubicacion}</p>}
           </div>
         </>
       )}
 
       <div className={styles.actions}>
-        <Button label="Cancelar" variant="secondary" onClick={onClose} />
-        <Button label={loading ? "Guardando…" : "Guardar cambios"} type="submit" />
+        <Button label="Cancelar" variant="secondary" onClick={onClose} disabled={loading} />
+        <Button label={loading ? "Guardando…" : "Guardar cambios"} type="submit" disabled={loading} ariaBusy={loading} />
       </div>
     </form>
   );

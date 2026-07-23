@@ -95,10 +95,10 @@ export default function ClientesAsociados({ usuarioId, onClose }: Props) {
         actuales.map((item) =>
           item.cliente_id === cliente.cliente_id
             ? {
-                ...item,
-                veterinario_id: nuevoVeterinarioId,
-                veterinario: nuevoVeterinario,
-              }
+              ...item,
+              veterinario_id: nuevoVeterinarioId,
+              veterinario: nuevoVeterinario,
+            }
             : item,
         ),
       );
@@ -112,7 +112,8 @@ export default function ClientesAsociados({ usuarioId, onClose }: Props) {
   }
 
   async function removeCliente(cliente: ClienteAdmin) {
-    if (!window.confirm(`¿Quitar a ${cliente.usuario.nombre} de este veterinario y asignarlo al veterinario predeterminado?`)) return;
+    if (!window.confirm(`¿Quitar a ${cliente.usuario.nombre} de este veterinario y asignarlo al veterinario predeterminado?`))
+      return;
 
     setSavingId(cliente.cliente_id);
     try {
@@ -124,10 +125,10 @@ export default function ClientesAsociados({ usuarioId, onClose }: Props) {
         actuales.map((item) =>
           item.cliente_id === cliente.cliente_id
             ? {
-                ...item,
-                veterinario_id: DEFAULT_VETERINARIO_ID,
-                veterinario: veterinarioPredeterminado,
-              }
+              ...item,
+              veterinario_id: DEFAULT_VETERINARIO_ID,
+              veterinario: veterinarioPredeterminado,
+            }
             : item,
         ),
       );
@@ -176,13 +177,26 @@ export default function ClientesAsociados({ usuarioId, onClose }: Props) {
 
           <div className={styles.group}>
             <label className={styles.label}>Buscar cliente para asociar</label>
-            <input className={styles.input} value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Nombre, email o razón social" />
+            <input
+              className={styles.input}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Nombre, email o razón social"
+            />
+
             {search.trim().length > 0 && search.trim().length < 2 && <span className={styles.hint}>Ingresá al menos 2 caracteres.</span>}
             {search.trim().length >= 2 && (
               <div className={styles.searchResults}>
                 {disponibles.length === 0 && <p className={styles.dropdownEmpty}>No se encontraron otros clientes.</p>}
                 {disponibles.map((cliente) => (
-                  <button key={cliente.cliente_id} type="button" className={styles.dropdownItem} disabled={savingId === cliente.cliente_id} onClick={() => veterinario && void moveCliente(cliente, getVeterinarioId(veterinario))}>
+                  <button
+                    key={cliente.cliente_id}
+                    type="button"
+                    className={styles.dropdownItem}
+                    disabled={savingId === cliente.cliente_id}
+                    onClick={() => veterinario && void moveCliente(cliente, getVeterinarioId(veterinario))}
+                  >
+
                     <strong>{cliente.usuario.nombre}</strong>
                     <span>{cliente.razon_social} · {cliente.usuario.email}</span>
                     <span>
@@ -197,7 +211,14 @@ export default function ClientesAsociados({ usuarioId, onClose }: Props) {
         </>
       )}
 
-      <div className={styles.actions}><Button label="Cerrar" variant="secondary" type="button" onClick={onClose} /></div>
+      <div className={styles.actions}>
+        <Button 
+          label="Cerrar" 
+          variant="secondary" 
+          type="button" 
+          onClick={onClose} 
+        />
+        </div>
     </div>
   );
 }

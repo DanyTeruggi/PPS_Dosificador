@@ -70,7 +70,7 @@ export default function EstablecimientoPanel() {
   const { user } = useAuth();
 
   const [establecimientos, setEstablecimientos] = useState<EstablecimientoRow[]>([]);
- 
+
   const [search, setSearch] = useState("");
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editEstablecimiento, setEditEstablecimiento] = useState<Establecimiento | null>(null);
@@ -114,7 +114,7 @@ export default function EstablecimientoPanel() {
           usuarioNombre,
         }))
       );
-      
+
       return;
     }
 
@@ -224,7 +224,6 @@ export default function EstablecimientoPanel() {
   }
 
 
-
   async function handleEditClick(id: number) {
     const res = await apiFetch(`/api/v1/establecimientos/${id}`);
     if (!res || !res.ok) {
@@ -236,9 +235,7 @@ export default function EstablecimientoPanel() {
     setEditEstablecimiento(data);
   }
 
-   /* ---------------------------------------------------------
-   * Borrar
-   * --------------------------------------------------------- */
+  // Borrar
   async function handleDeleteClick(id: number, nombre: string) {
     setDeleteConfirm({ id, nombre });
   }
@@ -309,10 +306,11 @@ export default function EstablecimientoPanel() {
 
   return (
     <div className={styles.container}>
+
       {/* BUSCADOR + CLEAR + FILTROS */}
       <div className={styles.searchRow}>
 
-         {/* Grupo: buscador + clear */}
+        {/* Grupo: buscador + clear */}
         <div className={styles.searchGroup}>
           <input
             type="text"
@@ -351,7 +349,7 @@ export default function EstablecimientoPanel() {
 
         <tbody>
           {filtrados.map((e) => (
-            <tr 
+            <tr
               key={e.id}
               onClick={() => handleRowClick(e.id)}
               className={`${styles.rowClickable} ${selectedRowId === e.id ? styles.rowSelected : ""}`}
@@ -361,7 +359,10 @@ export default function EstablecimientoPanel() {
               <td>{e.usuarioNombre}</td>
               <td>{e.clienteNombre}</td>
               <td className={styles.actionsCell}>
-                <ButtonTable variant="edit" onClick={() => handleEditClick(e.id)}>
+                <ButtonTable 
+                  variant="edit" 
+                  onClick={() => handleEditClick(e.id)}
+                >
                   Editar
                 </ButtonTable>
                 <ButtonTable
@@ -389,14 +390,17 @@ export default function EstablecimientoPanel() {
       {editEstablecimiento && (
         <div className={styles.modalOverlay} onClick={() => setEditEstablecimiento(null)}>
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-            <ButtonX className={styles.closeModalBtn} onClick={() => setEditEstablecimiento(null)} />
+            <ButtonX 
+              className={styles.closeModalBtn} 
+              onClick={() => setEditEstablecimiento(null)} 
+            />
 
             <EditarEstablecimientoForm
               establecimiento={editEstablecimiento}
               onSave={guardarCambios}
               onClose={() => {
                 setEditEstablecimiento(null)
-                loadEstablecimientos(); 
+                loadEstablecimientos();
               }}
             />
           </div>
@@ -406,12 +410,15 @@ export default function EstablecimientoPanel() {
       {showCreateModal && (
         <div className={styles.modalOverlay} onClick={() => setShowCreateModal(false)}>
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-            <ButtonX className={styles.closeModalBtn} onClick={() => setShowCreateModal(false)} />
+            <ButtonX 
+              className={styles.closeModalBtn} 
+              onClick={() => setShowCreateModal(false)} 
+            />
 
             <NuevoEstablecimientoForm
               onClose={() => {
                 setShowCreateModal(false);
-                loadEstablecimientos(); 
+                loadEstablecimientos();
               }}
             />
           </div>
@@ -419,18 +426,21 @@ export default function EstablecimientoPanel() {
       )}
 
       {deleteConfirm && (
-  <div className={styles.modalOverlay} onClick={() => setDeleteConfirm(null)}>
-    <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-      
-      <ButtonX className={styles.closeModalBtn} onClick={() => setDeleteConfirm(null)} />
+        <div className={styles.modalOverlay} onClick={() => setDeleteConfirm(null)}>
+          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
 
-      <h2 className={stylesDelete.title}>
-        Eliminar "{deleteConfirm.nombre}"
-      </h2>
+            <ButtonX 
+              className={styles.closeModalBtn} 
+              onClick={() => setDeleteConfirm(null)} 
+            />
 
-      <p className={stylesDelete.subtitle}>
-        ¿Seguro que deseas eliminar este Establecimiento?
-      </p>
+            <h2 className={stylesDelete.title}>
+              Eliminar "{deleteConfirm.nombre}"
+            </h2>
+
+            <p className={stylesDelete.subtitle}>
+              ¿Seguro que deseas eliminar este Establecimiento?
+            </p>
 
             <div className={stylesDelete.actions}>
 
@@ -449,10 +459,6 @@ export default function EstablecimientoPanel() {
           </div>
         </div>
       )}
-
-
-
-
     </div>
   );
 }

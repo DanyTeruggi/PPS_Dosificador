@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
-
 import { getApiErrorMessage } from "../../../utils/apiError";
 import { useApi } from "../../../utils/apiFetch";
 import type { Bebedero } from "../../../types/Bebedero";
@@ -38,9 +37,13 @@ function fileToBase64(file: File): Promise<string> {
 export default function CargaImagen({ bebederos, onClose, onCompleted }: Props) {
   const { apiFetch } = useApi();
   const [bebederoId, setBebederoId] = useState("");
-  // La clave se genera desde la raíz del backend con el mismo ID seleccionado:
-  // .\venv\Scripts\python.exe -m app.cli.device_api_key 25
-  // El comando imprime la X-API-Key. No guardar la clave en el frontend ni en localStorage.
+
+  /*
+  La clave se genera desde la raíz del backend con el mismo ID seleccionado:
+         .\venv\Scripts\python.exe -m app.cli.device_api_key 25
+   El comando imprime la X-API-Key. No guardar la clave en el frontend ni en localStorage.
+   Se hizo de esta manera hasta que lo implemente el backend para que el dispositivo pueda generar su propia clave.
+  */
   const [apiKey, setApiKey] = useState("");
   const [cobertura, setCobertura] = useState("");
   const [nivelAgua, setNivelAgua] = useState("");
@@ -104,47 +107,49 @@ export default function CargaImagen({ bebederos, onClose, onCompleted }: Props) 
     event.preventDefault();
     if (loading || !image) return;
 
+    const retryImageOnly = monitoringStatus === "success" && imageStatus === "error";
     setError(null);
     setResult(null);
-    setMonitoringStatus("loading");
+    if (!retryImageOnly) setMonitoringStatus("loading");
     setImageStatus("idle");
 
     const measurementDate = new Date(fechaMedicion);
     const headers = { "X-API-Key": apiKey.trim() };
 
     try {
-      const monitoringResponse = await apiFetch(`/api/v1/bebederos/${bebederoId}/monitoreo`, {
-        method: "POST",
-        headers,
-        skipAuth: true,
-        skipUnauthorizedLogout: true,
-        body: JSON.stringify({
-          fecha: measurementDate.toISOString().slice(0, 10),
-          timestamp: measurementDate.toISOString(),
-          nivel_agua_cm: nivelAgua === "" ? null : Number(nivelAgua),
-          distancia_sensor_cm: distanciaSensor === "" ? null : Number(distanciaSensor),
-          cobertura_capsulas_porciento: Number(cobertura),
-          sensor_ultrasound: sensorUltrasound,
-          camera_activa: cameraActiva,
-          analyzer_activo: analyzerActivo,
-          config_ok: configOk,
-          error_message: errorMessage.trim() || null,
-        }),
-      });
+      // Si sólo falló la imagen, el reintento reutiliza el monitoreo ya creado.
+      if (!retryImageOnly) {
+        const monitoringResponse = await apiFetch(`/api/v1/bebederos/${bebederoId}/monitoreo`, {
+          method: "POST",
+          headers,
+          skipAuth: true,
+          skipUnauthorizedLogout: true,
+          body: JSON.stringify({
+            fecha: measurementDate.toISOString().slice(0, 10),
+            timestamp: measurementDate.toISOString(),
+            nivel_agua_cm: nivelAgua === "" ? null : Number(nivelAgua),
+            distancia_sensor_cm: distanciaSensor === "" ? null : Number(distanciaSensor),
+            cobertura_capsulas_porciento: Number(cobertura),
+            sensor_ultrasound: sensorUltrasound,
+            camera_activa: cameraActiva,
+            analyzer_activo: analyzerActivo,
+            config_ok: configOk,
+            error_message: errorMessage.trim() || null,
+          }),
+        });
 
-      if (!monitoringResponse?.ok) {
-        setMonitoringStatus("error");
-        const monitoringError = monitoringResponse?.status === 401
-          ? "La API key no es válida para el dispositivo seleccionado."
-          : monitoringResponse
-            ? await getApiErrorMessage(monitoringResponse, "No se pudo crear el monitoreo.")
-            : "No se recibió respuesta al crear el monitoreo.";
-        throw new Error(
-          monitoringError,
-        );
+        if (!monitoringResponse?.ok) {
+          setMonitoringStatus("error");
+          const monitoringError = monitoringResponse?.status === 401
+            ? "La API key no es válida para el dispositivo seleccionado."
+            : monitoringResponse
+              ? await getApiErrorMessage(monitoringResponse, "No se pudo crear el monitoreo.")
+              : "No se recibió respuesta al crear el monitoreo.";
+          throw new Error(monitoringError);
+        }
+
+        setMonitoringStatus("success");
       }
-
-      setMonitoringStatus("success");
       setImageStatus("loading");
 
       const contenidoBase64 = await fileToBase64(image);
@@ -266,7 +271,11 @@ export default function CargaImagen({ bebederos, onClose, onCompleted }: Props) 
         <div className={styles.actions}>
           <button className={simulatorStyles.cancelButton} disabled={loading} type="button" onClick={onClose}>Cerrar</button>
           <button className={simulatorStyles.submitButton} disabled={loading || !image} type="submit">
-            {loading ? "Enviando…" : "Enviar lectura e imagen"}
+            {loading
+              ? "Enviando…"
+              : monitoringStatus === "success" && imageStatus === "error"
+                ? "Reintentar imagen"
+                : "Enviar lectura e imagen"}
           </button>
         </div>
       </form>

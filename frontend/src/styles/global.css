@@ -1,33 +1,7 @@
-:root {
-  /* --color-input-bg: #A7B5B3; */
-
-
-
-  /* Fondo para formularios */
-  --background-form: #e8e3e3;
-
- 
-}
-
-/* Fondo global */
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
-}
-
-
-
-
-/* Inputs */
-input.form-control {
-  background-color: var(--color-input-bg);
-  border: 1px solid #888;
-  color: #000;
-}
-
-input.form-control::placeholder {
-  color: #333;
-  opacity: 0.8;
 }
 

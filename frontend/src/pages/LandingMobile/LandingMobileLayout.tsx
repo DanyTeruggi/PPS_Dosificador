@@ -9,7 +9,7 @@ type LandingMobileLayoutProps = {
 };
 
 /**
- * Estructura comun de las paginas Landing para celular.
+ * Estructura comun de las paginas LandingMobile.
  * Recibe como children el contenido particular de cada pagina.
  */
 export default function LandingMobileLayout({ children }: LandingMobileLayoutProps) {

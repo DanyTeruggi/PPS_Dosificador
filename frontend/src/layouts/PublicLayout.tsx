@@ -1,5 +1,5 @@
 import { Outlet, useLocation } from "react-router-dom";
-import Footer from "../components/Footer/Footer"; 
+import Footer from "../components/Footer/Footer";
 import FooterDesktop from "../components/Footer/FooterDesktop";
 import { useIsDesktop } from "../hooks/useIsDesktop";
 

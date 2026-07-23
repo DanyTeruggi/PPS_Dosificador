@@ -12,6 +12,14 @@ type AuthenticatedImageProps = {
 
 type ImageStatus = "loading" | "loaded" | "error";
 
+/**
+ * Este componente se encarga de cargar imágenes desde un endpoint protegido,
+ * usando la función `apiFetch` para obtener la imagen con las credenciales del usuario.
+ * Muestra un estado de carga mientras se obtiene la imagen y maneja errores si la imagen no se puede cargar.
+ * Además, permite ampliar la imagen en un modal al hacer clic en ella.
+ * Solo se implementara hasta que el backend soporte la carga de imágenes protegidas, 
+ * por lo que actualmente no se utiliza en la aplicación.
+ */
 export default function AuthenticatedImage({ imageUrl, alt }: AuthenticatedImageProps) {
   const { apiFetch } = useApi();
   const [objectUrl, setObjectUrl] = useState<string | null>(null);

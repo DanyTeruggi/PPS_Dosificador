@@ -2,17 +2,13 @@ import { useState, useEffect, useCallback } from "react";
 import styles from "./../Styles/PanelStyles.module.css";
 import stylesDelete from "./../Styles/EditarFormStyles.module.css";
 import toast from "react-hot-toast";
-
 import { useApi } from "../../../utils/apiFetch";
 import { useAuth } from "../../../context/useAuth";
-
-
 import NuevoBebederoForm from "./NuevoBebederoForm";
 import Button from "../../Button/Button";
 import ButtonX from "../../ButtonX/ButtonX";
 import ButtonSearch from "../../ButtonSearch/ButtonSearch";
 import ButtonTable from "../../ButtonTable/ButtonTable";
-
 import type { Bebedero } from "../../../types/Bebedero";
 import type { Establecimiento } from "../../../types/Establecimiento";
 import EditarBebederoForm from "./EditaBebederoForm";
@@ -34,35 +30,31 @@ type ClienteAdmin = {
  * --------------------------------------------------------- */
 function normalizeBebederos(payload: unknown): Bebedero[] {
   // Caso A: ya es un array, lo devolvemos tal cual
-  if (Array.isArray(payload)) return payload as Bebedero[];
+  if (Array.isArray(payload)) 
+    return payload as Bebedero[];
   // Caso B: es un objeto que contiene "bebederos"
   if (payload && typeof payload === "object" && "bebederos" in payload) {
     const maybe = (payload as { bebederos?: unknown }).bebederos;
-
-    if (Array.isArray(maybe)) return maybe as Bebedero[];
+    if (Array.isArray(maybe)) 
+      return maybe as Bebedero[];
   }
-
   return [];
 }
 
 function normalizeEstablecimientos(payload: unknown): Establecimiento[] {
-  if (Array.isArray(payload)) return payload as Establecimiento[];
-
+  if (Array.isArray(payload)) 
+    return payload as Establecimiento[];
   if (payload && typeof payload === "object" && "establecimientos" in payload) {
     const establecimientos = (payload as { establecimientos?: unknown }).establecimientos;
     return Array.isArray(establecimientos) ? (establecimientos as Establecimiento[]) : [];
   }
-
   return [];
 }
 
-/* ---------------------------------------------------------
- * Panel
- * --------------------------------------------------------- */
+
 export default function BebederosPanel() {
   const { apiFetch } = useApi();
   const { user } = useAuth();
-
   const [bebederos, setBebederos] = useState<BebederoRow[]>([]);
   const [establecimientos, setEstablecimientos] = useState<Establecimiento[]>([]);
   const [search, setSearch] = useState("");
@@ -81,7 +73,6 @@ export default function BebederosPanel() {
    * --------------------------------------------------------- */
   const loadBebederos = useCallback(async () => {
     const role = user?.role ?? user?.rol;
- 
 
     if (role !== "admin") {
       setBebederos([]);
@@ -94,9 +85,7 @@ export default function BebederosPanel() {
       apiFetch("/api/v1/admin/establecimientos"),
       apiFetch("/api/v1/admin/clientes"),
     ]);
-    
-     
-      
+
     if (!bebRes?.ok || !estRes?.ok || !clientesRes?.ok) {
       setBebederos([]);
       setEstablecimientos([]);
@@ -113,7 +102,7 @@ export default function BebederosPanel() {
         const est = establecimientosAdmin.find((e) => e.id === b.establecimiento_id);
         const cliente = clientes.find((c) => c.cliente_id === est?.cliente_id);
         return {
-          ...b, 
+          ...b,
           establecimientoNombre: est?.nombre ?? "—",
           razonSocial: cliente?.razon_social ?? "—",
         };
@@ -143,9 +132,9 @@ export default function BebederosPanel() {
     );
   });
 
- /* ---------------------------------------------------------
-   * Toggle row selection 
-   * --------------------------------------------------------- */
+  /* ---------------------------------------------------------
+    * Toggle row selection 
+    * --------------------------------------------------------- */
   function handleRowClick(id: number) {
     setSelectedRowId(id);
   }
@@ -155,7 +144,8 @@ export default function BebederosPanel() {
    * --------------------------------------------------------- */
   async function toggleEstadoBebedero(id: number) {
     const bebedero = bebederos.find((b) => b.id === id);
-    if (!bebedero) return; // seguridad
+    if (!bebedero) 
+      return; // seguridad para evitar errores si el bebedero no se encuentra
 
     const updated = bebederos.map((b) =>
       b.id === id ? { ...b, estado: !b.estado } : b
@@ -201,7 +191,6 @@ export default function BebederosPanel() {
 
       if (!res.ok) {
         if (res.status === 400 || res.status === 409) {
-          // CASO DE ERROR: el bebedero tiene datos asociados y no se puede eliminar(falta implementar en el backend)
           toast.error("No se puede eliminar el bebedero porque tiene datos asociados.");
         } else {
           toast.error("No se pudo eliminar el bebedero.");
@@ -228,10 +217,8 @@ export default function BebederosPanel() {
   function clearFilters() {
     setSearch("");
   }
+ 
 
-  /* ---------------------------------------------------------
-   * Guardar cambios
-   * --------------------------------------------------------- */
   async function guardarCambios(bebActualizado: Bebedero) {
     setBebederos((actuales) =>
       actuales.map((b) =>
@@ -245,9 +232,6 @@ export default function BebederosPanel() {
     await loadBebederos();
   }
 
-  /* ---------------------------------------------------------
-   * Render
-   * --------------------------------------------------------- */
   return (
     <div className={styles.container}>
 
@@ -272,13 +256,21 @@ export default function BebederosPanel() {
 
         <div className={styles.headerActions}>
           {import.meta.env.DEV && (
-            <ButtonSearch variant="secondary" onClick={() => setShowSimulatorModal(true)}>
+            <ButtonSearch 
+              variant="secondary" 
+              onClick={() => setShowSimulatorModal(true)}
+            >
               Simular lectura
             </ButtonSearch>
           )}
-          <ButtonSearch variant="primary" onClick={() => setShowCreateModal(true)}>
+
+          <ButtonSearch 
+            variant="primary" 
+            onClick={() => setShowCreateModal(true)}
+          >
             Nuevo dispositivo
           </ButtonSearch>
+
         </div>
       </div>
 
@@ -289,9 +281,9 @@ export default function BebederosPanel() {
             <th>Establecimiento</th>
             <th>Ubicación</th>
             <th>Dispositivo</th>
-            <th>  
+            <th>
               <div className={styles.estadoHeader}>
-              <span>Estado</span>
+                <span>Estado</span>
               </div>
             </th>
             <th>Tiempo de Dosis</th>
@@ -301,7 +293,7 @@ export default function BebederosPanel() {
         </thead>
 
         <tbody>
-          {filtrados.map((b) => ( 
+          {filtrados.map((b) => (
             <tr key={b.id}
               onClick={() => handleRowClick(b.id)}
               className={`${styles.rowClickable} ${selectedRowId === b.id ? styles.rowSelected : ""}`}>
@@ -321,18 +313,14 @@ export default function BebederosPanel() {
                   <span className={styles.slider}></span>
                 </label>
               </td>
-
-              
               <td style={{ paddingLeft: "40px" }}>{b.tiempo_dosis ?? "-"}</td>
               <td style={{ paddingLeft: "40px" }}>
                 {b.cobertura_objetivo !== null && b.cobertura_objetivo !== undefined
                   ? `${b.cobertura_objetivo} %`
                   : "-"}
               </td>
-
-
-
               <td className={styles.actionsCell}>
+
                 <ButtonTable
                   variant="edit"
                   onClick={(e) => {
@@ -349,6 +337,7 @@ export default function BebederosPanel() {
                 >
                   Borrar
                 </ButtonTable>
+
               </td>
             </tr>
           ))}
@@ -367,7 +356,10 @@ export default function BebederosPanel() {
       {editBebedero && (
         <div className={styles.modalOverlay} onClick={() => setEditBebedero(null)}>
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-            <ButtonX className={styles.closeModalBtn} onClick={() => setEditBebedero(null)} />
+            <ButtonX 
+              className={styles.closeModalBtn} 
+              onClick={() => setEditBebedero(null)} 
+            />
 
             <EditarBebederoForm
               bebedero={editBebedero}
@@ -382,7 +374,10 @@ export default function BebederosPanel() {
       {showCreateModal && (
         <div className={styles.modalOverlay} onClick={() => setShowCreateModal(false)}>
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-            <ButtonX className={styles.closeModalBtn} onClick={() => setShowCreateModal(false)} />
+            <ButtonX 
+              className={styles.closeModalBtn} 
+              onClick={() => setShowCreateModal(false)} 
+            />
 
             <NuevoBebederoForm
               establecimientos={establecimientos}
@@ -395,7 +390,7 @@ export default function BebederosPanel() {
         </div>
       )}
 
-      {/* SIMULADOR DE HARDWARE: disponible solo durante desarrollo. */}
+      {/* SIMULADOR DE CARGA DE IMAGEN: disponible solo durante desarrollo. */}
       {import.meta.env.DEV && showSimulatorModal && (
         <div className={styles.modalOverlay} onClick={() => setShowSimulatorModal(false)}>
           <div className={styles.modalContent} onClick={(event) => event.stopPropagation()}>
@@ -413,7 +408,10 @@ export default function BebederosPanel() {
         <div className={styles.modalOverlay} onClick={() => setDeleteConfirm(null)}>
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
 
-            <ButtonX className={styles.closeModalBtn} onClick={() => setDeleteConfirm(null)} />
+            <ButtonX 
+              className={styles.closeModalBtn} 
+              onClick={() => setDeleteConfirm(null)} 
+            />
 
             <h2 className={stylesDelete.title}>
               Eliminar "{deleteConfirm.nombre}"
@@ -440,8 +438,6 @@ export default function BebederosPanel() {
           </div>
         </div>
       )}
-
-
     </div>
   );
 }

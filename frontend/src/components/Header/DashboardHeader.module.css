@@ -4,12 +4,10 @@
   align-items: center;
   padding: 18px 28px;
   border-bottom: 1px solid #ddd;
-
   background-image: url("../../assets/background.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  
 }
 
 .userInfo {

@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import toast from "react-hot-toast";
 import Button from "../../Button/Button";
 import { useApi } from "../../../utils/apiFetch";
 import styles from "./../Styles/EditarFormStyles.module.css";
 import type { BebederoCreateRequest } from "../../../types/ApiContracts";
 import type { Establecimiento } from "../../../types/Establecimiento";
 import type { AdminUserResponse } from "../../../types/AdminUser";
+import { getApiErrorDetails } from "../../../utils/apiError";
 
 interface ClienteOption {
   cliente_id: number;
@@ -27,6 +29,7 @@ interface Props {
 export default function NuevoBebederoForm({ onClose, establecimientos }: Props) {
   const { apiFetch } = useApi();
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [clienteSearch, setClienteSearch] = useState("");
   const [clientes, setClientes] = useState<ClienteOption[]>([]);
@@ -131,7 +134,9 @@ export default function NuevoBebederoForm({ onClose, establecimientos }: Props) 
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+    if (loading) return;
     setError(null);
+    setFieldErrors({});
 
     if (!selectedCliente || !form.clienteId) {
       setError("Seleccioná un cliente de la lista.");
@@ -163,12 +168,16 @@ export default function NuevoBebederoForm({ onClose, establecimientos }: Props) 
       });
 
       if (!response || !response.ok) {
-        throw new Error("No se pudo crear el dispositivo.");
+        if (!response) throw new Error("No se recibió respuesta del servidor.");
+        const details = await getApiErrorDetails(response, "No se pudo crear el dispositivo.");
+        setFieldErrors(details.fieldErrors);
+        throw new Error(details.message);
       }
 
+      toast.success(`Bebedero "${form.nombre}" creado correctamente.`);
       onClose();
     } catch (submitError) {
-      setError("No se pudo crear el dispositivo. Revisá los datos e intentá de nuevo.");
+      setError(submitError instanceof Error ? submitError.message : "No se pudo crear el dispositivo.");
       console.error(submitError);
     } finally {
       setLoading(false);
@@ -266,6 +275,7 @@ export default function NuevoBebederoForm({ onClose, establecimientos }: Props) 
             ))}
           </select>
         </div>
+        
         {/* Nombre */}
         <div className={styles.group}>
           <label className={styles.label}>Nombre</label>
@@ -412,17 +422,23 @@ export default function NuevoBebederoForm({ onClose, establecimientos }: Props) 
           <span>Bebedero activo</span>
         </div>
 
-        {error && <p className={styles.error}>{error}</p>}
+        {Object.entries(fieldErrors).map(([field, message]) => (
+          <p className={styles.error} key={field}><strong>{field}:</strong> {message}</p>
+        ))}
+        {error && Object.keys(fieldErrors).length === 0 && <p className={styles.error}>{error}</p>}
 
         <div className={styles.actions}>
           <Button
             label="Cancelar"
             variant="secondary"
             onClick={onClose}
+            disabled={loading}
           />
           <Button
             label={loading ? "Guardando..." : "Guardar"}
             type="submit"
+            disabled={loading}
+            ariaBusy={loading}
           />
         </div>
       </form>

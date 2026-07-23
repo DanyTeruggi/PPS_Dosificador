@@ -1,5 +1,4 @@
 import { useNavigate, useParams } from "react-router-dom";
-
 import BebederoCard from "../../components/BebederoCard/BebederoCard";
 import Button from "../../components/Button/Button";
 import EmptyState from "../../components/EmptyState/EmptyState";
@@ -10,10 +9,7 @@ import LandingHeader from "./LandingHeader";
 import LandingMobileLayout from "./LandingMobileLayout";
 import LandingPageStatus from "./LandingPageStatus";
 
-/**
- * Nueva version de la pagina de bebederos.
- * Todavia no reemplaza a la pagina anterior ni esta conectada al enrutado.
- */
+
 export default function LandingBebederos() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -38,7 +34,7 @@ export default function LandingBebederos() {
 
   return (
     <LandingMobileLayout>
-      <LandingPageStatus loading={loading} error={error} />
+      <LandingPageStatus loading={loading} error={error} loadingMessage="Cargando dispositivos..." />
 
       {!loading && !error && establecimientoNombre && (
         <>

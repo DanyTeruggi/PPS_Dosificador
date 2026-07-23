@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-
-import { getApiErrorMessage } from "../../utils/apiError";
+import { getApiErrorDetails } from "../../utils/apiError";
 import { useApi } from "../../utils/apiFetch";
 import styles from "./NuevoEstablecimientoClienteForm.module.css";
 import ButtonX from "../../components/ButtonX/ButtonX";
@@ -17,6 +16,7 @@ export default function NuevoEstablecimientoClienteForm({ onClose, onCreated }: 
   const [ubicacion, setUbicacion] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -33,6 +33,7 @@ export default function NuevoEstablecimientoClienteForm({ onClose, onCreated }: 
 
     setLoading(true);
     setError(null);
+    setFieldErrors({});
 
     try {
       const response = await apiFetch("/api/v1/clientes/me/establecimientos", {
@@ -48,9 +49,9 @@ export default function NuevoEstablecimientoClienteForm({ onClose, onCreated }: 
       }
 
       if (!response.ok) {
-        throw new Error(
-          await getApiErrorMessage(response, "No se pudo crear el establecimiento."),
-        );
+        const details = await getApiErrorDetails(response, "No se pudo crear el establecimiento.");
+        setFieldErrors(details.fieldErrors);
+        throw new Error(details.message);
       }
 
       toast.success(`Establecimiento "${nombre.trim()}" creado con éxito.`);
@@ -83,6 +84,7 @@ export default function NuevoEstablecimientoClienteForm({ onClose, onCreated }: 
               disabled={loading}
               onClick={onClose}
             />
+            {fieldErrors.nombre && <small className={styles.error}>{fieldErrors.nombre}</small>}
           </div>
 
           <p className={styles.subtitle}>Completá los datos de tu establecimiento.</p>
@@ -97,6 +99,7 @@ export default function NuevoEstablecimientoClienteForm({ onClose, onCreated }: 
               onChange={(event) => setNombre(event.target.value)}
               placeholder="Ej: Campo La Esperanza"
             />
+            {fieldErrors.ubicacion && <small className={styles.error}>{fieldErrors.ubicacion}</small>}
           </label>
 
           <label className={styles.group}>

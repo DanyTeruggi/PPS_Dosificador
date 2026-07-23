@@ -10,7 +10,6 @@ export default function LandingSelector() {
 
   if (isInitializing) return null;
 
-
   // Si NO hay token → mostrar la home pública, no el login directo
   if (!token) {
     return isDesktop ? <DesktopLoginPage /> : <WelcomePage />;

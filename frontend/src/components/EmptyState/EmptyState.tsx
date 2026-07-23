@@ -4,7 +4,11 @@ type EmptyStateProps = {
   message: string;
 };
 
-/** Informa que la consulta fue correcta, pero no hay datos asociados. */
+/**
+ * Muestra un mensaje cuando la consulta finalizó correctamente,
+ * pero no encontró elementos y devolvió una colección vacía (`[]`).
+ */
+
 export default function EmptyState({ message }: EmptyStateProps) {
   return (
     <div className={styles.emptyState} role="status">

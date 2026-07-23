@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
 import hidePasswordIcon from "../../assets/esconder.png";
 import showPasswordIcon from "../../assets/mostrar.png";
 import Button from "../../components/Button/Button";
@@ -8,7 +7,7 @@ import ButtonX from "../../components/ButtonX/ButtonX";
 import { useAuth } from "../../context/useAuth";
 import styles from "./DesktopLoginPage.module.css";
 
-/** Nueva pantalla de acceso exclusiva para administradores. */
+
 export default function DesktopLoginPage() {
   const navigate = useNavigate();
   const { login, logout } = useAuth();
@@ -18,6 +17,7 @@ export default function DesktopLoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -26,10 +26,12 @@ export default function DesktopLoginPage() {
     try {
       setIsSubmitting(true);
       setErrorMessage(null);
+      setFieldErrors({});
 
-      const authenticated = await login(email.trim(), password);
-      if (!authenticated) {
-        setErrorMessage("Correo o contraseña incorrectos. Revisá los datos e intentá nuevamente.");
+      const result = await login(email.trim(), password);
+      if (!result.ok) {
+        setFieldErrors(result.fieldErrors ?? {});
+        setErrorMessage(result.message ?? "Correo o contraseña incorrectos.");
         return;
       }
 
@@ -97,6 +99,7 @@ export default function DesktopLoginPage() {
                   disabled={isSubmitting}
                   required
                 />
+                {fieldErrors.email && <p className={styles.error}>{fieldErrors.email}</p>}
               </div>
 
               <div className={styles.field}>
@@ -128,6 +131,7 @@ export default function DesktopLoginPage() {
                     />
                   </button>
                 </div>
+                {fieldErrors.password && <p className={styles.error}>{fieldErrors.password}</p>}
               </div>
 
               {errorMessage && <p className={styles.error} role="alert">{errorMessage}</p>}

@@ -44,14 +44,14 @@ function formatFecha(raw?: string) {
 
   return {
     fecha: fecha.toLocaleDateString("es-AR", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
     }),
     hora: `${fecha.toLocaleTimeString("es-AR", {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
     })} Hs`,
   };
 }
@@ -102,7 +102,6 @@ function createHistorial(bebedero: BebederoDetalle): HistorialBebedero {
   };
 }
 
-/** Nueva pagina de resumen. Todavia no esta conectada al enrutado. */
 export default function LandingResumen() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -142,8 +141,8 @@ export default function LandingResumen() {
 
             {bebederos.length > 0 && historiales.every((historial) =>
               historial.filas.every((fila) => fila.estado === "sin-dato")) && (
-              <EmptyState message="Todavia no hay mediciones registradas para este establecimiento." />
-            )}
+                <EmptyState message="Todavia no hay mediciones registradas para este establecimiento." />
+              )}
 
             {historiales.map((historial) => (
               <article key={historial.id} className={styles.bebederoBlock}>

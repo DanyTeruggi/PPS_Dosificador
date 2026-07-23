@@ -62,6 +62,19 @@
   font: inherit;
 }
 
+/* Mantiene el selector de rol ligado al ancho del formulario en viewports mobile. */
+.form select.input {
+  width: 100%;
+  max-width: 100%;
+  inline-size: 100%;
+  field-sizing: fixed;
+}
+
+.form select.input option {
+  max-width: 100%;
+  font: inherit;
+}
+
 .input:focus {
   border-color: #8a4fa3;
   outline: 3px solid rgba(138, 79, 163, 0.22);

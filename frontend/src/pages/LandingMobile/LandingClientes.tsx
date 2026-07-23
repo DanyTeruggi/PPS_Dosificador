@@ -19,7 +19,6 @@ type VeterinarioResponse = {
   clientes: ClienteAsignado[];
 };
 
-/** Nueva pagina para que el veterinario seleccione un cliente. */
 export default function LandingClientes() {
   const navigate = useNavigate();
   const { apiFetch } = useApi();

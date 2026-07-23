@@ -4,6 +4,7 @@ import styles from "./../Styles/EditarFormStyles.module.css";
 import Button from "../../Button/Button";
 import { useApi } from "../../../utils/apiFetch";
 import toast from "react-hot-toast";
+import { getApiErrorDetails } from "../../../utils/apiError";
 import type { AdminUserResponse } from "../../../types/AdminUser";
 
 interface Props {
@@ -38,6 +39,7 @@ export default function NuevoEstablecimientoForm({ onClose }: Props) {
   // Estados de carga y error
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   // Autocomplete de clientes
   const [search, setSearch] = useState("");
@@ -139,7 +141,9 @@ export default function NuevoEstablecimientoForm({ onClose }: Props) {
   // Envía el formulario al backend
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (loading) return;
     setError(null);
+    setFieldErrors({});
 
     if (!form.cliente_id) {
       const message = "Seleccioná un cliente de la lista.";
@@ -168,11 +172,12 @@ export default function NuevoEstablecimientoForm({ onClose }: Props) {
 
       // Si el backend devuelve error
       if (!res.ok) {
-        toast.error("No se pudo crear el establecimiento.");
-        throw new Error("No se pudo crear el establecimiento.");
+        const details = await getApiErrorDetails(res, "No se pudo crear el establecimiento.");
+        setFieldErrors(details.fieldErrors);
+        throw new Error(details.message);
       }
 
-      // ⭐ Caso de éxito
+      // Caso de éxito
       const created = await res.json();
       toast.success(`Establecimiento "${created.nombre}" creado con éxito.`);
 
@@ -180,8 +185,9 @@ export default function NuevoEstablecimientoForm({ onClose }: Props) {
 
     } catch (err) {
       console.error(err);
-      setError("No se pudo crear el establecimiento. Revisá los datos.");
-      // El toast ya se mostró arriba
+      const message = err instanceof Error ? err.message : "No se pudo crear el establecimiento.";
+      setError(message);
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -206,6 +212,7 @@ export default function NuevoEstablecimientoForm({ onClose }: Props) {
             onChange={(e) => updateField("nombre", e.target.value)}
             placeholder="Ej: Campo La Esperanza"
           />
+          {fieldErrors.nombre && <p className={styles.error}>{fieldErrors.nombre}</p>}
         </div>
 
         {/* Ubicación */}
@@ -218,6 +225,7 @@ export default function NuevoEstablecimientoForm({ onClose }: Props) {
             onChange={(e) => updateField("ubicacion", e.target.value)}
             placeholder="Ej: Ruta 226 km 145"
           />
+          {fieldErrors.ubicacion && <p className={styles.error}>{fieldErrors.ubicacion}</p>}
         </div>
 
         {/* Buscador de Cliente */}
@@ -293,8 +301,8 @@ export default function NuevoEstablecimientoForm({ onClose }: Props) {
         {error && <p className={styles.error}>{error}</p>}
 
         <div className={styles.actions}>
-          <Button label="Cancelar" variant="secondary" onClick={onClose} />
-          <Button label={loading ? "Guardando..." : "Guardar"} type="submit" />
+          <Button label="Cancelar" variant="secondary" onClick={onClose} disabled={loading} />
+          <Button label={loading ? "Guardando..." : "Guardar"} type="submit" disabled={loading} ariaBusy={loading} />
         </div>
       </form>
     </div>

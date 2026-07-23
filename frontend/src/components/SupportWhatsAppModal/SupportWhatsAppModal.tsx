@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 import type { AuthUser } from "../../context/authContextDefinition";
 import ButtonX from "../ButtonX/ButtonX";
@@ -48,7 +49,13 @@ export default function SupportWhatsAppModal({ user, onClose }: Props) {
       `Fecha: ${new Date().toLocaleString("es-AR")}`,
     ].join("\n");
 
-    window.open(`https://wa.me/${supportNumber}?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
+    const opened = window.open(`https://wa.me/${supportNumber}?text=${encodeURIComponent(message)}`, "_blank");
+    if (!opened) {
+      toast.error("El navegador bloqueó la apertura de WhatsApp.");
+      return;
+    }
+    opened.opener = null;
+    toast.success("WhatsApp se abrió con el mensaje preparado.");
     onClose();
   }
 

@@ -1,4 +1,3 @@
-/*estilos del formulario */
 .wrapper {
   width: 100%;
   display: flex;
@@ -12,14 +11,14 @@
   padding: 24px 32px;
   border-radius: 12px;
   background: #B7CBE0;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .title {
   font-size: 24px;
   font-weight: 700;
   margin-bottom: 24px;
-  color: #E8EEF5;;
+  color: #E8EEF5;
   text-align: center;
   background-color: #1F5FB8;
   border-radius: 12px;
@@ -47,7 +46,7 @@
   font-size: 15px;
   font-weight: 600;
   color: #333;
-  margin-bottom: 3px;;
+  margin-bottom: 3px;
 }
 
 .input {
@@ -55,7 +54,6 @@
   padding: 10px 12px;
   border-radius: 8px;
   border: 1px solid #bbb;
-  /* background-color: var(--color-input-bg); */
   background-color: #e8e8e9;
   font-size: 15px;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
@@ -80,7 +78,6 @@
 }
 
 /* clases propias del Bebedero */
-
 .row {
   display: flex;
   gap: 12px;
@@ -96,7 +93,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  margin: 8px 8px 16px;;
+  margin: 8px 8px 16px;
+  ;
 }
 
 /* estilos del dropdown */
@@ -233,7 +231,7 @@
   background: #eef5ff;
 }
 
-.clientCard > div:first-child {
+.clientCard>div:first-child {
   display: flex;
   flex-direction: column;
   min-width: 0;

@@ -31,10 +31,11 @@ export default function WelcomePage() {
       <div className={styles.content}>
         <div className={styles.intro}>
           <h1 className={styles.title}>Bienvenido</h1>
+          <h1 className={styles.subtitle}>Monitoreo Bacteriológico</h1>
         </div>
 
         <div className={styles.projectIdentity}>
-          <p className={styles.subtitle}>Monitoreo Bacteriológico</p>
+          {/* <p className={styles.subtitle}>Monitoreo Bacteriológico</p> */}
           <img
             className={styles.mainLogo}
             src={logoPetri}

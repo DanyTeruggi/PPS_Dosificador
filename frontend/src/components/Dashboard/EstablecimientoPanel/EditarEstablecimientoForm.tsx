@@ -3,7 +3,7 @@ import styles from "./../Styles/EditarFormStyles.module.css";
 import Button from "../../Button/Button";
 import { useApi } from "../../../utils/apiFetch";
 import toast from "react-hot-toast";
-
+import { getApiErrorDetails } from "../../../utils/apiError";
 import type { Establecimiento } from "../../../types/Establecimiento";
 
 interface Props {
@@ -27,6 +27,7 @@ export default function EditarEstablecimientoForm({ establecimiento, onClose, on
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   function updateField(field: keyof typeof form, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -34,7 +35,9 @@ export default function EditarEstablecimientoForm({ establecimiento, onClose, on
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (loading) return;
     setError(null);
+    setFieldErrors({});
     setLoading(true);
 
     try {
@@ -57,11 +60,12 @@ export default function EditarEstablecimientoForm({ establecimiento, onClose, on
 
       // Si el backend devuelve error
       if (!res.ok) {
-        toast.error("No se pudo actualizar el establecimiento.");
-        throw new Error("No se pudo actualizar el establecimiento.");
+        const details = await getApiErrorDetails(res, "No se pudo actualizar el establecimiento.");
+        setFieldErrors(details.fieldErrors);
+        throw new Error(details.message);
       }
 
-      // ⭐ Caso de éxito
+      // Caso de éxito
       const updated: Establecimiento = await res.json();
       toast.success(`Establecimiento "${updated.nombre}" actualizado correctamente.`);
 
@@ -70,8 +74,9 @@ export default function EditarEstablecimientoForm({ establecimiento, onClose, on
 
     } catch (err) {
       console.error(err);
-      setError("No se pudo actualizar el establecimiento.");
-      // Ya mostramos toast arriba, no repetimos aquí
+      const message = err instanceof Error ? err.message : "No se pudo actualizar el establecimiento.";
+      setError(message);
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -92,6 +97,7 @@ export default function EditarEstablecimientoForm({ establecimiento, onClose, on
           value={form.nombre}
           onChange={(e) => updateField("nombre", e.target.value)}
         />
+        {fieldErrors.nombre && <p className={styles.error}>{fieldErrors.nombre}</p>}
       </div>
 
       {/* Ubicación */}
@@ -103,14 +109,27 @@ export default function EditarEstablecimientoForm({ establecimiento, onClose, on
           value={form.ubicacion}
           onChange={(e) => updateField("ubicacion", e.target.value)}
         />
+        {fieldErrors.ubicacion && <p className={styles.error}>{fieldErrors.ubicacion}</p>}
       </div>
 
 
       {error && <p className={styles.error}>{error}</p>}
 
       <div className={styles.actions}>
-        <Button label="Cancelar" variant="secondary" onClick={onClose} />
-        <Button label={loading ? "Guardando..." : "Guardar cambios"} type="submit" />
+        <Button 
+          label="Cancelar" 
+          variant="secondary" 
+          onClick={onClose} 
+          disabled={loading} 
+        />
+
+        <Button 
+          label={loading ? "Guardando..." : "Guardar cambios"} 
+          type="submit" 
+          disabled={loading} 
+          ariaBusy={loading} 
+        />
+        
       </div>
     </form>
   );

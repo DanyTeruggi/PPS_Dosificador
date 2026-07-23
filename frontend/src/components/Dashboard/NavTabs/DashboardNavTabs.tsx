@@ -19,7 +19,7 @@ export default function DashboardNavTabs({ active, onChange }: DashboardNavTabsP
       {tabs.map(tab => (
         <Button
           key={tab.id}
-          variant={active === tab.id ? "selectedActive" : "selected"} 
+          variant={active === tab.id ? "selectedActive" : "selected"}
           label={tab.label}
           onClick={() => onChange(tab.id)}
         />

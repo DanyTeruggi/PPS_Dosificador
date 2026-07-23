@@ -24,7 +24,6 @@ interface DropdownPosition {
 
 export default function AsignarVeterinario({ usuarioId, onClose }: Props) {
   const { apiFetch } = useApi();
-
   const [cliente, setCliente] = useState<ClienteAdmin | null>(null);
   const [veterinarioActual, setVeterinarioActual] = useState<VeterinarioOption | null>(null);
   const [veterinarios, setVeterinarios] = useState<VeterinarioOption[]>([]);
@@ -34,7 +33,6 @@ export default function AsignarVeterinario({ usuarioId, onClose }: Props) {
   const [showDropdown, setShowDropdown] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState<DropdownPosition | null>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -44,7 +42,8 @@ export default function AsignarVeterinario({ usuarioId, onClose }: Props) {
         apiFetch("/api/v1/admin/clientes"),
         apiFetch("/api/v1/admin/veterinarios"),
       ]);
-      if (!clientesRes?.ok || !veterinariosRes?.ok) return;
+      if (!clientesRes?.ok || !veterinariosRes?.ok) 
+        return;
 
       const lista = (await clientesRes.json()) as ClienteAdmin[];
       const listaVeterinarios = (await veterinariosRes.json()) as VeterinarioOption[];
@@ -78,12 +77,14 @@ export default function AsignarVeterinario({ usuarioId, onClose }: Props) {
   }, []);
 
   useEffect(() => {
-    if (searchVet.trim().length < 2 || veterinarioSeleccionado) return;
+    if (searchVet.trim().length < 2 || veterinarioSeleccionado) 
+      return;
 
     let active = true;
     async function loadVets() {
       const res = await apiFetch("/api/v1/admin/veterinarios");
-      if (!res || !res.ok) return;
+      if (!res || !res.ok) 
+        return;
 
       const lista = (await res.json()) as VeterinarioOption[];
       const normalizedSearch = searchVet.trim().toLowerCase();
@@ -112,7 +113,8 @@ export default function AsignarVeterinario({ usuarioId, onClose }: Props) {
   }, [apiFetch, searchVet, veterinarioSeleccionado, updateDropdownPosition]);
 
   useEffect(() => {
-    if (!showDropdown) return;
+    if (!showDropdown) 
+      return;
 
     window.addEventListener("resize", updateDropdownPosition);
     window.addEventListener("scroll", updateDropdownPosition, true);
@@ -139,6 +141,7 @@ export default function AsignarVeterinario({ usuarioId, onClose }: Props) {
   }
 
   async function handleGuardar() {
+    if (loading) return;
     if (!cliente || !nuevoVetId) {
       setError("Seleccioná un veterinario.");
       return;
@@ -210,7 +213,8 @@ export default function AsignarVeterinario({ usuarioId, onClose }: Props) {
               if (veterinarios.length > 0) {
                 updateDropdownPosition();
                 setShowDropdown(true);
-              }}}
+              }
+            }}
             onBlur={() => {
               window.setTimeout(() => setShowDropdown(false), 100);
             }}
@@ -223,7 +227,10 @@ export default function AsignarVeterinario({ usuarioId, onClose }: Props) {
           <div className={styles.selectedClient}>
             <div className={styles.selectedClientHeader}>
               <strong>{veterinarioSeleccionado.usuario.nombre}</strong>
-              <button type="button" onClick={changeVeterinario}>Cambiar</button>
+              <button 
+                type="button" 
+                onClick={changeVeterinario}>Cambiar
+              </button>
             </div>
             <span>{veterinarioSeleccionado.usuario.email}</span>
             <span>Especialidad: {veterinarioSeleccionado.especialidad || "Sin especificar"}</span>
@@ -267,12 +274,15 @@ export default function AsignarVeterinario({ usuarioId, onClose }: Props) {
           variant="secondary"
           type="button"
           onClick={onClose}
+          disabled={loading}
         />
         <Button
           label={loading ? "Guardando…" : "Guardar cambios"}
           variant="primary"
           type="button"
           onClick={handleGuardar}
+          disabled={loading}
+          ariaBusy={loading}
         />
       </div>
     </form>

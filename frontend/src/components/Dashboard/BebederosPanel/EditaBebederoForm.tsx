@@ -1,8 +1,9 @@
 import { useState } from "react";
 import Button from "../../Button/Button";
 import { useApi } from "../../../utils/apiFetch";
+import toast from "react-hot-toast";
+import { getApiErrorDetails } from "../../../utils/apiError";
 import styles from "./../Styles/EditarFormStyles.module.css";
-
 import type { Bebedero } from "../../../types/Bebedero";
 import type { BebederoUpdateRequest } from "../../../types/ApiContracts";
 
@@ -16,6 +17,7 @@ export default function EditarBebederoForm({ bebedero, onClose, onSave }: Props)
   const { apiFetch } = useApi();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const [form, setForm] = useState({
     nombre: bebedero.nombre || "",
@@ -36,7 +38,9 @@ export default function EditarBebederoForm({ bebedero, onClose, onSave }: Props)
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+    if (loading) return;
     setError(null);
+    setFieldErrors({});
     setLoading(true);
 
     try {
@@ -60,15 +64,19 @@ export default function EditarBebederoForm({ bebedero, onClose, onSave }: Props)
       });
 
       if (!response || !response.ok) {
-        throw new Error("No se pudo actualizar el dispositivo.");
+        if (!response) throw new Error("No se recibió respuesta del servidor.");
+        const details = await getApiErrorDetails(response, "No se pudo actualizar el dispositivo.");
+        setFieldErrors(details.fieldErrors);
+        throw new Error(details.message);
       }
 
       const updated = await response.json();
+      toast.success(`Bebedero "${updated.nombre}" actualizado correctamente.`);
       await onSave(updated);
       onClose();
 
     } catch (submitError) {
-      setError("No se pudo actualizar el dispositivo. Revisá los datos e intentá de nuevo.");
+      setError(submitError instanceof Error ? submitError.message : "No se pudo actualizar el dispositivo.");
       console.error(submitError);
     } finally {
       setLoading(false);
@@ -118,6 +126,7 @@ export default function EditarBebederoForm({ bebedero, onClose, onSave }: Props)
               placeholder="Ej: 192.168.1.10"
             />
           </div>
+          
           <div className={styles.group}>
             <label className={styles.label}>Puerto</label>
             <input
@@ -217,11 +226,14 @@ export default function EditarBebederoForm({ bebedero, onClose, onSave }: Props)
           </div>
         </div>
 
-        {error && <p className={styles.error}>{error}</p>}
+        {Object.entries(fieldErrors).map(([field, message]) => (
+          <p className={styles.error} key={field}><strong>{field}:</strong> {message}</p>
+        ))}
+        {error && Object.keys(fieldErrors).length === 0 && <p className={styles.error}>{error}</p>}
 
         <div className={styles.actions}>
-          <Button label="Cancelar" variant="secondary" onClick={onClose} />
-          <Button label={loading ? "Guardando..." : "Guardar"} type="submit" />
+          <Button label="Cancelar" variant="secondary" onClick={onClose} disabled={loading} />
+          <Button label={loading ? "Guardando..." : "Guardar"} type="submit" disabled={loading} ariaBusy={loading} />
         </div>
       </form>
     </div>

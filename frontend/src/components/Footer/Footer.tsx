@@ -1,21 +1,28 @@
 import { useState } from "react";
-import { BsHouseDoorFill,
-  BsHeadset,
-  BsBoxArrowRight } from "react-icons/bs";
+import { BsHeadset, BsBoxArrowRight } from "react-icons/bs";
+import { HiHome } from "react-icons/hi2";
 import styles from "./Footer.module.css";
 
 import { useAuth } from "../../context/useAuth";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import SupportWhatsAppModal from "../SupportWhatsAppModal/SupportWhatsAppModal";
 
 export default function Footer() {
   const { logout, user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [showSupport, setShowSupport] = useState(false);
 
-  // Redirige al home (SmartHomeRedirect decide desktop o mobile)
+  // Evita la ruta intermedia /home y su pantalla vacía para los roles mobile.
   const handleHome = () => {
-    navigate("/home");
+    const homePath = user?.role === "cliente"
+      ? "/cliente/establecimientos"
+      : user?.role === "veterinario"
+        ? "/veterinarios/clientes"
+        : null;
+
+    if (!homePath || (location.pathname === homePath && !location.search)) return;
+    navigate(homePath, { replace: true });
   };
 
   // Logout real: borra token + redirige al login
@@ -28,10 +35,10 @@ export default function Footer() {
     <footer className={styles.footer}>
 
       {/* HOME */}
-      <div className={styles.item} onClick={handleHome}>
-        <BsHouseDoorFill size={22} />
+      <button className={styles.item} type="button" onClick={handleHome}>
+        <HiHome size={22} />
         <span className={styles.label}>Inicio</span>
-      </div>
+      </button>
 
       {/* SOPORTE TÉCNICO */}
       <button className={styles.item} type="button" onClick={() => setShowSupport(true)}>

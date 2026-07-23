@@ -7,13 +7,13 @@ import logoEXACTAS from "../../assets/facExactas.png";
 export default function FooterDesktop() {
   return (
     <footer className={styles.footer}>
-      
+
       <div className={styles.logos}>
         <img src={logoFCV} alt="FCV" className={styles.logo} />
         <img src={logoCivetan} alt="CIVETAN" className={styles.logo} />
         <img src={logoEXACTAS} alt="Facultad de Exactas" className={styles.logo} />
-      
-</div>
+
+      </div>
 
       <div className={styles.contact}>
         <p>Facultad de Ciencias Veterinarias - UNCPBA</p>

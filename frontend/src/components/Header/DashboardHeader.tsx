@@ -44,12 +44,12 @@ export default function DashboardHeader() {
 
   return (
     <header className={styles.header}>
+
       {/* Información del usuario */}
       <div className={styles.userInfo}>
         <div className={styles.avatar}>
           {getInitials(user?.nombre)}
         </div>
-
         <p className={styles.role}>
           {getRolLabel(user?.role)}
         </p>
@@ -58,13 +58,13 @@ export default function DashboardHeader() {
       {/* Título del panel */}
       <p className={styles.title}>Centro de Monitoreo</p>
 
-      {/* Botón de logout reutilizando el componente Button */}
       <Button
         label="Cerrar sesión"
         variant="primary"
         fullWidth={false}
         onClick={handleLogout}
       />
+      
     </header>
   );
 }

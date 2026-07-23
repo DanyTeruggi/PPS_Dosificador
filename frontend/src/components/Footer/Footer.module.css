@@ -3,14 +3,11 @@
   bottom: 0;
   left: 0;
   width: 100%;
-
   background: #2d2d2d;
   padding: 10px 0;
-
   display: flex;
   justify-content: space-around;
   align-items: center;
-
   border-top: 1px solid #444;
   z-index: 1000;
 }
@@ -26,7 +23,6 @@
   font-family: inherit;
   font-size: 12px;
   cursor: pointer;
-
   transition: color 0.2s ease;
 }
 

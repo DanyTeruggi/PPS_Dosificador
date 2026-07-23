@@ -1,7 +1,7 @@
 import { useForm, useWatch } from "react-hook-form";
 import toast from "react-hot-toast";
 import { useApi } from "../../utils/apiFetch";
-import { getApiErrorMessage } from "../../utils/apiError";
+import { getApiErrorDetails } from "../../utils/apiError";
 import type {
   AdminCreateRequest,
   ClienteCreateRequest,
@@ -57,7 +57,8 @@ export default function UserForm({
     register,
     handleSubmit,
     control,
-    formState: { errors },
+    setError,
+    formState: { errors, isSubmitting },
   } = useForm<FormData>({
     defaultValues: { role: "cliente" },
     shouldUnregister: true,
@@ -71,9 +72,21 @@ export default function UserForm({
     fallbackError: string,
   ) => {
     if (!response?.ok) {
-      const message = response
-        ? await getApiErrorMessage(response, fallbackError)
-        : "No se recibió respuesta del servidor.";
+      const details = response
+        ? await getApiErrorDetails(response, fallbackError)
+        : { message: "No se recibió respuesta del servidor.", fieldErrors: {} };
+        // Los errores 422 del backend se asocian al input correspondiente.
+        
+      Object.entries(details.fieldErrors).forEach(([field, message]) => {
+        const frontendField = field === "ubicacion" ? "ubicacionVet" : field;
+        if (frontendField in {
+          nombre: 1, email: 1, password: 1, telefono: 1, clave_fiscal: 1,
+          razon_social: 1, especialidad: 1, ubicacionVet: 1,
+        }) {
+          setError(frontendField as keyof FormData, { type: "server", message });
+        }
+      });
+      const message = details.message;
       toast.error(message);
       return false;
     }
@@ -196,6 +209,7 @@ export default function UserForm({
         <div className={styles.group}>
           <label className={styles.label}>Email</label>
           <input type="email" className={styles.input} {...register("email", { required: true })} />
+          {errors.email && <p className={styles.error}>{errors.email.message}</p>}
         </div>
 
         {/* Password */}
@@ -225,6 +239,7 @@ export default function UserForm({
         <div className={styles.group}>
           <label className={styles.label}>Apellido y Nombre</label>
           <input className={styles.input} placeholder="Apellido, Nombre" {...register("nombre", { required: true })} />
+          {errors.nombre && <p className={styles.error}>{errors.nombre.message}</p>}
         </div>
 
         {selectedRole !== "admin" && <div className={styles.group}>
@@ -284,19 +299,23 @@ export default function UserForm({
             <div className={styles.group}>
               <label className={styles.label}>Especialidad</label>
               <input className={styles.input} {...register("especialidad")} />
+              {errors.especialidad && <p className={styles.error}>{errors.especialidad.message}</p>}
             </div>
 
             <div className={styles.group}>
               <label className={styles.label}>Ubicación</label>
-              <input className={styles.input} {...register("ubicacionVet")} placeholder="Ciudad, Provincia"/>
+              <input className={styles.input} {...register("ubicacionVet")} placeholder="Ciudad, Provincia" />
+              {errors.ubicacionVet && <p className={styles.error}>{errors.ubicacionVet.message}</p>}
             </div>
 
           </>
         )}
 
         <Button
-          label="Enviar"
+          label={isSubmitting ? "Enviando…" : "Enviar"}
           type="submit"
+          disabled={isSubmitting}
+          ariaBusy={isSubmitting}
           variant={variant === "mobile" ? "tertiary" : "primary"}
           fullWidth={true}
         />

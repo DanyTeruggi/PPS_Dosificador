@@ -88,8 +88,14 @@
   flex-direction: column;
 }
 
-.form { gap: 18px; }
-.field { gap: 7px; text-align: left; }
+.form {
+  gap: 18px;
+}
+
+.field {
+  gap: 7px;
+  text-align: left;
+}
 
 .label {
   color: #26383d;
@@ -120,7 +126,9 @@
   grid-template-columns: minmax(0, 1fr) 50px;
 }
 
-.passwordInput { border-radius: 9px 0 0 9px; }
+.passwordInput {
+  border-radius: 9px 0 0 9px;
+}
 
 .passwordButton {
   display: grid;
@@ -133,7 +141,9 @@
   cursor: pointer;
 }
 
-.passwordButton:hover { background: #d6e9e7; }
+.passwordButton:hover {
+  background: #d6e9e7;
+}
 
 .passwordIcon {
   width: 23px;
@@ -165,9 +175,18 @@
   transition: background-color 150ms ease, transform 120ms ease;
 }
 
-.submitButton:hover:not(:disabled) { background: #0f4a86; }
-.submitButton:active:not(:disabled) { transform: scale(0.98); }
-.submitButton:disabled { opacity: 0.65; cursor: wait; }
+.submitButton:hover:not(:disabled) {
+  background: #0f4a86;
+}
+
+.submitButton:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.submitButton:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
 
 .passwordButton:focus-visible,
 .submitButton:focus-visible {
@@ -176,11 +195,23 @@
 }
 
 @media (max-width: 900px) {
-  .page { padding: 28px; overflow-y: auto; }
-  .hero { margin-top: 0; gap: 70px; }
-  .titleWrapper { padding: 12px 20px; }
+  .page {
+    padding: 28px;
+    overflow-y: auto;
+  }
+
+  .hero {
+    margin-top: 0;
+    gap: 70px;
+  }
+
+  .titleWrapper {
+    padding: 12px 20px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .submitButton { transition: none; }
+  .submitButton {
+    transition: none;
+  }
 }

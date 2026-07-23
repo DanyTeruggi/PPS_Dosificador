@@ -1,5 +1,4 @@
 import type { ReactNode } from "react";
-
 import Button from "../../components/Button/Button";
 import styles from "./LandingMobile.module.css";
 
@@ -13,7 +12,7 @@ type LandingHeaderProps = {
 
 /**
  * Encabezado reutilizable con boton para volver y titulo centrado.
- * rightAction es opcional: por ejemplo, puede recibir un boton de resumen.
+ * rightAction es un opcional: por ejemplo, puede recibir un boton de resumen.
  */
 export default function LandingHeader({
   title,
@@ -29,12 +28,12 @@ export default function LandingHeader({
       {hasSideActions && (
         <div className={styles.action}>
           {onBack && (
-          <Button
-            label="Volver"
-            variant="back"
-            fullWidth={false}
-            onClick={onBack}
-          />
+            <Button
+              label="Volver"
+              variant="back"
+              fullWidth={false}
+              onClick={onBack}
+            />
           )}
         </div>
       )}

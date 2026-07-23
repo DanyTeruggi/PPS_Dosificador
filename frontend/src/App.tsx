@@ -46,9 +46,7 @@ export default function App() {
 
               {/* Ruta para nuevo usuario */}
               <Route path="/nuevo-usuario" element={<NuevoUsuarioPage />} />
-
               <Route path="/home-desktop" element={<DesktopLoginPage />} />
-
               <Route path="/home-mobile" element={<WelcomePage />} />
 
             </Route>
@@ -85,7 +83,7 @@ export default function App() {
                   </ProtectedRoute>
                 }
               />
-
+                
               <Route path="/bebederos" element={<BebederosPanel />} />
               <Route path="/veterinarios/clientes" element={<LandingClientes />} />
               <Route path="/cliente/establecimientos" element={<LandingEstablecimientos />} />

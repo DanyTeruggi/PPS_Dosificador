@@ -85,7 +85,7 @@ export default function ReportsPanel() {
             <span className={styles.icon}>👥</span>
             <h3>Usuarios</h3>
           </div>
-
+          
           <div className={styles.metrics}>
             <div className={styles.metricRow}>
               <span>Total</span>

@@ -76,32 +76,32 @@ function MeasurementCard({ bebedero, monitoreo }: MeasurementCardProps) {
 
         <div className={styles.details}>
           <dl className={styles.dataList}>
-          <div className={styles.dataRow}>
-            <HiOutlineMapPin className={styles.dataIcon} aria-hidden="true" />
-            <dt>Ubicación</dt>
-            <dd>{bebedero.ubicacion?.trim() || "s/n"}</dd>
-          </div>
+            <div className={styles.dataRow}>
+              <HiOutlineMapPin className={styles.dataIcon} aria-hidden="true" />
+              <dt>Ubicación</dt>
+              <dd>{bebedero.ubicacion?.trim() || "s/n"}</dd>
+            </div>
 
-          <div className={styles.dataRow}>
-            <HiOutlineCalendarDays className={styles.dataIcon} aria-hidden="true" />
-            <dt>Medición</dt>
-            <dd className={styles.measurementValue}>
-              <span>{formattedMeasurement.date}</span>
-              {formattedMeasurement.time && <small>{formattedMeasurement.time}</small>}
-            </dd>
-          </div>
+            <div className={styles.dataRow}>
+              <HiOutlineCalendarDays className={styles.dataIcon} aria-hidden="true" />
+              <dt>Medición</dt>
+              <dd className={styles.measurementValue}>
+                <span>{formattedMeasurement.date}</span>
+                {formattedMeasurement.time && <small>{formattedMeasurement.time}</small>}
+              </dd>
+            </div>
 
-          <div className={styles.dataRow}>
-            <HiOutlineViewfinderCircle className={styles.dataIcon} aria-hidden="true" />
-            <dt>Target</dt>
-            <dd>{formatPercentage(bebedero.cobertura_objetivo)}</dd>
-          </div>
+            <div className={styles.dataRow}>
+              <HiOutlineViewfinderCircle className={styles.dataIcon} aria-hidden="true" />
+              <dt>Target</dt>
+              <dd>{formatPercentage(bebedero.cobertura_objetivo)}</dd>
+            </div>
 
-          <div className={styles.dataRow}>
-            <HiOutlineShieldCheck className={styles.dataIcon} aria-hidden="true" />
-            <dt>Cobertura</dt>
-            <dd>{formatPercentage(coverage)}</dd>
-          </div>
+            <div className={styles.dataRow}>
+              <HiOutlineShieldCheck className={styles.dataIcon} aria-hidden="true" />
+              <dt>Cobertura</dt>
+              <dd>{formatPercentage(coverage)}</dd>
+            </div>
           </dl>
         </div>
       </div>

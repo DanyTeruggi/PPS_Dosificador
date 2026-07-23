@@ -1,28 +1,27 @@
 import styles from "./Button.module.css";
 import { HiOutlineArrowLeft, HiOutlineChartBarSquare } from "react-icons/hi2";
-
-// Importá tus imágenes
 import addIcon from "../../assets/add.png";
 interface ButtonProps {
   label: string;
   ariaLabel?: string;
-  //onClick?: () => void;
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   type?: "button" | "submit";
   variant?: "primary" | "secondary" | "tertiary" |
-            "hero" | "back" | "dashboard" | "selected"  | "selectedActive" | 
-            "danger" | "add";
+  "hero" | "back" | "dashboard" | "selected" | "selectedActive" |
+  "danger" | "add";
   fullWidth?: boolean;
+  disabled?: boolean;
+  ariaBusy?: boolean;
 }
 
-// Mapa de variantes → íconos
+// Mapa de variantes => íconos
 const vectorIconMap = {
   back: HiOutlineArrowLeft,
   dashboard: HiOutlineChartBarSquare,
 } as const;
 
 const imageIconMap: Record<string, string> = {
-  add: addIcon, 
+  add: addIcon,
 };
 
 export default function Button({
@@ -32,6 +31,8 @@ export default function Button({
   type = "button",
   variant = "primary",
   fullWidth = true,
+  disabled = false,
+  ariaBusy = false,
 }: ButtonProps) {
   const VectorIcon = variant === "back" || variant === "dashboard"
     ? vectorIconMap[variant]
@@ -43,6 +44,8 @@ export default function Button({
     <button
       type={type}
       onClick={onClick}
+      disabled={disabled}
+      aria-busy={ariaBusy}
       aria-label={ariaLabel ?? (hasIcon ? label : undefined)}
       className={`
     ${styles.button}

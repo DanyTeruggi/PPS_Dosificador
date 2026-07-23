@@ -13,6 +13,7 @@ import type { AdminUserResponse, AdminUserRow } from "../../../types/AdminUser";
 import ButtonX from "../../ButtonX/ButtonX";
 import ButtonSearch from "../../ButtonSearch/ButtonSearch";
 import ButtonTable from "../../ButtonTable/ButtonTable";
+import { canChangeUserStatus } from "./userStatusUtils";
 
 export default function UsersPanel() {
   const { apiFetch } = useApi();
@@ -35,9 +36,7 @@ export default function UsersPanel() {
   >("todos");
   const [estadoFilter, setEstadoFilter] = useState<"todos" | "activo" | "inactivo">("todos");
 
-  /**
-   * 🔥 FUNCIÓN GLOBAL PARA RECARGAR USUARIOS
-   */
+  // FUNCIÓN GLOBAL PARA RECARGAR USUARIOS
   const loadUsuarios = useCallback(async () => {
     const role = user?.role ?? user?.rol;
     if (role !== "admin") return;
@@ -76,9 +75,7 @@ export default function UsersPanel() {
     setUsuarios(usuariosSinDuplicados);
   }, [apiFetch, user]);
 
-  /**
-   * Carga inicial
-   */
+  // CARGA INICIAL DE USUARIOS
   useEffect(() => {
     const timeoutId = window.setTimeout(() => {
       void loadUsuarios();
@@ -130,12 +127,14 @@ export default function UsersPanel() {
       return estadoFilter === "activo" ? u.activo : !u.activo;
     });
 
-  /**
-   * Activar / desactivar usuario
-   */
+  // AACTIVAR/DESACTIVAR USUARIO
   async function toggleEstadoUsuario(usuarioId: number) {
     const usuario = usuarios.find((item) => item.id === usuarioId);
     if (!usuario) return;
+    if (!canChangeUserStatus(usuario.rol)) {
+      toast.error("Las cuentas administrativas no pueden desactivarse.");
+      return;
+    }
 
     const nuevoEstado = !usuario.activo;
 
@@ -159,7 +158,7 @@ export default function UsersPanel() {
 
   return (
     <div className={styles.container}>
-      
+
       {/* BUSCADOR + CLEAR + FILTROS */}
       <div className={styles.searchRow}>
 
@@ -246,6 +245,7 @@ export default function UsersPanel() {
 
         <tbody>
           {usuariosFiltrados.map((u) => {
+            const canChangeStatus = canChangeUserStatus(u.rol);
             return (
               <tr
                 key={u.id}
@@ -259,14 +259,32 @@ export default function UsersPanel() {
                 <td>{u.cliente?.razon_social || "-"}</td>
                 <td>{u.email}</td>
                 <td>{u.telefono}</td>
-                
+
                 <td>{u.rol}</td>
 
                 <td>
-                  <label className={styles.switch}>
+                  <label
+                    className={`${styles.switch} ${!canChangeStatus ? styles.switchLocked : ""}`}
+                    title={!canChangeStatus
+                      ? "Las cuentas administrativas no pueden desactivarse"
+                      : undefined}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      if (!canChangeStatus) {
+                        event.preventDefault();
+                        toast("Las cuentas administrativas no pueden desactivarse.", {
+                          icon: "🔒",
+                        });
+                      }
+                    }}
+                  >
                     <input
                       type="checkbox"
                       checked={u.activo}
+                      disabled={!canChangeStatus}
+                      aria-label={canChangeStatus
+                        ? `Cambiar estado de ${u.nombre}`
+                        : `${u.nombre} es administrador y su estado está protegido`}
                       onChange={() => toggleEstadoUsuario(u.id)}
                     />
                     <span className={styles.slider}></span>
@@ -295,11 +313,10 @@ export default function UsersPanel() {
         <div className={styles.modalOverlay} onClick={() => setShowModalNuevoUsuario(false)}>
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
             <ButtonX className={styles.closeModalBtn} onClick={() => setShowModalNuevoUsuario(false)} />
-
             <UserForm
               mode="admin-create"
               onClose={() => setShowModalNuevoUsuario(false)}
-              onCreated={() => loadUsuarios()}   
+              onCreated={() => loadUsuarios()}
             />
           </div>
         </div>
@@ -335,7 +352,7 @@ export default function UsersPanel() {
               usuarioId={selectedUserId}
               onClose={() => {
                 setShowAsignarVetModal(false);
-                loadUsuarios();   {/* 🔥 refresca la tabla */}
+                loadUsuarios(); {/* 🔥 refresca la tabla */ }
               }}
             />
           </div>

@@ -19,6 +19,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [showRecoveryModal, setShowRecoveryModal] = useState(false);
   const [recoveryEmail, setRecoveryEmail] = useState("");
 
@@ -38,23 +39,25 @@ export default function LoginPage() {
     setShowRecoveryModal(true);
   }
 
-  function handleRecoverySubmit(event: React.FormEvent<HTMLFormElement>) {
+  function handleRecoverySubmit(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     setShowRecoveryModal(false);
     toast("La recuperación de contraseña estará disponible próximamente.");
   }
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     if (isSubmitting) return;
 
     try {
       setIsSubmitting(true);
       setErrorMessage(null);
+      setFieldErrors({});
 
-      const authenticated = await login(email.trim(), password);
-      if (!authenticated) {
-        setErrorMessage("No se pudo iniciar sesión. Revisá tus datos y tu conexión.");
+      const result = await login(email.trim(), password);
+      if (!result.ok) {
+        setFieldErrors(result.fieldErrors ?? {});
+        setErrorMessage(result.message ?? "No se pudo iniciar sesión.");
         return;
       }
 
@@ -114,6 +117,7 @@ export default function LoginPage() {
                 disabled={isSubmitting}
                 required
               />
+              {fieldErrors.email && <p className={styles.error}>{fieldErrors.email}</p>}
             </div>
 
             <div className={styles.field}>
@@ -145,6 +149,7 @@ export default function LoginPage() {
                   />
                 </button>
               </div>
+              {fieldErrors.password && <p className={styles.error}>{fieldErrors.password}</p>}
             </div>
 
             {errorMessage && (

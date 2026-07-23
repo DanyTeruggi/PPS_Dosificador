@@ -1,11 +1,13 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
+import type { UserRole } from "../context/authContextDefinition";
 
 interface Props {
   children: React.ReactNode;
-  roles?: string[]; // opcional: ["admin"], ["cliente"], ["veterinario"]
+  roles?: UserRole[];
 }
 
+// controla si el usuario puede entrar a una ruta
 export default function ProtectedRoute({ children, roles }: Props) {
   const { token, user, isInitializing } = useAuth();
 
@@ -18,7 +20,7 @@ export default function ProtectedRoute({ children, roles }: Props) {
     return <Navigate to="/" replace />;
   }
 
-  // 2) Si hay token pero NO hay user → home pública (caso raro)
+  // 2) Si hay token pero NO hay user → home pública 
   if (!user) {
     return <Navigate to="/" replace />;
   }
@@ -30,6 +32,6 @@ export default function ProtectedRoute({ children, roles }: Props) {
     return <Navigate to="/home-mobile" replace />;
   }
 
-  // 4) Si todo está OK → renderizar
+  // 4) Si todo está OK => renderizar
   return <>{children}</>;
 }

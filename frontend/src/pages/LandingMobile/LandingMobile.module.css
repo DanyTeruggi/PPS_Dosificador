@@ -1,4 +1,4 @@
-/* Estructura general de las paginas Landing para celular. */
+/* Estructura general de las paginas LandingMobile */
 .page {
   min-height: 100dvh;
   display: flex;
@@ -95,15 +95,15 @@
   display: grid;
   flex: 0 0 28px;
   place-items: center;
-  color: rgba(255, 255, 255, 0.92); 
+  color: rgba(255, 255, 255, 0.92);
 }
 
-.headerIcon > svg {
+.headerIcon>svg {
   width: 100%;
   height: 100%;
 }
 
-.action > .headerIcon {
+.action>.headerIcon {
   transform: translateX(-6px);
 }
 
@@ -122,4 +122,133 @@
 
 .error {
   color: #8f1122;
+}
+
+/* Carga compartida de las landing mobile. */
+.loadingState {
+  min-height: min(56dvh, 520px);
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  padding: 18px 0 32px;
+  color: #fff;
+  text-align: center;
+}
+
+.loadingVisual {
+  --loader-size: clamp(210px, 66vw, 290px);
+  position: relative;
+  width: var(--loader-size);
+  height: var(--loader-size);
+  display: grid;
+  place-items: center;
+  filter: drop-shadow(0 18px 30px rgba(40, 14, 61, 0.34));
+}
+
+.petriFrame {
+  width: calc(100% - 28px);
+  height: calc(100% - 28px);
+  overflow: hidden;
+  border: 3px solid rgba(255, 255, 255, 0.62);
+  border-radius: 50%;
+  background: rgba(226, 198, 245, 0.28);
+  box-shadow:
+    0 0 0 7px rgba(255, 255, 255, 0.1),
+    0 0 30px rgba(232, 207, 255, 0.52),
+    inset 0 0 24px rgba(255, 255, 255, 0.22);
+  animation: petri-sway 3.2s ease-in-out infinite;
+}
+
+.petriImage {
+  width: 100%;
+  height: 100%;
+  display: block;
+  border-radius: inherit;
+  object-fit: cover;
+  transform: scale(1.035);
+}
+
+.spinnerRing {
+  position: absolute;
+  inset: -12px;
+  border-radius: 50%;
+  background: conic-gradient(from 15deg,
+      transparent 0 18%,
+      rgba(255, 255, 255, 0.18) 36%,
+      #fff 62%,
+      rgba(255, 255, 255, 0.24) 78%,
+      transparent 88% 100%);
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.8));
+  mask: radial-gradient(farthest-side,
+      transparent calc(100% - 7px),
+      #000 calc(100% - 6px));
+  -webkit-mask: radial-gradient(farthest-side,
+      transparent calc(100% - 7px),
+      #000 calc(100% - 6px));
+  animation: loading-spin 2.8s linear infinite;
+}
+
+.loadingCopy {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.loadingTitle,
+.loadingHint {
+  margin: 0;
+}
+
+.loadingTitle {
+  color: rgba(255, 255, 255, 0.96);
+  font-size: clamp(18px, 5.2vw, 22px);
+  font-weight: 800;
+  line-height: 1.25;
+  text-shadow: 0 3px 12px rgba(40, 14, 61, 0.52);
+}
+
+.loadingHint {
+  color: rgba(245, 231, 255, 0.78);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+@keyframes loading-spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+@keyframes petri-sway {
+
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+
+  50% {
+    transform: rotate(3.5deg);
+  }
+}
+
+@media (max-width: 350px) {
+  .loadingState {
+    gap: 22px;
+    padding-top: 8px;
+  }
+
+  .loadingVisual {
+    --loader-size: min(68vw, 225px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .spinnerRing,
+  .petriFrame {
+    animation: none;
+  }
 }
