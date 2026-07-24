@@ -5,6 +5,7 @@ import styles from "./Footer.module.css";
 
 import { useAuth } from "../../context/useAuth";
 import { useLocation, useNavigate } from "react-router-dom";
+import { getHomeByRole } from "../../utils/roleHome";
 import SupportWhatsAppModal from "../SupportWhatsAppModal/SupportWhatsAppModal";
 
 export default function Footer() {
@@ -15,11 +16,7 @@ export default function Footer() {
 
   // Evita la ruta intermedia /home y su pantalla vacía para los roles mobile.
   const handleHome = () => {
-    const homePath = user?.role === "cliente"
-      ? "/cliente/establecimientos"
-      : user?.role === "veterinario"
-        ? "/veterinarios/clientes"
-        : null;
+    const homePath = user ? getHomeByRole(user.role) : null;
 
     if (!homePath || (location.pathname === homePath && !location.search)) return;
     navigate(homePath, { replace: true });
@@ -36,21 +33,26 @@ export default function Footer() {
 
       {/* HOME */}
       <button className={styles.item} type="button" onClick={handleHome}>
-        <HiHome size={22} />
+        <HiHome aria-hidden="true" size={22} />
         <span className={styles.label}>Inicio</span>
       </button>
 
       {/* SOPORTE TÉCNICO */}
       <button className={styles.item} type="button" onClick={() => setShowSupport(true)}>
-        <BsHeadset size={22} />
+        <BsHeadset aria-hidden="true" size={22} />
         <span className={styles.label}>Soporte Técnico</span>
       </button>
 
       {/* LOGOUT */}
-      <div className={styles.item} onClick={handleLogout}>
-        <BsBoxArrowRight size={22} />
+      <button
+        aria-label="Cerrar sesión"
+        className={styles.item}
+        type="button"
+        onClick={handleLogout}
+      >
+        <BsBoxArrowRight aria-hidden="true" size={22} />
         <span className={styles.label}>Salir</span>
-      </div>
+      </button>
 
       {showSupport && (
         <SupportWhatsAppModal user={user} onClose={() => setShowSupport(false)} />

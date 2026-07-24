@@ -36,7 +36,7 @@ export default function EditarBebederoForm({ bebedero, onClose, onSave }: Props)
     setForm((current) => ({ ...current, [field]: value }));
   };
 
-  const handleSubmit = async (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (loading) return;
     setError(null);

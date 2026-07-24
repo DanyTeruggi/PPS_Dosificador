@@ -31,6 +31,7 @@ export default function AsignarVeterinario({ usuarioId, onClose }: Props) {
   const [nuevoVetId, setNuevoVetId] = useState<number | null>(null);
   const [veterinarioSeleccionado, setVeterinarioSeleccionado] = useState<VeterinarioOption | null>(null);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [activeOptionIndex, setActiveOptionIndex] = useState(-1);
   const [dropdownPosition, setDropdownPosition] = useState<DropdownPosition | null>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
@@ -97,6 +98,7 @@ export default function AsignarVeterinario({ usuarioId, onClose }: Props) {
 
       if (active) {
         setVeterinarios(filtrados);
+        setActiveOptionIndex(-1);
         updateDropdownPosition();
         setShowDropdown(true);
       }
@@ -130,6 +132,7 @@ export default function AsignarVeterinario({ usuarioId, onClose }: Props) {
     setVeterinarioSeleccionado(veterinario);
     setSearchVet(veterinario.usuario.nombre);
     setShowDropdown(false);
+    setActiveOptionIndex(-1);
     setError(null);
   }
 
@@ -138,6 +141,32 @@ export default function AsignarVeterinario({ usuarioId, onClose }: Props) {
     setVeterinarioSeleccionado(null);
     setSearchVet("");
     setVeterinarios([]);
+    setActiveOptionIndex(-1);
+  }
+
+  function handleVeterinarioKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
+    if (event.key === "Escape") {
+      setShowDropdown(false);
+      setActiveOptionIndex(-1);
+      return;
+    }
+
+    if (veterinarios.length === 0) return;
+
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      setShowDropdown(true);
+      setActiveOptionIndex((current) => (current + 1) % veterinarios.length);
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      setShowDropdown(true);
+      setActiveOptionIndex((current) =>
+        current <= 0 ? veterinarios.length - 1 : current - 1
+      );
+    } else if (event.key === "Enter" && showDropdown && activeOptionIndex >= 0) {
+      event.preventDefault();
+      selectVeterinario(veterinarios[activeOptionIndex]);
+    }
   }
 
   async function handleGuardar() {
@@ -202,11 +231,18 @@ export default function AsignarVeterinario({ usuarioId, onClose }: Props) {
             role="combobox"
             aria-expanded={showDropdown}
             aria-controls="veterinarios-autocomplete"
+            aria-activedescendant={
+              showDropdown && activeOptionIndex >= 0
+                ? `veterinario-option-${getVeterinarioId(veterinarios[activeOptionIndex])}`
+                : undefined
+            }
+            onKeyDown={handleVeterinarioKeyDown}
             onChange={(event) => {
               setSearchVet(event.target.value);
               if (event.target.value.trim().length < 2) {
                 setShowDropdown(false);
                 setVeterinarios([]);
+                setActiveOptionIndex(-1);
               }
             }}
             onFocus={() => {
@@ -216,7 +252,10 @@ export default function AsignarVeterinario({ usuarioId, onClose }: Props) {
               }
             }}
             onBlur={() => {
-              window.setTimeout(() => setShowDropdown(false), 100);
+              window.setTimeout(() => {
+                setShowDropdown(false);
+                setActiveOptionIndex(-1);
+              }, 100);
             }}
           />
         </div>
@@ -246,13 +285,15 @@ export default function AsignarVeterinario({ usuarioId, onClose }: Props) {
           style={dropdownPosition}
           onMouseDown={(event) => event.preventDefault()}
         >
-          {veterinarios.length > 0 ? veterinarios.map((veterinario) => (
+          {veterinarios.length > 0 ? veterinarios.map((veterinario, index) => (
             <button
               key={getVeterinarioId(veterinario)}
+              id={`veterinario-option-${getVeterinarioId(veterinario)}`}
               type="button"
               role="option"
-              aria-selected="false"
+              aria-selected={index === activeOptionIndex}
               className={styles.dropdownItem}
+              onMouseEnter={() => setActiveOptionIndex(index)}
               onClick={() => selectVeterinario(veterinario)}
             >
               <strong>{veterinario.usuario.nombre}</strong>

@@ -18,7 +18,7 @@ Este documento describe la navegación implementada actualmente en el frontend. 
 ```mermaid
 flowchart TD
     A["/ — LandingSelector"] --> B{"¿Se está validando la sesión?"}
-    B -->|Sí| C[No renderiza contenido]
+    B -->|Sí| C["SessionLoadingScreen"]
     B -->|No| D{"¿Existe token?"}
 
     D -->|Sí| E[SmartHomeRedirect]
@@ -61,7 +61,7 @@ flowchart TD
 
 Componente: `LandingSelector`.
 
-1. Espera a que `AuthProvider` termine de validar una sesión existente.
+1. Mientras `AuthProvider` valida una sesión existente, muestra `SessionLoadingScreen`.
 2. Si existe un token válido, renderiza `SmartHomeRedirect`.
 3. Si no existe token:
    - En desktop (`>= 768 px`) muestra `DesktopLoginPage` dentro de la misma ruta `/`.
@@ -122,12 +122,12 @@ Componente: `NuevoUsuarioPage`.
 
 Componente: `SmartHomeRedirect`.
 
-No muestra una pantalla propia. Decide el destino de la sesión:
+Mientras determina el destino muestra `SessionLoadingScreen`; luego decide el destino de la sesión:
 
 ```mermaid
 flowchart TD
     A["/home"] --> B{"¿Validación de sesión terminada?"}
-    B -->|No| C[Esperar]
+    B -->|No| C["SessionLoadingScreen"]
     B -->|Sí| D{"¿Hay token y usuario?"}
     D -->|No| E["/"]
     D -->|Sí| F{"Rol"}
@@ -136,7 +136,7 @@ flowchart TD
     F -->|cliente| I["/cliente/establecimientos"]
 ```
 
-El botón **Inicio** del footer mobile navega a `/home`, por lo que siempre vuelve al inicio correspondiente al rol autenticado.
+El botón **Inicio** del footer mobile utiliza `getHomeByRole` y navega directamente al inicio correspondiente al rol autenticado.
 
 ## 6. Protección de rutas
 
@@ -147,11 +147,14 @@ Las rutas privadas están envueltas por dos controles:
 
 Comportamiento de `ProtectedRoute`:
 
-- Mientras se valida la sesión muestra `Validando sesión…`.
+- Mientras se valida la sesión muestra `SessionLoadingScreen`, que conserva el fondo visual de la aplicación, la animación de carga y el mensaje accesible `Validando sesión…`.
 - Sin token o usuario redirige a `/`.
 - Si la ruta exige un rol distinto:
-  - Un administrador es enviado a `/dashboard`.
-  - Un cliente o veterinario es enviado a `/home-mobile`.
+  - `admin` es enviado a `/dashboard`.
+  - `veterinario` es enviado a `/veterinarios/clientes`.
+  - `cliente` es enviado a `/cliente/establecimientos`.
+
+Los destinos se obtienen mediante `getHomeByRole`, definido en `src/utils/roleHome.ts`. La misma función es utilizada por `SmartHomeRedirect` y los formularios de inicio de sesión.
 
 Solo las rutas del dashboard declaran actualmente `roles={["admin"]}`. Las demás rutas privadas requieren autenticación, pero no restringen explícitamente el rol desde el router.
 
@@ -277,7 +280,7 @@ Las pantallas de selección, bebederos y resumen utilizan `LandingMobileLayout`,
 
 | Acción | Comportamiento |
 |---|---|
-| Inicio | Navega a `/home`; `SmartHomeRedirect` decide el destino por rol |
+| Inicio | Usa `getHomeByRole` y navega directamente al destino del rol |
 | Soporte Técnico | Abre `SupportWhatsAppModal` sin cambiar la URL |
 | Salir | Navega a `/` y elimina la sesión |
 
@@ -311,10 +314,9 @@ Estas observaciones describen el código vigente; no implican que sean el compor
 1. `/home-mobile` y `/home-desktop` son rutas públicas directas y no verifican el dispositivo antes de renderizar.
 2. Las rutas mobile privadas no declaran roles específicos en `App.tsx`. La autorización de datos depende principalmente del backend y de la lógica interna de cada pantalla.
 3. `/bebederos` permite cualquier rol autenticado y renderiza directamente un panel administrativo.
-4. Cuando un cliente o veterinario intenta ingresar a una ruta reservada al administrador, `ProtectedRoute` lo envía a `/home-mobile`, no a `/home`.
-5. Las pestañas del dashboard no sincronizan normalmente su selección con la URL.
-6. `/dashboard/dispositivos/nuevo` selecciona Dispositivos, pero no abre automáticamente el modal de alta.
-7. No hay una pantalla 404 ni una redirección para rutas desconocidas.
-8. La navegación de regreso desde los bebederos del veterinario pierde el cliente previamente seleccionado.
+4. Las pestañas del dashboard no sincronizan normalmente su selección con la URL.
+5. `/dashboard/dispositivos/nuevo` selecciona Dispositivos, pero no abre automáticamente el modal de alta.
+6. No hay una pantalla 404 ni una redirección para rutas desconocidas.
+7. La navegación de regreso desde los bebederos del veterinario pierde el cliente previamente seleccionado.
 
 Estas diferencias son relevantes si se desea convertir la navegación en enlaces compartibles, aplicar permisos estrictos por rol o conservar el contexto al usar atrás y adelante del navegador.

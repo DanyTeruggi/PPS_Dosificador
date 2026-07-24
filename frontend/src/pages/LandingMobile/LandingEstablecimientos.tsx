@@ -26,7 +26,7 @@ export default function LandingEstablecimientos() {
   const role = user?.role ?? user?.rol;
   const clienteId = searchParams.get("clienteId");
 
-  const [title, setTitle] = useState("Seleccione un establecimiento");
+  const [title, setTitle] = useState("Seleccione establecimiento");
   const [establecimientos, setEstablecimientos] = useState<Establecimiento[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

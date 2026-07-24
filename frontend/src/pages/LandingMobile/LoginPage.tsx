@@ -7,6 +7,7 @@ import hidePasswordIcon from "../../assets/esconder.png";
 import showPasswordIcon from "../../assets/mostrar.png";
 import { useAuth } from "../../context/useAuth";
 import { useIsDesktop } from "../../hooks/useIsDesktop";
+import { getHomeByRole } from "../../utils/roleHome";
 import styles from "./LoginPage.module.css";
 
 
@@ -64,7 +65,7 @@ export default function LoginPage() {
       const user = JSON.parse(sessionStorage.getItem("user") ?? "{}");
       if (user.role === "admin") {
         if (isDesktop) {
-          navigate("/dashboard", { replace: true });
+          navigate(getHomeByRole(user.role), { replace: true });
           return;
         }
 
@@ -75,12 +76,7 @@ export default function LoginPage() {
         return;
       }
 
-      if (user.role === "veterinario") {
-        navigate("/veterinarios/clientes", { replace: true });
-        return;
-      }
-
-      navigate("/cliente/establecimientos", { replace: true });
+      navigate(getHomeByRole(user.role), { replace: true });
     } catch (loginError) {
       console.error(loginError);
       setErrorMessage("Ocurrió un problema de comunicación. Intentá nuevamente.");

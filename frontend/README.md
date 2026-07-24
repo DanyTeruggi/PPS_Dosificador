@@ -186,6 +186,15 @@ VITE_API_PREFIX=/api/v1
 VITE_SUPPORT_WHATSAPP_NUMBER=549CODIGOAREANUMERO
 ```
 
+Para el desarrollo local, `.env.development` define el backend en `localhost`. Para probar desde otro dispositivo de la misma red, `.env.mobile` define la IP local de la computadora.
+
+```bash
+npm run dev
+npm run dev:mobile
+```
+
+El segundo comando expone Vite en la red local. Desde el celular se accede mediante `http://192.168.0.51:5173`; FastAPI también debe iniciarse con `--host 0.0.0.0`.
+
 La URL final se construye combinando ambas variables. Por ejemplo:
 
 ```text
@@ -277,8 +286,8 @@ npm test
 El comando ejecuta todas las pruebas una vez y termina. Un resultado correcto se ve de forma similar a:
 
 ```text
-Test Files  5 passed (5)
-Tests       41 passed (41)
+Test Files  6 passed (6)
+Tests       44 passed (44)
 ```
 
 Significado:
@@ -395,6 +404,16 @@ El frontend:
 4. Agrega `Authorization: Bearer <token>` a las solicitudes protegidas.
 5. Redirige al usuario según su rol.
 6. Cierra la sesión si `/auth/me` rechaza el token o cualquier solicitud responde `401`.
+
+Las páginas iniciales se definen en una única fuente de verdad: `src/utils/roleHome.ts`. Tanto `ProtectedRoute` como `SmartHomeRedirect` y los formularios de inicio de sesión usan `getHomeByRole`, evitando que cada flujo mantenga destinos diferentes.
+
+| Rol | Página inicial |
+|---|---|
+| `admin` | `/dashboard` |
+| `veterinario` | `/veterinarios/clientes` |
+| `cliente` | `/cliente/establecimientos` |
+
+Cuando un usuario intenta acceder a una ruta que no admite su rol, `ProtectedRoute` lo redirige a la página inicial definida en ese mismo mapa.
 
 > La decodificación del JWT en el navegador no reemplaza las validaciones de autorización del backend. La API debe validar el token y los permisos en cada endpoint.
 

@@ -94,7 +94,6 @@
   align-items: center;
   gap: 8px;
   margin: 8px 8px 16px;
-  ;
 }
 
 /* estilos del dropdown */
@@ -157,6 +156,7 @@
 }
 
 .dropdownItem:hover,
+.dropdownItem[aria-selected="true"],
 .dropdownItem:focus-visible {
   background: #eef5ff;
   outline: none;

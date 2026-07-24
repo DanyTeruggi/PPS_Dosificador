@@ -1,6 +1,8 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
 import type { UserRole } from "../context/authContextDefinition";
+import { getHomeByRole } from "../utils/roleHome";
+import SessionLoadingScreen from "./SessionLoadingScreen";
 
 interface Props {
   children: React.ReactNode;
@@ -12,7 +14,7 @@ export default function ProtectedRoute({ children, roles }: Props) {
   const { token, user, isInitializing } = useAuth();
 
   if (isInitializing) {
-    return <div>Validando sesión…</div>;
+    return <SessionLoadingScreen />;
   }
 
   // 1) Si NO hay token → home pública
@@ -28,8 +30,7 @@ export default function ProtectedRoute({ children, roles }: Props) {
   // 3) Si la ruta requiere roles específicos
   if (roles && !roles.includes(user.role)) {
     // Redirección inteligente según rol
-    if (user.role === "admin") return <Navigate to="/dashboard" replace />;
-    return <Navigate to="/home-mobile" replace />;
+    return <Navigate to={getHomeByRole(user.role)} replace />;
   }
 
   // 4) Si todo está OK => renderizar

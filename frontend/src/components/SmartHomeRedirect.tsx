@@ -1,12 +1,13 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
+import { getHomeByRole } from "../utils/roleHome";
+import SessionLoadingScreen from "./SessionLoadingScreen";
 
 //decide a qué página inicial enviar al usuario según su rol y si está logueado o no.
 export default function SmartHomeRedirect() {
   const { user, token, isInitializing } = useAuth();
   const navigate = useNavigate();
-  const role = user?.role ?? user?.rol;
 
   useEffect(() => {
     if (isInitializing) return;
@@ -25,21 +26,10 @@ export default function SmartHomeRedirect() {
     }
 
     // ADMIN => escritorio (dashboard)
-    if (role === "admin") {
-      navigate("/dashboard", { replace: true });
-      return;
-    }
+    navigate(getHomeByRole(user.role), { replace: true });
 
-    // VETERINARIO => comienza en la lista de clientes.
-    if (role === "veterinario") {
-      navigate("/veterinarios/clientes", { replace: true });
-      return;
-    }
+  }, [isInitializing, token, user, navigate]);
 
-    navigate("/cliente/establecimientos", { replace: true });
-
-  }, [isInitializing, token, user, role, navigate]);
-
-  return null;
+  return <SessionLoadingScreen />;
 }
 

@@ -27,7 +27,7 @@ export default function NuevoEstablecimientoClienteForm({ onClose, onCreated }: 
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [loading, onClose]);
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     if (loading) return;
 

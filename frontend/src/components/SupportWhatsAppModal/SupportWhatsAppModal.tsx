@@ -32,7 +32,7 @@ export default function SupportWhatsAppModal({ user, onClose }: Props) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [onClose]);
 
-  function handleSubmit(event: React.FormEvent) {
+  function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     const detail = description.trim();
     if (!detail || !supportNumber) return;

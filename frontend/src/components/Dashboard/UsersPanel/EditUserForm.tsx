@@ -39,7 +39,7 @@ export default function EditUserForm({ usuario, onClose, onSaved }: Props) {
     setForm((current) => ({ ...current, [field]: value }));
   }
 
-  async function handleSubmit(event: React.FormEvent) {
+  async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     if (loading) return;
     setFieldErrors({});

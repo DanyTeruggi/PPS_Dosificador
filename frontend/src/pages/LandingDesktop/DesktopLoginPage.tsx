@@ -5,6 +5,7 @@ import showPasswordIcon from "../../assets/mostrar.png";
 import Button from "../../components/Button/Button";
 import ButtonX from "../../components/ButtonX/ButtonX";
 import { useAuth } from "../../context/useAuth";
+import { getHomeByRole } from "../../utils/roleHome";
 import styles from "./DesktopLoginPage.module.css";
 
 
@@ -19,7 +20,7 @@ export default function DesktopLoginPage() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     if (isSubmitting) return;
 
@@ -43,7 +44,7 @@ export default function DesktopLoginPage() {
         return;
       }
 
-      navigate("/dashboard", { replace: true });
+      navigate(getHomeByRole(user.role), { replace: true });
     } catch (loginError) {
       console.error(loginError);
       setErrorMessage("Ocurrió un problema de comunicación. Intentá nuevamente.");

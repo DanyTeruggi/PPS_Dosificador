@@ -22,6 +22,11 @@
   padding-bottom: calc(90px + env(safe-area-inset-bottom));
 }
 
+.sessionLoadingContent {
+  justify-content: center;
+  padding-bottom: 20px;
+}
+
 /* Encabezado compartido. */
 .header {
   display: grid;

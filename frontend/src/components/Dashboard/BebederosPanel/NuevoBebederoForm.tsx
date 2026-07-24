@@ -35,6 +35,7 @@ export default function NuevoBebederoForm({ onClose, establecimientos }: Props) 
   const [clientes, setClientes] = useState<ClienteOption[]>([]);
   const [selectedCliente, setSelectedCliente] = useState<ClienteOption | null>(null);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [activeOptionIndex, setActiveOptionIndex] = useState(-1);
   const [dropdownPosition, setDropdownPosition] = useState<DropdownPosition | null>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -92,6 +93,7 @@ export default function NuevoBebederoForm({ onClose, establecimientos }: Props) 
 
         if (active) {
           setClientes(filteredClientes);
+          setActiveOptionIndex(-1);
           updateDropdownPosition();
           setShowDropdown(true);
         }
@@ -130,9 +132,35 @@ export default function NuevoBebederoForm({ onClose, establecimientos }: Props) 
       establecimiento: "",
     }));
     setShowDropdown(false);
+    setActiveOptionIndex(-1);
   }
 
-  const handleSubmit = async (event: React.FormEvent) => {
+  function handleClienteKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
+    if (event.key === "Escape") {
+      setShowDropdown(false);
+      setActiveOptionIndex(-1);
+      return;
+    }
+
+    if (clientes.length === 0) return;
+
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      setShowDropdown(true);
+      setActiveOptionIndex((current) => (current + 1) % clientes.length);
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      setShowDropdown(true);
+      setActiveOptionIndex((current) =>
+        current <= 0 ? clientes.length - 1 : current - 1
+      );
+    } else if (event.key === "Enter" && showDropdown && activeOptionIndex >= 0) {
+      event.preventDefault();
+      selectCliente(clientes[activeOptionIndex]);
+    }
+  }
+
+  const handleSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (loading) return;
     setError(null);
@@ -204,6 +232,12 @@ export default function NuevoBebederoForm({ onClose, establecimientos }: Props) 
             role="combobox"
             aria-expanded={showDropdown}
             aria-controls="clientes-bebedero-autocomplete"
+            aria-activedescendant={
+              showDropdown && activeOptionIndex >= 0
+                ? `bebedero-cliente-option-${clientes[activeOptionIndex].cliente_id}`
+                : undefined
+            }
+            onKeyDown={handleClienteKeyDown}
             onChange={(event) => {
               setClienteSearch(event.target.value);
               setSelectedCliente(null);
@@ -211,6 +245,7 @@ export default function NuevoBebederoForm({ onClose, establecimientos }: Props) 
               if (event.target.value.trim().length < 2) {
                 setShowDropdown(false);
                 setClientes([]);
+                setActiveOptionIndex(-1);
               }
             }}
             onFocus={() => {
@@ -219,7 +254,10 @@ export default function NuevoBebederoForm({ onClose, establecimientos }: Props) 
                 setShowDropdown(true);
               }
             }}
-            onBlur={() => window.setTimeout(() => setShowDropdown(false), 100)}
+            onBlur={() => window.setTimeout(() => {
+              setShowDropdown(false);
+              setActiveOptionIndex(-1);
+            }, 100)}
             placeholder="Buscar por razón social o email"
           />
 
@@ -239,13 +277,15 @@ export default function NuevoBebederoForm({ onClose, establecimientos }: Props) 
             style={dropdownPosition}
             onMouseDown={(event) => event.preventDefault()}
           >
-            {clientes.length > 0 ? clientes.map((cliente) => (
+            {clientes.length > 0 ? clientes.map((cliente, index) => (
               <button
                 key={cliente.cliente_id}
+                id={`bebedero-cliente-option-${cliente.cliente_id}`}
                 type="button"
                 role="option"
-                aria-selected="false"
+                aria-selected={index === activeOptionIndex}
                 className={styles.dropdownItem}
+                onMouseEnter={() => setActiveOptionIndex(index)}
                 onClick={() => selectCliente(cliente)}
               >
                 <strong>{cliente.razon_social}</strong>

@@ -3,12 +3,13 @@ import DesktopLoginPage from "./LandingDesktop/DesktopLoginPage";
 import WelcomePage from "./LandingMobile/WelcomePage";
 import { useAuth } from "../context/useAuth";
 import SmartHomeRedirect from "../components/SmartHomeRedirect";
+import SessionLoadingScreen from "../components/SessionLoadingScreen";
 
 export default function LandingSelector() {
   const isDesktop = useIsDesktop();
   const { token, isInitializing } = useAuth();
 
-  if (isInitializing) return null;
+  if (isInitializing) return <SessionLoadingScreen />;
 
   // Si NO hay token → mostrar la home pública, no el login directo
   if (!token) {

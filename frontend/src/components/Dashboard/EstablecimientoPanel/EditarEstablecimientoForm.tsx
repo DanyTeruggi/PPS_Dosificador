@@ -33,7 +33,7 @@ export default function EditarEstablecimientoForm({ establecimiento, onClose, on
     setForm((prev) => ({ ...prev, [field]: value }));
   }
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
     if (loading) return;
     setError(null);
