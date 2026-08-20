@@ -426,7 +426,7 @@ export default function NuevoBebederoForm({ onClose, establecimientos }: Props) 
           </div>
 
           <div className={styles.group}>
-            <label className={styles.label}>Tiempo dosis (hs)</label>
+            <label className={styles.label}>Medición cada... (hs)</label>
             <input
               className={styles.input}
               type="number"

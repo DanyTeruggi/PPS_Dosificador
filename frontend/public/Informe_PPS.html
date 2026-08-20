@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Informe de avance de la Práctica Profesional Supervisada de Daniel Teruggi.">
+  <title>Informe de avance PPS | Daniel Teruggi</title>
+  <link rel="stylesheet" href="Informe_PPS.css">
+</head>
+
+<body>
+  <a class="skip-link" href="#contenido">Saltar al contenido principal</a>
+  <header class="cover" id="inicio">
+    <div class="cover__content">
+      <p class="eyebrow">Práctica Profesional Supervisada · Informe de avance</p>
+      <h1>Plataforma web para la gestión y el monitoreo de dispositivos IoT en bebederos</h1>
+      <p class="cover__subtitle">Dosificación automática de cápsulas para el control biológico de nematodos en ovinos
+      </p>
+      <dl class="cover__data">
+        <div>
+          <dt>Estudiante</dt>
+          <dd>Daniel Teruggi</dd>
+        </div>
+        <div>
+          <dt>Carrera</dt>
+          <dd>Tecnicatura Universitaria en Desarrollo de Aplicaciones Informáticas</dd>
+        </div>
+        <div>
+          <dt>Institución solicitante</dt>
+          <dd>Centro de Investigación Veterinaria Tandil (CIVETAN)</dd>
+        </div>
+        <div>
+          <dt>Tutor académico</dt>
+          <dd>Dr. Juan M. Toloza</dd>
+        </div>
+        <div>
+          <dt>Tutora externa</dt>
+          <dd>Dra. Federica Sagüés</dd>
+        </div>
+        <div>
+          <dt>Fecha del informe</dt>
+          <dd><time datetime="2026-08-20">20 de agosto de 2026</time></dd>
+        </div>
+      </dl>
+      <p class="status"><span aria-hidden="true"></span> Proyecto en desarrollo · Primera demo realizada</p>
+    </div>
+  </header>
+
+  <nav class="contents" aria-label="Índice del informe">
+    <div class="contents__inner">
+      <p class="contents__title">Contenido</p>
+      <ol>
+        <li><a href="#introduccion">Introducción</a></li>
+        <li><a href="#objetivos">Objetivos</a></li>
+        <li><a href="#requerimientos">Relevamiento</a></li>
+        <li><a href="#metodologia">Metodología</a></li>
+        <li><a href="#diseno">Diseño UX/UI</a></li>
+        <li><a href="#desarrollo">Desarrollo</a></li>
+        <li><a href="#funcionalidades">Funcionalidades</a></li>
+        <li><a href="#hitos">Hitos</a></li>
+        <li><a href="#estado">Estado actual</a></li>
+        <li><a href="#reflexiones">Reflexiones</a></li>
+        <li><a href="#agradecimientos">Agradecimientos</a></li>
+      </ol>
+    </div>
+  </nav>
+
+  <main id="contenido">
+    <section class="report-section" id="introduccion">
+      <div class="section-heading"><span>01</span>
+        <div>
+          <p class="eyebrow">Contexto</p>
+          <h2>Introducción</h2>
+        </div>
+      </div>
+      <div class="prose">
+        <p>El presente informe documenta el avance de la Práctica Profesional Supervisada desarrollada para el Centro de
+          Investigación Veterinaria Tandil (CIVETAN), dependiente de la Facultad de Ciencias Veterinarias de la
+          Universidad Nacional del Centro de la Provincia de Buenos Aires.</p>
+        <p>El proyecto consiste en el desarrollo de una plataforma web destinada a administrar y monitorear bebederos
+          automáticos utilizados para dosificar cápsulas de hongos en estrategias de control biológico de nematodos
+          parásitos en ovinos. La solución busca centralizar información operativa, facilitar la administración de los
+          actores involucrados y transformar las mediciones de los dispositivos en información útil para el seguimiento
+          y la toma de decisiones.</p>
+        <p>La PPS contempla una carga de <strong>200 horas</strong>. El relevamiento de requisitos fue realizado de
+          manera conjunta por Daniel Teruggi y Matías Spacech. En cuanto al desarrollo técnico, Daniel asumió la
+          implementación del frontend, mientras que Matías tuvo a su cargo el backend. Esta división exige una
+          coordinación permanente para acordar contratos de API, modelos de datos y flujos de usuario.</p>
+      </div>
+    </section>
+
+    <section class="report-section" id="objetivos">
+      <div class="section-heading"><span>02</span>
+        <div>
+          <p class="eyebrow">Alcance</p>
+          <h2>Objetivos del proyecto</h2>
+        </div>
+      </div>
+      <div class="objective-card">
+        <h3>Objetivo general</h3>
+        <p>Desarrollar el frontend de una plataforma web integral que permita gestionar bebederos automáticos,
+          visualizar su estado operativo, administrar usuarios y roles, y generar información relevante para el control
+          biológico de nematodos en ovinos.</p>
+      </div>
+      <div class="card-grid">
+        <article class="info-card"><span class="info-card__number">01</span>
+          <h3>Experiencia de usuario</h3>
+          <p>Diseñar una interfaz clara, accesible y adaptable a los distintos perfiles y dispositivos de uso.</p>
+        </article>
+        <article class="info-card"><span class="info-card__number">02</span>
+          <h3>Gestión segura</h3>
+          <p>Integrar autenticación mediante JWT y controlar el acceso según los roles de administrador, veterinario y
+            cliente.</p>
+        </article>
+        <article class="info-card"><span class="info-card__number">03</span>
+          <h3>Integración</h3>
+          <p>Consumir la API REST desarrollada por el backend y representar sus datos con estados de carga y error
+            comprensibles.</p>
+        </article>
+        <article class="info-card"><span class="info-card__number">04</span>
+          <h3>Monitoreo</h3>
+          <p>Construir paneles y gráficos que permitan analizar la cobertura de cápsulas y el estado de los
+            dispositivos.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="report-section" id="requerimientos">
+      <div class="section-heading"><span>03</span>
+        <div>
+          <p class="eyebrow">Comprensión del problema</p>
+          <h2>Relevamiento y validación de requisitos</h2>
+        </div>
+      </div>
+      <div class="prose">
+        <p>La toma de requisitos se realizó de manera conjunta entre Daniel y Matías, con la participación de referentes
+          de CIVETAN, Federica y Manuela. La primera reunión presencial tuvo lugar el <time datetime="2026-03-31">31 de
+            marzo de 2026</time> y estuvo orientada a comprender el contexto de uso, las necesidades institucionales y
+          los perfiles que interactuarían con la plataforma.</p>
+        <p>El relevamiento permitió definir una estructura de usuarios con responsabilidades diferenciadas. El
+          administrador requiere una visión global y herramientas de gestión; el veterinario necesita acceder a los
+          clientes que tiene asignados; y el cliente debe consultar sus establecimientos, bebederos y mediciones. Se
+          definió una interfaz móvil para los perfiles de veterinario y cliente, y una interfaz de escritorio para el
+          rol de administrador.</p>
+      </div>
+      <aside class="callout" aria-label="Requisitos funcionales principales">
+        <h3>Requisitos funcionales principales</h3>
+        <ul class="check-list">
+          <li>Autenticación y autorización por roles.</li>
+          <li>Administración de usuarios, veterinarios y clientes.</li>
+          <li>Gestión de establecimientos y bebederos.</li>
+          <li>Asociación de veterinarios con clientes.</li>
+          <li>Consulta del estado operativo de los dispositivos.</li>
+          <li>Visualización histórica y comparativa de mediciones.</li>
+          <li>Soporte accesible para el usuario.</li>
+        </ul>
+      </aside>
+    </section>
+
+    <section class="report-section" id="metodologia">
+      <div class="section-heading"><span>04</span>
+        <div>
+          <p class="eyebrow">Organización</p>
+          <h2>Metodología de trabajo</h2>
+        </div>
+      </div>
+      <div class="two-columns">
+        <div class="prose">
+          <p>El plan de trabajo se organizó con un enfoque ágil e iterativo. Las actividades se estructuraron en etapas
+            con objetivos definidos y entregables incrementales, acompañadas de revisiones periódicas. Este esquema
+            permitió ajustar y priorizar las tareas a partir de las devoluciones recibidas durante el desarrollo.</p>
+          <p>La separación entre frontend y backend permitió trabajar en paralelo, pero hizo necesario acordar las
+            estructuras de datos y los endpoints de integración. En el frontend se adoptó una organización modular por
+            páginas, componentes, contextos, hooks, tipos y utilidades, de modo de favorecer la reutilización y el
+            mantenimiento.</p>
+        </div>
+        <ol class="process-list">
+          <li><strong>Relevar</strong><span>Comprender el dominio y registrar necesidades.</span></li>
+          <li><strong>Prototipar</strong><span>Convertir los requisitos en flujos y pantallas.</span></li>
+          <li><strong>Implementar</strong><span>Construir componentes e integrar la API.</span></li>
+          <li><strong>Validar</strong><span>Presentar incrementos y registrar devoluciones.</span></li>
+          <li><strong>Iterar</strong><span>Ajustar el producto según la evidencia obtenida.</span></li>
+        </ol>
+      </div>
+      <div class="hours-summary">
+        <div class="hours-summary__intro">
+          <p class="eyebrow">Carga horaria</p>
+          <h3>Estimación de la dedicación</h3>
+          <p>Debido a que no se llevó un registro diario de las horas, la carga horaria se reconstruyó
+            retrospectivamente a partir del historial de actividad del repositorio, los hitos del proyecto y las tareas
+            realizadas fuera del desarrollo de código. La estimación acumulada asciende a <strong>216 horas</strong>.
+          </p>
+        </div>
+        <div class="hours-table-wrapper">
+          <table class="hours-table">
+            <caption class="visually-hidden">Distribución estimada de la carga horaria del proyecto</caption>
+            <thead>
+              <tr>
+                <th scope="col">Actividad</th>
+                <th scope="col">Horas</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Diseño y prototipado en Figma</td>
+                <td>16</td>
+              </tr>
+              <tr>
+                <td>Capacitación en React.js</td>
+                <td>20</td>
+              </tr>
+              <tr>
+                <td>Desarrollo e integración del frontend</td>
+                <td>135</td>
+              </tr>
+              <tr>
+                <td>Pruebas y correcciones</td>
+                <td>28</td>
+              </tr>
+              <tr>
+                <td>Reuniones en CIVETAN</td>
+                <td>4</td>
+              </tr>
+              <tr>
+                <td>Toma y documentación de requisitos</td>
+                <td>3</td>
+              </tr>
+              <tr>
+                <td>Coordinación con Matías</td>
+                <td>6</td>
+              </tr>
+              <tr>
+                <td>Preparación de la primera demo</td>
+                <td>2</td>
+              </tr>
+              <tr>
+                <td>Elaboración del informe</td>
+                <td>2</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <th scope="row">Total estimado</th>
+                <td>216</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="report-section" id="diseno">
+      <div class="section-heading"><span>05</span>
+        <div>
+          <p class="eyebrow">Prototipado</p>
+          <h2>Diseño UX/UI</h2>
+        </div>
+      </div>
+      <div class="prose">
+        <p>A partir del primer relevamiento se elaboró un bosquejo de la solución. El prototipo permitió organizar la
+          arquitectura de información, representar los flujos principales y disponer de una referencia visual común
+          antes de avanzar con la implementación.</p>
+        <p>La propuesta fue presentada el <time datetime="2026-05-07">7 de mayo de 2026</time> en CIVETAN, durante una
+          reunión en la que participaron Federica, Manuela, Daniel y Matías. La instancia permitió contrastar el diseño
+          con las necesidades expresadas y utilizar la devolución recibida como insumo para la evolución de la interfaz.
+        </p>
+        <p>El primer prototipo representó los flujos centrales de la versión móvil destinada a los perfiles de
+          veterinario y cliente. Las pantallas contemplaban el acceso a la plataforma, la selección de establecimientos,
+          la consulta de bebederos y la visualización de sus mediciones.</p>
+      </div>
+      <div class="prototype-gallery" aria-labelledby="prototype-gallery-title">
+        <header class="prototype-gallery__header">
+          <p class="eyebrow">Evidencia de diseño</p>
+          <h3 id="prototype-gallery-title">Primer prototipo presentado</h3>
+          <p>Capturas utilizadas como material de apoyo durante la segunda reunión en CIVETAN y como punto de partida
+            para la evolución de la interfaz.</p>
+        </header>
+        <figure class="prototype-shot prototype-shot--wide">
+          <a href="informe-assets/prototipo-acceso.png" target="_blank" rel="noopener noreferrer"
+            aria-label="Ampliar las pantallas de acceso y selección">
+            <img src="informe-assets/prototipo-acceso.png"
+              alt="Pantallas móviles del prototipo: bienvenida, ingreso de credenciales y selección de establecimiento"
+              loading="lazy">
+          </a>
+          <figcaption><strong>Acceso y selección </strong><span>Pantallas iniciales de bienvenida, autenticación y
+              selección del establecimiento.</span></figcaption>
+        </figure>
+        <figure class="prototype-shot">
+          <a href="informe-assets/prototipo-bebederos.png" target="_blank" rel="noopener noreferrer"
+            aria-label="Ampliar la pantalla de estado de los bebederos">
+            <img src="informe-assets/prototipo-bebederos.png"
+              alt="Pantalla móvil con el listado de bebederos y sus porcentajes de cobertura" loading="lazy">
+          </a>
+          <figcaption><strong>Estado de los bebederos</strong><span>Consulta de los dispositivos asociados y de su
+              porcentaje de cobertura.</span></figcaption>
+        </figure>
+        <figure class="prototype-shot">
+          <a href="informe-assets/prototipo-mediciones.png" target="_blank" rel="noopener noreferrer"
+            aria-label="Ampliar la pantalla del historial de mediciones">
+            <img src="informe-assets/prototipo-mediciones.png"
+              alt="Pantalla móvil con el historial de mediciones de dos bebederos" loading="lazy">
+          </a>
+          <figcaption><strong>Historial de mediciones</strong><span>Detalle cronológico de las mediciones registradas
+              para cada bebedero.</span></figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="report-section" id="desarrollo">
+      <div class="section-heading"><span>06</span>
+        <div>
+          <p class="eyebrow">Implementación</p>
+          <h2>Desarrollo del frontend</h2>
+        </div>
+      </div>
+      <div class="prose">
+        <p>El frontend se desarrolló como una aplicación de página única basada en React y TypeScript, compilada con
+          Vite. La navegación se resolvió mediante React Router y la interfaz se organizó en componentes reutilizables
+          con hojas de estilo modulares. Esta estructura permite separar responsabilidades y adaptar la experiencia a
+          pantallas de escritorio y dispositivos móviles.</p>
+        <p>La aplicación se comunica con el backend mediante solicitudes HTTP centralizadas. El token JWT se incorpora a
+          las solicitudes protegidas y la sesión se conserva durante la pestaña activa mediante
+          <code>sessionStorage</code>. Al iniciar la aplicación, la sesión se valida contra el backend y, ante una
+          respuesta no autorizada, se eliminan las credenciales locales.</p>
+      </div>
+      <div class="tech-grid" aria-label="Tecnologías utilizadas">
+        <div><strong>React 19</strong><span>Interfaz por componentes</span></div>
+        <div><strong>TypeScript</strong><span>Tipado y contratos</span></div>
+        <div><strong>Vite</strong><span>Entorno y compilación</span></div>
+        <div><strong>React Router</strong><span>Navegación protegida</span></div>
+        <div><strong>Recharts / Chart.js</strong><span>Visualización de datos</span></div>
+        <div><strong>API REST + JWT</strong><span>Integración y seguridad</span></div>
+      </div>
+      <h3 class="architecture-title">Arquitectura general</h3>
+      <div class="architecture" aria-label="Capas generales de la aplicación">
+        <div data-step="01"><small>Presentación</small><strong>Vistas responsive</strong></div>
+        <div data-step="02"><small>Aplicación</small><strong>Componentes y contexto</strong></div>
+        <div data-step="03"><small>Integración</small><strong>API REST</strong></div>
+        <div data-step="04"><small>Servicios</small><strong>Backend e IoT</strong></div>
+      </div>
+    </section>
+
+    <section class="report-section" id="funcionalidades">
+      <div class="section-heading"><span>07</span>
+        <div>
+          <p class="eyebrow">Incremento disponible</p>
+          <h2>Funcionalidades implementadas</h2>
+        </div>
+      </div>
+      <div class="feature-grid">
+        <article><span aria-hidden="true">A</span>
+          <div>
+            <h3>Acceso y roles</h3>
+            <p>Inicio de sesión, persistencia temporal, validación de sesión y rutas protegidas para administrador,
+              veterinario y cliente.</p>
+          </div>
+        </article>
+        <article><span aria-hidden="true">U</span>
+          <div>
+            <h3>Usuarios</h3>
+            <p>Alta y edición de usuarios, consulta de estados y administración de la relación entre veterinarios y
+              clientes.</p>
+          </div>
+        </article>
+        <article><span aria-hidden="true">E</span>
+          <div>
+            <h3>Establecimientos</h3>
+            <p>Registro, consulta y edición de establecimientos asociados con los clientes de la plataforma.</p>
+          </div>
+        </article>
+        <article><span aria-hidden="true">B</span>
+          <div>
+            <h3>Bebederos</h3>
+            <p>Listado, creación y edición de dispositivos, incorporación de imágenes y acceso al estado de cada
+              bebedero.</p>
+          </div>
+        </article>
+        <article><span aria-hidden="true">R</span>
+          <div>
+            <h3>Reportes</h3>
+            <p>Resumen de usuarios y dispositivos activos e inactivos para facilitar la supervisión administrativa.</p>
+          </div>
+        </article>
+        <article><span aria-hidden="true">%</span>
+          <div>
+            <h3>Cobertura</h3>
+            <p>Gráficos por cliente, establecimiento o bebedero, con períodos configurables y series reales, promedio,
+              mínimo y máximo.</p>
+          </div>
+        </article>
+        <article><span aria-hidden="true">M</span>
+          <div>
+            <h3>Experiencia móvil</h3>
+            <p>Flujos específicos para consultar clientes, establecimientos, bebederos y resúmenes desde pantallas
+              pequeñas.</p>
+          </div>
+        </article>
+        <article><span aria-hidden="true">S</span>
+          <div>
+            <h3>Soporte</h3>
+            <p>Acceso a un canal de asistencia por WhatsApp desde la interfaz de la aplicación.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="report-section" id="hitos">
+      <div class="section-heading"><span>08</span>
+        <div>
+          <p class="eyebrow">Seguimiento</p>
+          <h2>Cronología de hitos</h2>
+        </div>
+      </div>
+      <ol class="timeline">
+        <li><time datetime="2026-03-31"><span>31</span> MAR 2026</time>
+          <div>
+            <h3>Primera reunión de relevamiento</h3>
+            <p>Encuentro en CIVETAN para comprender el problema, identificar los perfiles de usuario y comenzar la
+              definición de requisitos.</p>
+          </div>
+        </li>
+        <li><time datetime="2026-05-07"><span>07</span> MAY 2026</time>
+          <div>
+            <h3>Presentación del primer mockup</h3>
+            <p>Segunda reunión con Federica, Manuela, Matías y Daniel. Se presentó el primer bosquejo elaborado en Figma
+              y se validó la dirección inicial del producto.</p>
+          </div>
+        </li>
+        <li><time datetime="2026-08-20"><span>20</span> AGO 2026</time>
+          <div>
+            <h3>Primera demostración funcional</h3>
+            <p>Presentación del estado alcanzado por el proyecto y de las funciones integradas hasta la fecha. Esta
+              instancia constituye una demo de avance y no la entrega final.</p>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <section class="report-section" id="estado">
+      <div class="section-heading"><span>09</span>
+        <div>
+          <p class="eyebrow">Situación al 20/08/2026</p>
+          <h2>Estado actual</h2>
+        </div>
+      </div>
+      <div class="status-panel">
+        <div>
+          <h3>Primer incremento</h3>
+          <p>La solución dispone de una base funcional que integra autenticación, navegación por roles, administración
+            de las entidades principales y visualización de reportes. La primera demo permitió exponer este avance en un
+            contexto real de seguimiento.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="report-section" id="reflexiones">
+      <div class="section-heading"><span>10</span>
+        <div>
+          <p class="eyebrow">Aprendizajes</p>
+          <h2>Reflexiones</h2>
+        </div>
+      </div>
+      <div class="prose prose--lead">
+        <p>El desarrollo realizado hasta el momento permitió aplicar conocimientos de análisis de requisitos, diseño de
+          interfaces, programación con React y TypeScript, consumo de APIs REST, autenticación basada en tokens,
+          visualización de datos y muchos conceptos adquiridos a lo largo de estos 2 años en TUDAI. El contexto
+          institucional aportó una problemática concreta y la necesidad de traducir conceptos del dominio veterinario a
+          flujos digitales comprensibles.</p>
+        <p>La articulación entre frontend y backend fortaleció la comunicación técnica y la definición conjunta de
+          contratos. Asimismo, las reuniones con Federica y Manuela evidenciaron la importancia de validar
+          tempranamente: el prototipo permitió conversar sobre la solución antes de implementarla y la primera demo
+          aportó una nueva instancia para contrastar el producto con su contexto de uso.</p>
+      </div>
+    </section>
+
+    <section class="report-section" id="agradecimientos">
+      <div class="section-heading"><span>11</span>
+        <div>
+          <p class="eyebrow">Reconocimientos</p>
+          <h2>Agradecimientos</h2>
+        </div>
+      </div>
+      <div class="prose prose--lead">
+        <p>Quiero agradecer a Federica y Manuela por su predisposición, acompañamiento y participación en las instancias
+          de relevamiento y validación realizadas en CIVETAN. Asimismo, deseo destacar el trabajo conjunto con Matías y
+          su coordinación, fundamentales para lograr la integración de este proyecto. Finalmente, muchas gracias a Juan
+          Toloza por su acompañamiento y por la oportunidad brindada durante el desarrollo de esta PPS.</p>
+      </div>
+    </section>
+  </main>
+  <footer class="report-footer">
+    <div><strong>Daniel Teruggi</strong><span>Práctica Profesional Supervisada · TUDAI</span></div><a
+      href="#inicio">Volver al inicio <span aria-hidden="true">↑</span></a>
+  </footer>
+</body>
+
+</html>
