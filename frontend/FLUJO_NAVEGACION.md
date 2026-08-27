@@ -28,7 +28,7 @@ flowchart TD
     F -->|No| H[WelcomePage]
     H -->|Ingresar| I["/login — LoginPage"]
     I -->|Nuevo usuario| J["/nuevo-usuario — NuevoUsuarioPage"]
-    J -->|Cerrar o finalizar| I
+    J -->|Registro exitoso| I
 
     G -->|Login admin correcto| K["/dashboard"]
     G -->|Rol no admin| G1[Cierra la sesión y muestra error]
@@ -157,6 +157,8 @@ Comportamiento de `ProtectedRoute`:
 Los destinos se obtienen mediante `getHomeByRole`, definido en `src/utils/roleHome.ts`. La misma función es utilizada por `SmartHomeRedirect` y los formularios de inicio de sesión.
 
 Solo las rutas del dashboard declaran actualmente `roles={["admin"]}`. Las demás rutas privadas requieren autenticación, pero no restringen explícitamente el rol desde el router.
+
+Como consecuencia, un usuario autenticado puede ingresar manualmente a una ruta privada destinada a otro rol. Por ejemplo, un cliente o administrador puede abrir `/veterinarios/clientes`, y un veterinario o administrador puede abrir `/cliente/establecimientos`. En esos casos el router no lo redirige preventivamente: el componente intenta consultar el endpoint correspondiente y puede terminar mostrando un error si el backend rechaza el acceso.
 
 ## 7. Flujo del administrador
 

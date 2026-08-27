@@ -10,6 +10,7 @@ Aplicación web para administrar usuarios, establecimientos, bebederos y reporte
 ## Documentación
 
 - [Flujo real de navegación](./FLUJO_NAVEGACION.md): rutas, redirecciones, permisos, recorridos por rol y diagramas Mermaid.
+- [Tareas pendientes](./TODO.md): funcionalidades y mejoras todavía no implementadas.
 
 ## Stack
 
@@ -17,8 +18,8 @@ Aplicación web para administrar usuarios, establecimientos, bebederos y reporte
 - **Lenguaje**: TypeScript 6.
 - **Enrutamiento**: React Router 7.
 - **Formularios**: React Hook Form.
-- **Gráficos**: Recharts, Chart.js y React Chart.js 2.
-- **Fechas**: date-fns.
+- **Gráficos**: Recharts. Chart.js y React Chart.js 2 están instalados, pero no se utilizan actualmente.
+- **Fechas**: API nativa de JavaScript mediante `Date`, `toLocaleDateString` y `toLocaleTimeString`.
 - **Autenticación**: JWT decodificado con `jwt-decode`.
 - **Notificaciones**: React Hot Toast.
 - **Estilos**: CSS Modules y estilos globales.
@@ -56,7 +57,9 @@ Aplicación web para administrar usuarios, establecimientos, bebederos y reporte
 - Consulta de clientes asociados.
 - Selección de un cliente para ver sus establecimientos.
 - Consulta de bebederos pertenecientes a esos establecimientos.
-- Acceso protegido según el rol incluido en el JWT.
+- Las rutas del recorrido requieren una sesión autenticada, pero no restringen explícitamente el rol desde el router.
+- La pantalla valida la relación entre el veterinario y el cliente seleccionado, mientras que el backend aplica la autorización definitiva sobre los recursos solicitados.
+- Contacto con soporte técnico mediante un mensaje prearmado de WhatsApp.
 
 ### Cliente
 
@@ -272,8 +275,9 @@ La configuración se encuentra en `vite.config.ts`, dentro de la propiedad `test
 | `src/utils/apiError.ts` | `src/utils/apiError.test.ts` | Errores 401, 403, 409, 422 y 500, JSON inválido y errores por campo de FastAPI |
 | `src/components/Dashboard/UsersPanel/assignmentUtils.ts` | `assignmentUtils.test.ts` en la misma carpeta | Obtención de IDs y solicitud de reasignación de veterinarios |
 | `src/components/Dashboard/UsersPanel/userStatusUtils.ts` | `userStatusUtils.test.ts` en la misma carpeta | Roles autorizados para activar o desactivar usuarios |
+| `src/utils/roleHome.ts` | `src/utils/roleHome.test.ts` | Destinos iniciales correspondientes a los roles administrador, veterinario y cliente |
 
-La suite contiene **41 casos de prueba** distribuidos en cinco archivos.
+La suite contiene **44 casos de prueba** distribuidos en seis archivos.
 
 ### Cómo ejecutar las pruebas
 
@@ -405,49 +409,13 @@ El frontend:
 5. Redirige al usuario según su rol.
 6. Cierra la sesión si `/auth/me` rechaza el token o cualquier solicitud responde `401`.
 
-Las páginas iniciales se definen en una única fuente de verdad: `src/utils/roleHome.ts`. Tanto `ProtectedRoute` como `SmartHomeRedirect` y los formularios de inicio de sesión usan `getHomeByRole`, evitando que cada flujo mantenga destinos diferentes.
-
-| Rol | Página inicial |
-|---|---|
-| `admin` | `/dashboard` |
-| `veterinario` | `/veterinarios/clientes` |
-| `cliente` | `/cliente/establecimientos` |
-
-Cuando un usuario intenta acceder a una ruta que no admite su rol, `ProtectedRoute` lo redirige a la página inicial definida en ese mismo mapa.
+Las páginas iniciales se definen en una única fuente de verdad: `src/utils/roleHome.ts`. `ProtectedRoute`, `SmartHomeRedirect` y los formularios de inicio de sesión usan `getHomeByRole`, evitando que cada flujo mantenga destinos diferentes. Las restricciones declaradas por ruta y las consecuencias de acceder con un rol distinto se detallan en [Flujo real de navegación](./FLUJO_NAVEGACION.md).
 
 > La decodificación del JWT en el navegador no reemplaza las validaciones de autorización del backend. La API debe validar el token y los permisos en cada endpoint.
 
-## Rutas principales
+## Rutas y navegación
 
-### Públicas
-
-| Ruta | Descripción |
-|---|---|
-| `/` | `LandingSelector`: recupera la sesión y selecciona login desktop o bienvenida mobile según el viewport |
-| `/login` | `LoginPage`: autenticación mobile y modal informativo de recuperación |
-| `/home-desktop` | `DesktopLoginPage`: acceso exclusivo de administradores |
-| `/home-mobile` | `WelcomePage`: bienvenida y acceso al login mobile |
-| `/nuevo-usuario` | `NuevoUsuarioPage`: autorregistro de clientes o veterinarios |
-| `/home` | `SmartHomeRedirect`: redirección automática al inicio correspondiente al rol |
-
-### Protegidas
-
-| Ruta | Roles | Descripción |
-|---|---|---|
-| `/dashboard` | Admin | `HomePageDashboard`, inicialmente en la pestaña Usuarios |
-| `/dashboard/dispositivos` | Admin | El mismo dashboard, inicialmente en Dispositivos |
-| `/dashboard/dispositivos/nuevo` | Admin | El mismo dashboard en Dispositivos; el alta se abre como modal |
-| `/bebederos` | Autenticado | Panel de dispositivos sin restricción explícita de rol en el router |
-| `/veterinarios/clientes` | Autenticado | Clientes asociados al veterinario |
-| `/cliente/establecimientos` | Autenticado | Establecimientos propios o del cliente seleccionado por un veterinario |
-| `/establecimiento/:id/bebederos` | Autenticado | Bebederos del establecimiento indicado |
-| `/establecimiento/:id/resumen` | Autenticado | Resumen del mismo establecimiento |
-
-El componente `ProtectedRoute` controla sesión y roles en la interfaz. Las tres rutas del dashboard exigen explícitamente `admin`; las restantes rutas privadas sólo exigen autenticación. La autorización definitiva y la propiedad de cada recurso corresponden al backend.
-
-El dashboard contiene las pestañas Usuarios, Establecimientos, Dispositivos y Reportes. Excepto por las rutas iniciales de Dispositivos, el cambio de pestaña se mantiene como estado local y no crea una URL nueva. Los formularios administrativos se abren como modales, no como rutas independientes.
-
-No existe actualmente una ruta comodín (`*`) ni una página 404.
+El inventario de rutas públicas y privadas, las redirecciones, los permisos declarados en el router, los recorridos por rol y el comportamiento de los layouts se mantienen en [Flujo real de navegación](./FLUJO_NAVEGACION.md). Esa documentación es la fuente de referencia para la navegación actual y evita duplicar aquí información que debe actualizarse junto con `src/App.tsx`.
 
 ### Protección del estado de administradores
 
@@ -740,19 +708,7 @@ npm run build
 
 La compilación puede advertir sobre el tamaño del bundle principal. Es una advertencia de rendimiento y no impide generar la aplicación.
 
-## Autor
-
-**Sergio Daniel Teruggi**
-
-- Tecnicatura Universitaria en Desarrollo de Aplicaciones Informáticas.
-- Universidad Nacional del Centro de la Provincia de Buenos Aires.
-- Proyecto: PPS Dosificador.
-- Correo: [sdteruggi@gmail.com](mailto:sdteruggi@gmail.com).
-- GitHub: [DanyTeruggi/PPS_Dosificador](https://github.com/DanyTeruggi/PPS_Dosificador).
-
-Desarrollado como parte de la Práctica Profesional Supervisada.
-
-## Información académica
+## Autor e información académica
 
 - **Autor:** Sergio Daniel Teruggi.
 - **Carrera:** Tecnicatura Universitaria en Desarrollo de Aplicaciones Informáticas.
@@ -760,3 +716,5 @@ Desarrollado como parte de la Práctica Profesional Supervisada.
 - **Institución:** UNICEN.
 - **Año:** 2026.
 - **Docente/Tutor:** Dr. Toloza Juan M.
+- **Correo:** [sdteruggi@gmail.com](mailto:sdteruggi@gmail.com).
+- **GitHub:** [DanyTeruggi/PPS_Dosificador](https://github.com/DanyTeruggi/PPS_Dosificador).
