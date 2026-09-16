@@ -50,19 +50,22 @@
   <nav class="contents" aria-label="Índice del informe">
     <div class="contents__inner">
       <p class="contents__title">Contenido</p>
-      <ol>
-        <li><a href="#introduccion">Introducción</a></li>
-        <li><a href="#objetivos">Objetivos</a></li>
-        <li><a href="#requerimientos">Relevamiento</a></li>
-        <li><a href="#metodologia">Metodología</a></li>
-        <li><a href="#diseno">Diseño UX/UI</a></li>
-        <li><a href="#desarrollo">Desarrollo</a></li>
-        <li><a href="#funcionalidades">Funcionalidades</a></li>
-        <li><a href="#hitos">Hitos</a></li>
-        <li><a href="#estado">Estado actual</a></li>
-        <li><a href="#reflexiones">Reflexiones</a></li>
-        <li><a href="#agradecimientos">Agradecimientos</a></li>
-      </ol>
+      <details class="contents__menu" open>
+        <summary><span>Contenido</span><span class="contents__menu-icon" aria-hidden="true"></span></summary>
+        <ol>
+          <li><a href="#introduccion">Introducción</a></li>
+          <li><a href="#objetivos">Objetivos</a></li>
+          <li><a href="#requerimientos">Relevamiento</a></li>
+          <li><a href="#metodologia">Metodología</a></li>
+          <li><a href="#diseno">Diseño UX/UI</a></li>
+          <li><a href="#desarrollo">Desarrollo</a></li>
+          <li><a href="#funcionalidades">Funcionalidades</a></li>
+          <li><a href="#hitos">Hitos</a></li>
+          <li><a href="#estado">Estado actual</a></li>
+          <li><a href="#reflexiones">Reflexiones</a></li>
+          <li><a href="#agradecimientos">Agradecimientos</a></li>
+        </ol>
+      </details>
     </div>
   </nav>
 
@@ -470,7 +473,7 @@
 
         <p>Los contenidos de <strong>Introducción a las Metodologías de Desarrollo de Software</strong> tuvieron una
           aplicación directa durante el relevamiento de requisitos, las reuniones con el equipo de CIVETAN y en la forma en la
-          cual organizamos el propio trabajo de desarrollo de la aplicación. La identificación de los distintos perfiles de
+          cual se organizó el propio trabajo de desarrollo de la aplicación. La identificación de los distintos perfiles de
           usuario, sus necesidades y los requisitos funcionales permitió transformar una problemática del ámbito veterinario 
           en funcionalidades concretas de la aplicación. Este proceso también permitió experimentar cómo los requisitos iniciales 
           pueden evolucionar a partir de la interacción y la validación con los usuarios.</p>
@@ -544,6 +547,23 @@
     <div><strong>Daniel Teruggi</strong><span>Práctica Profesional Supervisada · TUDAI</span></div><a
       href="#inicio">Volver al inicio <span aria-hidden="true">↑</span></a>
   </footer>
+  <script>
+    const contentsMenu = document.querySelector(".contents__menu");
+    const mobileMenuQuery = window.matchMedia("(max-width: 640px)");
+
+    const syncContentsMenu = ({ matches }) => {
+      contentsMenu.open = !matches;
+    };
+
+    syncContentsMenu(mobileMenuQuery);
+    mobileMenuQuery.addEventListener("change", syncContentsMenu);
+
+    contentsMenu.querySelectorAll("a").forEach((link) => {
+      link.addEventListener("click", () => {
+        if (mobileMenuQuery.matches) contentsMenu.open = false;
+      });
+    });
+  </script>
 </body>
 
 </html>
