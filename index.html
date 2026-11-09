@@ -62,6 +62,7 @@
           <li><a href="#funcionalidades">Funcionalidades</a></li>
           <li><a href="#hitos">Hitos</a></li>
           <li><a href="#estado">Estado actual</a></li>
+          <li><a href="#continuidad">Continuidad del proyecto</a></li>
           <li><a href="#reflexiones">Reflexiones</a></li>
           <li><a href="#agradecimientos">Agradecimientos</a></li>
         </ol>
@@ -146,6 +147,17 @@
           clientes que tiene asignados; y el cliente debe consultar sus establecimientos, bebederos y mediciones. Se
           definió una interfaz móvil para los perfiles de veterinario y cliente, y una interfaz de escritorio para el
           rol de administrador.</p>
+      </div>
+      <div class="prose">
+        <h3>Desafíos durante el relevamiento de requisitos</h3>
+        <p>Al iniciar el trabajo, los referentes de CIVETAN habían identificado la problemática general que debía abordar
+          la plataforma, aunque todavía no estaban completamente definidas todas las funcionalidades y los flujos de uso.
+          A medida que avanzaron las reuniones y se analizaron situaciones concretas, surgieron nuevas necesidades y
+          precisiones sobre los requisitos inicialmente planteados.</p>
+        <p>Por este motivo, el relevamiento no se limitó a una instancia inicial: fue necesario mantener intercambios,
+          revisar propuestas y validar decisiones durante el diseño y el desarrollo. Este proceso de definición progresiva
+          demandó más tiempo del previsto y permitió ajustar la solución a las necesidades que los propios usuarios
+          fueron identificando.</p>
       </div>
       <aside class="callout" aria-label="Requisitos funcionales principales">
         <h3>Requisitos funcionales principales</h3>
@@ -327,6 +339,17 @@
           <code>sessionStorage</code>. Al iniciar la aplicación, la sesión se valida contra el backend y, ante una
           respuesta no autorizada, se eliminan las credenciales locales.</p>
       </div>
+      <div class="prose">
+        <h3>Dependencia del dispositivo IoT</h3>
+        <p>La solución contempla el uso de imágenes obtenidas por el dispositivo IoT como parte del proceso destinado
+          a calcular el porcentaje de cobertura y poner esa información a disposición de la plataforma. Sin embargo,
+          la puesta en funcionamiento del dispositivo correspondía a otro desarrollo de PPS y requirió tareas
+          adicionales que no llegaron a completarse durante el período de este informe.</p>
+        <p>En consecuencia, no se contó con fotografías capturadas por el dispositivo en condiciones de operación,
+          por lo que no fue posible mostrar esa evidencia ni validar de extremo a extremo el circuito de obtención
+          de imágenes y cálculo de cobertura con datos reales. Esta limitación corresponde a la integración con el
+          dispositivo físico y debe distinguirse de las funcionalidades de interfaz desarrolladas.</p>
+      </div>
       <div class="tech-grid" aria-label="Tecnologías utilizadas">
         <div><strong>React 19</strong><span>Interfaz por componentes</span></div>
         <div><strong>TypeScript</strong><span>Tipado y contratos</span></div>
@@ -455,10 +478,40 @@
             contexto real de seguimiento.</p>
         </div>
       </div>
+      <div class="prose">
+        <h3>Limitaciones y validaciones pendientes</h3>
+        <p>Si bien se desarrollaron interfaces para consultar el estado de los bebederos y visualizar información de
+          cobertura, la disponibilidad de imágenes y mediciones provenientes del dispositivo IoT quedó condicionada
+          por su puesta en funcionamiento. Al cierre del período informado, no se disponía de fotografías reales
+          capturadas por ese dispositivo para incorporarlas al informe.</p>
+        <p>Por lo tanto, el funcionamiento integral que comprende la captura de imágenes, el cálculo de cobertura
+          y su posterior consulta desde la plataforma aún requería validación con el dispositivo operativo.
+          Esta situación no invalida el incremento de software presentado, pero delimita el alcance de las
+          pruebas y de los resultados que pueden afirmarse en esta etapa.</p>
+      </div>
+    </section>
+
+    <section class="report-section" id="continuidad">
+      <div class="section-heading"><span>10</span>
+        <div>
+          <p class="eyebrow">Proyección</p>
+          <h2>Continuidad del proyecto y futuras Prácticas Profesionales Supervisadas</h2>
+        </div>
+      </div>
+      <div class="prose">
+        <p>El trabajo realizado durante esta PPS constituye una base para continuar la evolución de la plataforma.
+          La estructura del frontend, las funcionalidades implementadas y su integración con el backend permiten
+          que nuevas etapas de desarrollo partan de los avances ya alcanzados.</p>
+        <p>Al finalizar esta etapa, nuevos estudiantes comenzaron a participar en el proyecto para darle continuidad.
+          Entre los desafíos futuros se encuentra completar y validar la integración con el dispositivo IoT cuando
+          esté operativo, además de seguir ajustando la plataforma a las necesidades de CIVETAN.</p>
+        <p>De este modo, la práctica se integra en un proceso de trabajo colaborativo que trasciende una única etapa
+          académica y facilita que los desarrollos posteriores aprovechen la experiencia y los resultados previos.</p>
+      </div>
     </section>
 
     <section class="report-section" id="reflexiones">
-      <div class="section-heading"><span>10</span>
+      <div class="section-heading"><span>11</span>
         <div>
           <p class="eyebrow">Aprendizajes</p>
           <h2>Reflexiones</h2>
@@ -520,6 +573,15 @@
           <strong>pruebas unitarias</strong>, que permitieron verificar el comportamiento de distintas partes de la
           aplicación y detectar errores durante el desarrollo.</p>
 
+        <p>La evolución de los requisitos durante el proyecto permitió reconocer que las necesidades de los usuarios
+          no siempre se encuentran completamente definidas desde el comienzo. Escuchar, revisar y validar las
+          propuestas de manera continua resultó tan importante como implementar las funcionalidades acordadas.</p>
+
+        <p>La dependencia de un dispositivo físico desarrollado en otra instancia de PPS también puso de manifiesto
+          la importancia de identificar los límites de una integración y comunicar con claridad qué componentes
+          pudieron probarse y cuáles quedaron pendientes. Asimismo, la incorporación de nuevos estudiantes mostró
+          el valor de construir una base de software que pueda ser comprendida y continuada por otros equipos.</p>
+
         <p>En conjunto, la PPS permitió comprender de manera práctica cómo contenidos abordados en diferentes asignaturas
           <strong>se relacionan y complementan al momento de desarrollar una solución real</strong>. El análisis del
           problema, el relevamiento de requisitos, el diseño de la experiencia de usuario, el modelado de los datos, la
@@ -529,7 +591,7 @@
     </section>
 
     <section class="report-section" id="agradecimientos">
-      <div class="section-heading"><span>11</span>
+      <div class="section-heading"><span>12</span>
         <div>
           <p class="eyebrow">Reconocimientos</p>
           <h2>Agradecimientos</h2>
